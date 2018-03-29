@@ -1,0 +1,46 @@
+
+
+### BUGS ###
+   topic details (after clicking on topic name) sticks with first topic name displayed
+      bug: cannot send message without key to compacted topic - disable such possibilty or show warning ...
+### TODO ###
+
+todo: big feature : enable providing multiple bootstrap servers in broker config
+    this will cause lots of compilations
+        e.g. checking that all bootstrap servers belong to the same cluster
+        e.g. detection that some nodes (or all) goes does down during listeners working
+        e.g. check that all advertised listeners from each node is accessible
+        (but maybe only one valid advertised listener is enough ?)
+            question: how to detect that nodes with 'accessible' advertised listeners went down but the node(s) with
+                inaccessible advertised listeners are up ?
+
+todo: make topic names (in broker status window) copyable
+
+todo: add autocomplete (popup) in topic config for existing topics
+todo: add word wrap enable/disable checkbox for all CodeArea / LogArea
+todo: add 'after EACH message' to be 'symmetric' when sending message template is concerned
+todo: refactor kafka proxy class
+todo: add wordwrap checkbox for all text areas
+todo: syntax highlighting for message receiver ?
+todo: add status bar with popup hints (similar in Intelij IDEA) to communicate with the user, and remove 'logging window'
+todo: add config opiton - add opition: don't show warning about invalid configuraiton
+
+
+
+### TODO_LOW_PRIORITY ###
+todo: feature: replace 'status' button with 'connect/disconnect' . Connect will result in fetching info every e.g. 1 second
+todo: low_priority: report in details inconsistent configuration (which node has what settings)
+todo: low_priority: when fetching new broker, if configuration on some tab does need to be updated, do not refresh it
+todo: low_priority save user sorting type for topic (only during program work - dont need to be persistent)
+todo: add handling DEL button in LIstVIew to delete config
+todo: add handling INS button in listView to add new config
+todo: remember main window position
+todo: add gui configuration window (e.g. define all timeouts in application instead of hardcoded values)
+todo: add checkbox to NOT send empty messages (if they get evaluated to empty string)
+
+### NOT DONE - DONT KNOW SOLUTION ###
+expand table column width to content
+print replication factor for topic in summary
+
+
+	

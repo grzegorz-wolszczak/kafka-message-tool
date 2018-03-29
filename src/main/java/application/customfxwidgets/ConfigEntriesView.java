@@ -1,0 +1,89 @@
+package application.customfxwidgets;
+
+import application.utils.GuiUtils;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.TitledPane;
+import org.apache.kafka.clients.admin.ConfigEntry;
+
+import java.io.IOException;
+import java.util.Set;
+
+public class ConfigEntriesView extends TitledPane {
+
+    private static final String FXML_FILE = "ConfigEntriesView.fxml";
+    private final ObservableList<ConfigEntry> observableEntries = FXCollections.observableArrayList();
+    private final String title;
+    @FXML
+    private TableColumn<ConfigEntry, String> nameColumn;
+    @FXML
+    private TableColumn<ConfigEntry, String> valueColumn;
+    @FXML
+    private TableView<ConfigEntry> configEntriesTableView;
+
+    private ConfigEntriesViewPreferences columnWidths;
+
+
+    public ConfigEntriesView(String title,
+                             Set<ConfigEntry> entries) throws IOException {
+        this(title, entries, new ConfigEntriesViewPreferences());
+    }
+
+    public ConfigEntriesView(String title,
+                             Set<ConfigEntry> entries,
+                             ConfigEntriesViewPreferences columnWidths) throws IOException {
+        this.title = title;
+        observableEntries.setAll(entries);
+        this.columnWidths = columnWidths;
+
+        FXMLLoader loader = new FXMLLoader(AddTopicDialog.class.getResource(FXML_FILE));
+        loader.setRoot(this);
+        loader.setController(this);
+        loader.load();
+        GuiUtils.expandNodeToAnchorPaneBorders(this);
+    }
+
+    @FXML
+    private void initialize() {
+        setText(title);
+        setCollapsible(false);
+        configureColumns();
+        setTableContent();
+    }
+
+    private void setTableContent() {
+        configEntriesTableView.setItems(observableEntries);
+        configEntriesTableView.getSortOrder().add(nameColumn);
+    }
+
+    private void configureColumns() {
+        configureNameColumn();
+        configureValueColumn();
+    }
+
+    private void configureValueColumn() {
+        valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().value()));
+        valueColumn.setResizable(true);
+
+        if (columnWidths.valueColumnWidth != ConfigEntriesViewPreferences.INVALID_COLUMN_WIDHT) {
+            valueColumn.setPrefWidth(columnWidths.nameColumnWidth);
+        }
+        valueColumn.widthProperty().addListener((observable, oldValue, newValue) -> columnWidths.valueColumnWidth = newValue.doubleValue());
+    }
+
+    private void configureNameColumn() {
+        nameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().name()));
+        nameColumn.setResizable(true);
+
+        if (columnWidths.nameColumnWidth != ConfigEntriesViewPreferences.INVALID_COLUMN_WIDHT) {
+            nameColumn.setPrefWidth(columnWidths.nameColumnWidth);
+        }
+        nameColumn.widthProperty().addListener((observable, oldValue, newValue) -> columnWidths.nameColumnWidth = newValue.doubleValue());
+    }
+
+}

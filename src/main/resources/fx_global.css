@@ -1,0 +1,89 @@
+
+/*
+.label, .check-box {
+    -fx-font-size: 12px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #333333;
+    -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 0, 0, 0, 1);
+}
+*/
+.label, .check-box {
+    -fx-font-weight: bold;
+}
+
+.button {
+    -fx-text-fill: white;
+    -fx-font-family: "Arial Narrow";
+    -fx-font-weight: bold;
+    -fx-background-color: linear-gradient(#0096C9, #007CA7);
+
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 5, 0.0, 0, 1);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(#007CA7, #0096C9);
+}
+
+/* used in text fields to indicate error input*/
+.text-field:error {
+    -fx-background-color: #ed6565;
+}
+
+.text-field:ok_topic_exists {
+    -fx-background-color: lightgreen;
+}
+
+.text-field:warn_topic_will_be_autocreated {
+    -fx-background-color: #90BFEE;
+}
+
+.text-field:error_cannot_use_topic {
+    -fx-background-color: orange;
+}
+
+.tab {
+    -fx-font-weight: bold;
+    -fx-font-size: 12px;
+}
+
+.text-area{
+    -fx-font-family: "Consolas";
+    -fx-font-size: 12px;
+}
+
+.tooltip {
+    -fx-background: rgb(30, 30, 30);
+    -fx-text-fill: white;
+    -fx-background-color: rgba(30, 30, 30, 0.8);
+    -fx-background-radius: 6px;
+    -fx-background-insets: 0;
+    -fx-padding: 0.7em 0.75em 0.7em 0.75em; /* 10px */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.5), 10, 0.0, 0, 3);
+    -fx-font-family: "Courier New";
+    -fx-font-size: 1em;
+}
+
+.log_line_red {
+    -fx-fill: red;
+    -fx-font-family: "Courier New";
+    -fx-font-size: 1em;
+}
+
+.log_line_gray {
+    -fx-fill: gray;
+     -fx-font-family: "Courier New";
+        -fx-font-size: 1em;
+}
+
+.log_line_blue {
+    -fx-fill: blue;
+    -fx-font-family: "Courier New";
+    -fx-font-size: 1em;
+}
+
+.log_line_black {
+    -fx-fill: black;
+    -fx-font-family: "Courier New";
+    -fx-font-size: 1em;
+}
+

@@ -1,0 +1,20 @@
+.json_bracket {
+    -fx-fill: peru;
+    -fx-font-weight: bold;
+}
+.json_brace {
+    -fx-fill: orange;
+   -fx-font-weight: bold;
+}
+.json_string {
+    -fx-fill: blue;
+}
+.json_number {
+    -fx-fill: violet;
+}
+.json_boolean {
+    -fx-fill: green;
+}
+.json_null {
+   -fx-fill: red;
+}

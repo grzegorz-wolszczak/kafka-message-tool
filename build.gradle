@@ -1,0 +1,172 @@
+
+
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'org.ajoberstar:grgit:1.7.2'
+        classpath "org.jfrog.buildinfo:build-info-extractor-gradle:4.5.0"
+        classpath 'net.ltgt.gradle:gradle-apt-plugin:0.8'
+        classpath 'com.github.jengelman.gradle.plugins:shadow:2.0.1'
+    }
+}
+
+plugins {
+    id 'java'
+    id 'org.ajoberstar.grgit' version '1.7.2'
+    id 'com.github.ben-manes.versions' version '0.15.0'
+}
+
+repositories {
+    mavenCentral()
+}
+
+import java.time.Instant
+
+apply plugin: 'java'
+apply plugin: 'groovy'
+apply plugin: 'maven'
+apply plugin: 'idea'
+apply plugin: 'findbugs'
+apply plugin: 'checkstyle'
+apply plugin: 'net.ltgt.apt'
+apply plugin: 'java-library-distribution'
+apply plugin: 'publishing'
+apply plugin: 'maven-publish'
+apply plugin: "jacoco"
+apply plugin: 'com.github.johnrengelman.shadow'
+
+
+static String getShortenedTimestamp() {
+    new Date().format("MM.dd-HH.mm.ss", TimeZone.getTimeZone("UTC"))
+}
+
+//version = "preview.${getShortenedTimestamp()}"
+version = "0.0.0.0"
+
+println "Gradle project dir: ${projectDir}"
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+ext.timestamp = Instant.now().toString()
+
+distTar.enabled = false
+distZip.enabled = false
+
+
+if (version == "unspecified") {
+    version = "dev"
+}
+
+jar.archiveName = "${rootProject.name}-${version}.jar"
+jar.manifest.attributes 'Main-Class': 'application.MainApplication'
+
+
+static String getIsoTime() {
+    new Date().format("yyyy-MM-dd'T'HH:mm:ss'Z'", TimeZone.getTimeZone("UTC"))
+}
+
+
+dependencies {
+    testCompile(
+            'com.github.grzesiek-galezowski:tdd-toolkit-java:1.0.29',
+            'org.testng:testng:6.11',
+            'org.assertj:assertj-core:3.8.0',
+            'org.mockito:mockito-core:2.8.47',
+    )
+    testCompile group: 'org.xmlunit', name: 'xmlunit-matchers', version: '2.5.1'
+    testCompile group: 'org.hamcrest', name: 'hamcrest-all', version: '1.3'
+    compile group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
+    compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
+    compile group: 'org.apache.kafka', name: 'kafka-clients', version: '1.0.0'
+    compile group: 'org.apache.kafka', name: 'kafka_2.12', version: '1.0.0'
+    compile group: 'commons-validator', name: 'commons-validator', version: '1.4.0'
+    compile group: 'com.google.guava', name: 'guava', version: '22.0'
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.13'
+    compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.8.1'
+}
+
+task wrapper(type: Wrapper) {
+    group = rootProject.name
+    gradleVersion = '3.4.1'
+}
+
+checkstyle {
+    toolVersion = "8.1"
+}
+
+task createProperties() {
+    doLast {
+        String fileLocation = "$projectDir/src/main/resources/version.properties"
+        // recreate file on build, delete it first
+        new File(fileLocation).delete()
+        new File(fileLocation).withWriter { w ->
+            Properties p = new Properties()
+            p['version'] = project.version.toString()
+            p.store w, null
+        }
+    }
+}
+
+processResources.dependsOn createProperties
+
+
+findbugs {
+    toolVersion = "3.0.1"
+    sourceSets = [sourceSets.main, sourceSets.test]
+    ignoreFailures = false
+    effort = "max"
+    reportLevel = "high"
+    omitVisitors = ["FindNonShortCircuit"]
+    excludeFilter = file("$rootProject.projectDir/config/findbugs/excludeFilter.xml")
+}
+
+
+task checkAndTest {
+    group = rootProject.name
+    dependsOn tasks.check, tasks.test
+}
+
+task buildJar {
+    group = rootProject.name
+    dependsOn tasks.assemble, tasks.checkAndTest, tasks.shadowJar
+}
+shadowJar {
+    baseName = project.name
+    version = project.version
+    appendix = ""
+    classifier = ""
+    from("src/main/java") {
+        include "/**/*.fxml"
+    }
+}
+
+jar {
+    baseName = project.name
+    from("src/main/java") {
+        include '/**/*.fxml'
+    }
+}
+
+build.doFirst {
+    println "Build Version [${version}] ISO Time [${timestamp}]"
+}
+
+test {
+    useTestNG() {
+        useDefaultListeners = true
+    }
+}
+
+task testWithJacocoReport {
+    group = rootProject.name
+    dependsOn tasks.checkAndTest, jacocoTestReport
+    jacocoTestReport.mustRunAfter checkAndTest
+}
+
+sourceSets.main.java.srcDirs = []
+sourceSets.main.groovy.srcDirs += ["src/main/java"]
+
+build.dependsOn shadowJar

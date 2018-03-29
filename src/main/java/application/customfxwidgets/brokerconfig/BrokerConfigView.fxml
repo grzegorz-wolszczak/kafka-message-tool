@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TitledPane?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.RowConstraints?>
+
+<fx:root minHeight="-Infinity" minWidth="-Infinity" prefHeight="566.0" prefWidth="888.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <TitledPane collapsible="false" text="Broker configuration" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <content>
+            <GridPane hgap="5.0" vgap="5.0">
+              <columnConstraints>
+                <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="146.0" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="87.0" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+                <ColumnConstraints hgrow="ALWAYS" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
+                <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
+               <children>
+                  <Label text="Config name" />
+                  <Label text="Kafka broker" GridPane.rowIndex="1" />
+                  <TextField fx:id="brokerConfigNameField" GridPane.columnIndex="1" GridPane.columnSpan="4" />
+                  <TextField fx:id="kafkaBrokerHostnameField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="kafkaBrokerPortField" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+                  <Button fx:id="connectionCheckButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#checkButtonOnAction" text="Status" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+                  <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnSpan="2147483647" GridPane.hgrow="NEVER" GridPane.rowIndex="2" GridPane.vgrow="NEVER">
+                     <children>
+                        <TitledPane fx:id="clusterStatusTitledPane" collapsible="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="100.0" prefWidth="100.0" text="Cluster summary" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                           <content>
+                              <TabPane fx:id="clusterSummaryTabPane">
+                                 <tabs>
+                                    <Tab closable="false" text="Properties">
+                                       <content>
+                                          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
+                                             <children>
+                                                <TabPane fx:id="clusterConfigEntriesTabPane" maxHeight="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0" />
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </Tab>
+                                    <Tab fx:id="topicsTab" closable="false" text="Topics">
+                                       <content>
+                                          <AnchorPane prefHeight="200.0" prefWidth="200.0">
+                                             <children>
+                                                <SplitPane dividerPositions="0.5" layoutX="182.0" layoutY="45.0" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                  <items>
+                                                    <AnchorPane fx:id="lowerSplitPane" minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                                         <children>
+                                                            <TableView fx:id="topicsTableView" layoutX="243.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                              <columns>
+                                                                <TableColumn fx:id="topicNameColumn" editable="false" prefWidth="94.0" text="Topic name" />
+                                                                <TableColumn fx:id="partitionCountColumn" editable="false" prefWidth="95.0" text="Parition count" />
+                                                                  <TableColumn fx:id="activeAssignedConsumersColumn" editable="false" prefWidth="191.0" text="Active assigned consumers" />
+                                                                  <TableColumn fx:id="consumerGroupsCountColumn" editable="false" minWidth="8.0" prefWidth="120.0" text="Consumer groups" />
+                                                              </columns>
+                                                            </TableView>
+                                                         </children>
+                                                      </AnchorPane>
+                                                    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+                                                         <children>
+                                                            <TableView fx:id="assignedConsumerListTableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                               <columns>
+                                                                  <TableColumn fx:id="assignedConsumerClientIdColumn" editable="false" prefWidth="157.0" text="Client id" />
+                                                                  <TableColumn fx:id="assignedConsumerGroupColumn" editable="false" prefWidth="185.0" text="Consumer group" />
+                                                                  <TableColumn fx:id="assignedConsumerPartitionColumn" editable="false" prefWidth="118.0" text="Assigned partition" />
+                                                                  <TableColumn fx:id="assignedConsumerNextMsgOffsetColumn" editable="false" prefWidth="113.0" text="Next msg offset" />
+                                                                  <TableColumn fx:id="assignedConsumerHostColumn" editable="false" prefWidth="84.0" text="Host" />
+                                                                  <TableColumn fx:id="assignedConsumerIdColumn" editable="false" maxWidth="1.7976931348623157E308" prefWidth="366.0" text="Consumer id" />
+                                                               </columns>
+                                                            </TableView>
+                                                         </children>
+                                                      </AnchorPane>
+                                                  </items>
+                                                </SplitPane>
+                                             </children>
+                                          </AnchorPane>
+                                       </content>
+                                    </Tab>
+                                    <Tab fx:id="unassignedConsumersTab" closable="false" text="Unassigned consumers">
+                                      <content>
+                                        <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                                             <children>
+                                                <TableView fx:id="unassignedConsumerListTableView" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                                   <columns>
+                                                      <TableColumn fx:id="unassignedClientIdColumn" editable="false" prefWidth="157.0" text="Client id" />
+                                                      <TableColumn fx:id="unassignedConsumerGroupColumn" editable="false" prefWidth="185.0" text="Consumer group" />
+                                                      <TableColumn fx:id="unassignedConsumerHostColumn" editable="false" prefWidth="84.0" text="Host" />
+                                                      <TableColumn fx:id="unassignedConsumerIdColumn" editable="false" maxWidth="1.7976931348623157E308" prefWidth="366.0" text="Consumer id" />
+                                                   </columns>
+                                                </TableView>
+                                             </children>
+                                          </AnchorPane>
+                                      </content>
+                                    </Tab>
+                                 </tabs>
+                              </TabPane>
+                           </content>
+                        </TitledPane>
+                     </children>
+                  </AnchorPane>
+                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Detach pane" GridPane.columnIndex="6" />
+               </children>
+               <padding>
+                  <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+               </padding>
+            </GridPane>
+         </content>
+         <padding>
+            <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+         </padding>
+      </TitledPane>
+   </children>
+</fx:root>

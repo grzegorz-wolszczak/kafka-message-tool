@@ -1,0 +1,26 @@
+.groovy_keyword {
+    -fx-fill: purple;
+    -fx-font-weight: bold;
+}
+.groovy_semicolon {
+    -fx-font-weight: bold;
+}
+.groovy_paren {
+    -fx-fill: firebrick;
+    -fx-font-weight: bold;
+}
+.groovy_bracket {
+    -fx-fill: darkgreen;
+    -fx-font-weight: bold;
+}
+.groovy_brace {
+    -fx-fill: teal;
+    -fx-font-weight: bold;
+}
+.groovy_string {
+    -fx-fill: blue;
+}
+
+.groovy_comment {
+    -fx-fill: cadetblue;
+}
