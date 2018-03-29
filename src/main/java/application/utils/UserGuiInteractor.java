@@ -146,10 +146,10 @@ public class UserGuiInteractor implements UserInteractor {
     private Alert getConfigEntriesViewDialog(String header) {
         if (configEntriesViewAlert == null) {
             configEntriesViewAlert = new Alert(AlertType.INFORMATION);
-            configEntriesViewAlert.setHeaderText(header);
             configEntriesViewAlert.initOwner(owner);
             decorateWithCss(configEntriesViewAlert);
         }
+        configEntriesViewAlert.setHeaderText(header);
         return configEntriesViewAlert;
     }
 
