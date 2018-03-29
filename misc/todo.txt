@@ -1,7 +1,6 @@
 
 
 ### BUGS ###
-   topic details (after clicking on topic name) sticks with first topic name displayed
       bug: cannot send message without key to compacted topic - disable such possibilty or show warning ...
 ### TODO ###
 
@@ -43,4 +42,3 @@ expand table column width to content
 print replication factor for topic in summary
 
 
-	
