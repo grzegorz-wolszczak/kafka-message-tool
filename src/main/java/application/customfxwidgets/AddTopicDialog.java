@@ -1,7 +1,7 @@
 package application.customfxwidgets;
 
 import application.constants.ApplicationConstants;
-import application.dto.TopicToAdd;
+import application.kafka.dto.TopicToAdd;
 import application.globals.StageRepository;
 import application.utils.GuiUtils;
 import application.utils.UserGuiInteractor;

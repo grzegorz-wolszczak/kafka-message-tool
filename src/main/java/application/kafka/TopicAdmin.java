@@ -21,11 +21,13 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.admin.TopicListing;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.config.ConfigResource;
+import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -53,15 +55,20 @@ public class TopicAdmin {
     }
 
     public void createNewTopic(String topicName,
-                               int partitionNumber, int replicationFactor) throws Exception {
+                               int partitionNumber,
+                               int replicationFactor) throws Exception {
         Logger.trace(String.format("Creating topic '%s' [partitions:%d, replication factor:%d]",
                                    topicName,
                                    partitionNumber,
                                    replicationFactor));
 
-        final CreateTopicsResult result = kafkaClientsAdminClient.createTopics(Collections.singletonList(new NewTopic(topicName,
-                                                                                                                      partitionNumber,
-                                                                                                                      (short) replicationFactor)));
+        final NewTopic newTopic = new NewTopic(topicName,
+                                        partitionNumber,
+                                        (short) replicationFactor);
+        //Map<String, String> configs = new HashMap<>();
+        //configs.put(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.CLEANUP_POLICY_COMPACT);
+        //newTopic.configs(configs);
+        final CreateTopicsResult result = kafkaClientsAdminClient.createTopics(Collections.singletonList(newTopic));
 
         for (Map.Entry<String, KafkaFuture<Void>> entry : result.values().entrySet()) {
             try {

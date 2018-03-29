@@ -1,4 +1,4 @@
-package application.dto;
+package application.kafka.dto;
 
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;

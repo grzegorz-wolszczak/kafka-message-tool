@@ -7,7 +7,7 @@ import application.customfxwidgets.Displayable;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
-import application.dto.TopicToAdd;
+import application.kafka.dto.TopicToAdd;
 import application.customfxwidgets.ConfigEntriesView;
 import application.globals.KafkaClusterProxiesProperties;
 import application.kafka.ClusterStatusChecker;
@@ -422,7 +422,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         final MenuItem createTopicMenuItem = new MenuItem("Create topic");
         createTopicMenuItem.setOnAction((ActionEvent event) -> {
             try {
-                createNewTopicAction(kafkaBrokerProxyProperty.get(), new TopicToAdd());
+                createNewTopicAction(kafkaBrokerProxyProperty.get());
             } catch (Exception e) {
                 Logger.error("Could not createFrom config", e);
             }
@@ -525,12 +525,11 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         }
     }
 
-    private void createNewTopicAction(KafkaClusterProxy proxy,
-                                      TopicToAdd topicToAdd) throws Exception {
-        final ButtonType callType = new AddTopicDialog(getParentWindow())
-            .call(topicToAdd);
+    private void createNewTopicAction(KafkaClusterProxy proxy) throws Exception {
+        final TopicToAdd topicDetails = new TopicToAdd();
+        final ButtonType callType = new AddTopicDialog(getParentWindow()).call(topicDetails);
         if (callType == ButtonType.OK) {
-            createTopicButShowGuiErrorOnFailure(proxy, topicToAdd);
+            createTopicButShowGuiErrorOnFailure(proxy, topicDetails);
         }
     }
 

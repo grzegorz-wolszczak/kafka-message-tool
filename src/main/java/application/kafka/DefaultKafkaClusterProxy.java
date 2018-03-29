@@ -104,7 +104,9 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     @Override
-    public void createTopic(String topicName, int partitionNumber, int replicationFactor) throws Exception {
+    public void createTopic(String topicName,
+                            int partitionNumber,
+                            int replicationFactor) throws Exception {
         topicAdmin.createNewTopic(topicName, partitionNumber, replicationFactor);
     }
 
