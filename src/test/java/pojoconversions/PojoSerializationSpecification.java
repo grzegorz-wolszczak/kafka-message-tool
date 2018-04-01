@@ -1,3 +1,5 @@
+package pojoconversions;
+
 import application.model.pojos.BrokerConfigPojo;
 import application.model.pojos.ListenerConfigPojo;
 import application.model.pojos.SenderConfigPojo;

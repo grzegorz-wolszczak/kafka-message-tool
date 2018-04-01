@@ -1,3 +1,5 @@
+package pojoconversions;
+
 import application.model.FromPojoConverter;
 import application.model.KafkaOffsetResetType;
 import application.model.ModelDataProxy;

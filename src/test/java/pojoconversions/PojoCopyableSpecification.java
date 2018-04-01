@@ -1,3 +1,5 @@
+package pojoconversions;
+
 import autofixture.publicinterface.Any;
 import application.model.pojos.BrokerConfigPojo;
 import application.model.pojos.ListenerConfigPojo;

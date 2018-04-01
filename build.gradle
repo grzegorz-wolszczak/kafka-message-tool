@@ -44,7 +44,7 @@ static String getShortenedTimestamp() {
 }
 
 //version = "preview.${getShortenedTimestamp()}"
-version = "0.0.0.0"
+version = "1.0.0.0"
 
 println "Gradle project dir: ${projectDir}"
 

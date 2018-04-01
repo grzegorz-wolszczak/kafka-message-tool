@@ -1,3 +1,5 @@
+package pojoconversions;
+
 import application.model.KafkaOffsetResetType;
 import application.model.ToPojoConverter;
 import application.model.modelobjects.KafkaBrokerConfig;

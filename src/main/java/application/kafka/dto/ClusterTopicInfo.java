@@ -2,8 +2,10 @@ package application.kafka.dto;
 
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.common.TopicPartitionInfo;
+import org.apache.kafka.common.config.TopicConfig;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class ClusterTopicInfo {
@@ -31,6 +33,19 @@ public class ClusterTopicInfo {
 
     public String getTopicName() {
         return topicName;
+    }
+
+    private Optional<ConfigEntry> findByName(String configEntryName)
+    {
+        final Optional<ConfigEntry> first = configEntries.stream()
+            .filter(e -> e.name().equals(configEntryName))
+            .findFirst();
+        return first;
+    }
+
+    public boolean isCompacted(){
+        final Optional<ConfigEntry> byName = findByName(TopicConfig.CLEANUP_POLICY_CONFIG);
+        return byName.map(configEntry -> configEntry.value().equalsIgnoreCase(TopicConfig.CLEANUP_POLICY_COMPACT)).orElse(false);
     }
 
 }
