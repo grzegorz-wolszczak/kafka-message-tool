@@ -1,12 +1,12 @@
 package application.kafka;
 
-import application.kafka.dto.ClusterTopicInfo;
-import application.logging.Logger;
-import com.google.common.base.Throwables;
 import application.constants.ApplicationConstants;
 import application.exceptions.TopicAlreadyExistsError;
 import application.exceptions.TopicMarkedForDeletionError;
+import application.kafka.dto.ClusterTopicInfo;
+import application.logging.Logger;
 import application.utils.AppUtils;
+import com.google.common.base.Throwables;
 import kafka.server.KafkaConfig;
 import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
@@ -21,13 +21,11 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.clients.admin.TopicListing;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.config.ConfigResource;
-import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
@@ -63,8 +61,8 @@ public class TopicAdmin {
                                    replicationFactor));
 
         final NewTopic newTopic = new NewTopic(topicName,
-                                        partitionNumber,
-                                        (short) replicationFactor);
+                                               partitionNumber,
+                                               (short) replicationFactor);
         //Map<String, String> configs = new HashMap<>();
         //configs.put(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.CLEANUP_POLICY_COMPACT);
         //newTopic.configs(configs);

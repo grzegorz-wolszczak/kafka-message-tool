@@ -4,6 +4,7 @@ import application.constants.ApplicationConstants;
 import application.exceptions.ClusterConfigurationError;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
+import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.UnassignedConsumerInfo;
 import application.logging.Logger;
 import application.utils.AppUtils;
@@ -13,6 +14,7 @@ import kafka.admin.AdminClient;
 import kafka.coordinator.group.GroupOverview;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.kafka.clients.admin.Config;
+import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.DescribeClusterResult;
 import org.apache.kafka.clients.admin.DescribeConfigsResult;
 import org.apache.kafka.common.KafkaFuture;
@@ -64,10 +66,6 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         fetchClusterStateSummary();
     }
 
-    @Override
-    public ClusterStateSummary getClusterSummary() {
-        return clusterSummary;
-    }
 
     @Override
     public void reportInvalidClusterConfigurationTo(Consumer<String> problemReporter) {
@@ -88,6 +86,31 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     @Override
+    public Set<AssignedConsumerInfo> getConsumersForTopic(String topicName) {
+        return clusterSummary.getConsumersForTopic(topicName);
+    }
+
+    @Override
+    public Set<UnassignedConsumerInfo> getUnassignedConsumersInfo() {
+        return clusterSummary.getUnassignedConsumersInfo();
+    }
+
+    @Override
+    public Set<ClusterNodeInfo> getNodesInfo() {
+        return clusterSummary.getNodesInfo();
+    }
+
+    @Override
+    public Set<TopicAggregatedSummary> getAggregatedTopicSummary() {
+        return clusterSummary.getAggregatedTopicSummary();
+    }
+
+    @Override
+    public int partitionsForTopic(String topicName) {
+        return clusterSummary.partitionsForTopic(topicName);
+    }
+
+    @Override
     public TriStateConfigEntryValue isTopicAutoCreationEnabled() {
         if (clusterNodesProperties.isEmpty()) {
             return TriStateConfigEntryValue.False;
@@ -102,6 +125,17 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         }
         return clusterNodesProperties.topicDeletionEnabled();
     }
+
+    @Override
+    public boolean hasTopic(String topicName) {
+        return clusterSummary.hasTopic(topicName);
+    }
+
+    @Override
+    public Set<ConfigEntry> getTopicProperties(String topicName) {
+        return clusterSummary.getTopicProperties(topicName);
+    }
+
 
     @Override
     public void createTopic(String topicName,
@@ -203,14 +237,14 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     private String getOffsetForPartition(Map<TopicPartition, Object> offsets, TopicPartition topicPartition) {
-        Logger.trace(String.format("Searching for offset for %s in %s",topicPartition, offsets));
+        Logger.trace(String.format("Searching for offset for %s in %s", topicPartition, offsets));
         if (!offsets.containsKey(topicPartition)) {
             Logger.trace("Not found");
             return "NOT_FOUND";
         }
         final Object offset = offsets.get(topicPartition);
         final String offsetAsString = String.valueOf(offset);
-        Logger.trace(String.format("Found : %s",offsetAsString));
+        Logger.trace(String.format("Found : %s", offsetAsString));
         return offsetAsString;
     }
 

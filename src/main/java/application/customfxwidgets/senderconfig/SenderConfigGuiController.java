@@ -7,10 +7,8 @@ import application.customfxwidgets.TopicConfigComboBoxConfigurator;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
-import application.globals.KafkaClusterProxiesProperties;
-import application.kafka.ClusterStateSummary;
+import application.kafka.KafkaClusterProxies;
 import application.kafka.KafkaClusterProxy;
-import application.kafka.KafkaMessageToolPartitioner;
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
@@ -18,8 +16,10 @@ import application.model.modelobjects.KafkaTopicConfig;
 import application.scripting.MessageTemplateSender;
 import application.utils.GuiUtils;
 import application.utils.TooltipCreator;
+import application.utils.ValidationStatus;
+import application.utils.Validations;
 import application.utils.ValidatorUtils;
-import application.utils.kafka.KafkaBrokerHostInfo;
+import application.utils.kafka.KafkaParitionUtils;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.value.ChangeListener;
@@ -63,6 +63,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     private final StyleClassedTextArea beforeAllMessagesScriptCodeArea;
     private final StyleClassedTextArea beforeEachMessagesScriptCodeArea;
     private final StyleClassedTextArea messageContentTextArea;
+    private KafkaClusterProxies kafkaClusterProxies;
     @FXML
     private TextField messageNameTextField;
     @FXML
@@ -107,9 +108,11 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
                                      MessageTemplateSender msgTemplateSender,
                                      VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesScriptScrollPane,
                                      VirtualizedScrollPane<StyleClassedTextArea> beforeEachMessageScriptScrollPane,
-                                     VirtualizedScrollPane<StyleClassedTextArea> messageContentScrollPane) throws IOException {
+                                     VirtualizedScrollPane<StyleClassedTextArea> messageContentScrollPane,
+                                     KafkaClusterProxies kafkaClusterProxies) throws IOException {
         this.msgTemplateSender = msgTemplateSender;
         this.beforeAllMessagesScriptScrollPane = beforeAllMessagesScriptScrollPane;
+        this.kafkaClusterProxies = kafkaClusterProxies;
         beforeAllMessagesScriptCodeArea = this.beforeAllMessagesScriptScrollPane.getContent();
 
         this.beforeEachMessageScriptTextArea = beforeEachMessageScriptScrollPane;
@@ -245,36 +248,17 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     }
 
     private void displayProbableAssignedPartitionForMessageSentToTopic(String messageKey) {
+        final ValidationStatus validationStatus = Validations.validateForCalculatingPartition(config, kafkaClusterProxies);
+        if (!validationStatus.isSuccess()) {
+            showInfoWhyTargetPartitionCouldNotBeCalculated(validationStatus.validationFailureMessage());
+            return;
+        }
 
-        if (StringUtils.isBlank(messageKey)) {
-            final String reason = "message key is blank";
-            showInfoWhyTargetPartitionCouldNotBeCalculated(reason);
-            return;
-        }
         final KafkaTopicConfig topicConfig = config.getRelatedConfig();
-        if (topicConfig == null) {
-            showInfoWhyTargetPartitionCouldNotBeCalculated("invalid topic config");
-            return;
-        }
-        final String topicName = topicConfig.getTopicName();
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
-        if (brokerConfig == null) {
-            showInfoWhyTargetPartitionCouldNotBeCalculated("invalid broker config");
-            return;
-        }
-        final KafkaBrokerHostInfo hostInfo = brokerConfig.getHostInfo();
-        final KafkaClusterProxy kafkaClusterProxy = KafkaClusterProxiesProperties.get(hostInfo).get();
-        if (kafkaClusterProxy == null) {
-            showInfoWhyTargetPartitionCouldNotBeCalculated("broker status unknown");
-            return;
-        }
-        final ClusterStateSummary summary = kafkaClusterProxy.getClusterSummary();
-        if (!summary.hasTopic(topicName)) {
-            showInfoWhyTargetPartitionCouldNotBeCalculated(String.format("topic '%s' does not exist on broker", topicName));
-            return;
-        }
-        final int partitions = summary.partitionsForTopic(topicName);
-        final int expectedAssignedPartitions = KafkaMessageToolPartitioner.partition(messageKey, partitions);
+        final KafkaClusterProxy kafkaClusterProxy = kafkaClusterProxies.get(brokerConfig.getHostInfo());
+        final int partitions = kafkaClusterProxy.partitionsForTopic(topicConfig.getTopicName());
+        final int expectedAssignedPartitions = KafkaParitionUtils.partition(messageKey, partitions);
         Logger.info(String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions));
     }
 

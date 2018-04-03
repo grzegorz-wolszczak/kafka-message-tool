@@ -1,12 +1,11 @@
 package application.utils;
 
-public class ValidationStatus {
+public final class ValidationStatus {
 
-    private final boolean status ;
+    private final boolean status;
     private final String failureMessage;
 
-    private ValidationStatus(boolean status, String failureMessage)
-    {
+    private ValidationStatus(boolean status, String failureMessage) {
         this.status = status;
         this.failureMessage = failureMessage;
     }

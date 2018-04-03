@@ -2,6 +2,7 @@ package application.controllers;
 
 import application.customfxwidgets.brokerconfig.BrokerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
+import application.kafka.KafkaClusterProxies;
 import application.scripting.GroovyScriptEvaluator;
 import application.scripting.MessageTemplateSender;
 import application.customfxwidgets.senderconfig.SenderConfigGuiController;
@@ -39,13 +40,16 @@ public class DefaultControllerProvider implements ControllerProvider {
     private final ClusterStatusChecker statusChecker;
     private final ModelConfigObjectsGuiInformer guiInformer;
     private final SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator;
+    private KafkaClusterProxies kafkaClusterProxies;
 
     public DefaultControllerProvider(ModelConfigObjectsGuiInformer guiInformer,
                                      ClusterStatusChecker statusChecker,
-                                     SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator) {
+                                     SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator,
+                                     KafkaClusterProxies kafkaClusterProxies) {
         this.guiInformer = guiInformer;
         this.statusChecker = statusChecker;
         this.syntaxHighlightConfigurator = syntaxHighlightConfigurator;
+        this.kafkaClusterProxies = kafkaClusterProxies;
     }
 
 
@@ -63,7 +67,8 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                      parentWindow,
                                                      refeshCallback,
                                                      guiInteractor,
-                                                     statusChecker);
+                                                     statusChecker,
+                                                     kafkaClusterProxies);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;
@@ -105,7 +110,8 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                     guiInformer,
                                                     refreshCallback,
                                                     brokerConfigs,
-                                                    statusChecker);
+                                                    statusChecker,
+                                                    kafkaClusterProxies);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;
@@ -151,7 +157,8 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                      msgTemplateEvaluator,
                                                      beforeAllMessagesScriptScrollPane,
                                                      beforeEachMessageScriptScrollPane,
-                                                     messageContentScrollPane);
+                                                     messageContentScrollPane,
+                                                     kafkaClusterProxies);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;

@@ -18,7 +18,7 @@ public final class ClusterStateSummary {
     private final Set<ClusterTopicInfo> topicsInfo = new HashSet<>();
     private final Set<AssignedConsumerInfo> assignedConsumersInfo = new HashSet<>();
     private final Set<UnassignedConsumerInfo> unassignedConsumersInfo = new HashSet<>();
-    private static final int INVALID_TOPIC = -1;
+    private static final int INVALID_PARITION_NUMBER_FOR_TOPIC = -1;
     private String clusterId;
 
     public Set<UnassignedConsumerInfo> getUnassignedConsumersInfo() {
@@ -43,7 +43,7 @@ public final class ClusterStateSummary {
                 return topicInfo.getPartitions().size();
             }
         }
-        return INVALID_TOPIC;
+        return INVALID_PARITION_NUMBER_FOR_TOPIC;
     }
 
     public void setClusterId(String clusterId) {
@@ -83,7 +83,7 @@ public final class ClusterStateSummary {
     }
 
     public Set<ConfigEntry> getTopicProperties(String topicName) {
-        // just get first topicsInfo for first node,
+        // just getAsProperty first topicsInfo for first node,
         // it should be the same on rest of nodes any way
         for (ClusterTopicInfo clusterTopicInfo : topicsInfo) {
             if (clusterTopicInfo.getTopicName().equals(topicName)) {

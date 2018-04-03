@@ -2,7 +2,6 @@ package application.kafka;
 
 import application.logging.Logger;
 import application.root.ApplicationBusySwitcher;
-import application.globals.KafkaClusterProxies;
 import application.utils.HostInfo;
 import application.utils.ThrowableUtils;
 import application.utils.UserInteractor;
@@ -11,11 +10,14 @@ import javafx.application.Platform;
 public class ClusterStatusChecker {
     private final ApplicationBusySwitcher busySwitcher;
     private final UserInteractor userInteractor;
+    private KafkaClusterProxies kafkaClusterProxies;
 
     public ClusterStatusChecker(ApplicationBusySwitcher busySwitcher,
-                                UserInteractor userInteractor) {
+                                UserInteractor userInteractor,
+                                KafkaClusterProxies kafkaClusterProxies) {
         this.busySwitcher = busySwitcher;
         this.userInteractor = userInteractor;
+        this.kafkaClusterProxies = kafkaClusterProxies;
     }
 
     public void updateStatus(HostInfo hostInfo,
@@ -25,7 +27,7 @@ public class ClusterStatusChecker {
                 busySwitcher.setAppBusy(true);
             });
             try {
-                final KafkaClusterProxy proxy = KafkaClusterProxies.getFreshFor(hostInfo);
+                final KafkaClusterProxy proxy = kafkaClusterProxies.getFreshFor(hostInfo);
                 showWarningOnInvalidClusterConfig(proxy, shouldShowWarningOnInvalidConfig);
             } catch (Throwable e) {
                 Logger.error(e);

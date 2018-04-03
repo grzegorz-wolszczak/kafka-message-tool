@@ -7,7 +7,7 @@ import static org.testng.Assert.assertTrue;
 import static org.testng.AssertJUnit.assertFalse;
 import static org.testng.AssertJUnit.assertNull;
 
-public class ValidationResultSpecification {
+public class ValidationStatusSpecification {
     @Test
     public void shouldCreateSuccessfulValidationStatus() {
         // GIVEN

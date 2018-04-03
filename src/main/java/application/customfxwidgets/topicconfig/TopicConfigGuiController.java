@@ -6,8 +6,8 @@ import application.customfxwidgets.TopicConfigComboBoxConfigurator;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
-import application.globals.KafkaClusterProxiesProperties;
 import application.kafka.ClusterStatusChecker;
+import application.kafka.KafkaClusterProxies;
 import application.kafka.KafkaClusterProxy;
 import application.kafka.TriStateConfigEntryValue;
 import application.logging.Logger;
@@ -43,6 +43,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private final KafkaTopicConfig config;
     private final DisplayBehaviour displayBehaviour;
     private final ClusterStatusChecker statusChecker;
+    private KafkaClusterProxies kafkaClusterProxies;
     private final TopicConfigComboBoxConfigurator<KafkaBrokerConfig> comboBoxConfigurator;
 
     @FXML
@@ -67,8 +68,10 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
                                     ModelConfigObjectsGuiInformer guiInformer,
                                     Runnable refreshCallback,
                                     ObservableList<KafkaBrokerConfig> brokerConfigs,
-                                    ClusterStatusChecker statusChecker) throws IOException {
+                                    ClusterStatusChecker statusChecker,
+                                    KafkaClusterProxies kafkaClusterProxies) throws IOException {
         this.statusChecker = statusChecker;
+        this.kafkaClusterProxies = kafkaClusterProxies;
 
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
 
@@ -175,14 +178,14 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
             return;
         }
         final KafkaBrokerHostInfo hostInfo = brokerConfig.getHostInfo();
-        final ObjectProperty<KafkaClusterProxy> proxy = KafkaClusterProxiesProperties.get(hostInfo);
-        setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(proxy.get());
+        final KafkaClusterProxy proxy = kafkaClusterProxies.get(hostInfo);
+        setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(proxy);
     }
 
     private void setCallbackForUpdatingTopicNameTextFieldBackgroundIfCurrentClusterSummaryChanges(KafkaBrokerConfig oldValue,
                                                                                                   KafkaBrokerConfig newValue) {
         if (oldValue != null) {
-            final ObjectProperty<KafkaClusterProxy> oldProxy = KafkaClusterProxiesProperties.get(oldValue.getHostInfo());
+            final ObjectProperty<KafkaClusterProxy> oldProxy = kafkaClusterProxies.getAsProperty(oldValue.getHostInfo());
             Logger.trace(String.format("removing listener for cluster proxy property for %s", oldValue.getHostInfo()));
             oldProxy.removeListener(this::udateTopicNameTextFieldAppearanceCallback);
         }
@@ -191,7 +194,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
             Logger.trace("not adding new listener for proxy property because new broker config is null");
             return;
         }
-        final ObjectProperty<KafkaClusterProxy> newProxy = KafkaClusterProxiesProperties.get(newValue.getHostInfo());
+        final ObjectProperty<KafkaClusterProxy> newProxy = kafkaClusterProxies.getAsProperty(newValue.getHostInfo());
         Logger.trace(String.format("adding listener for cluster proxy property for %s", newValue.getHostInfo()));
         newProxy.addListener(this::udateTopicNameTextFieldAppearanceCallback);
     }
@@ -236,7 +239,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
         String toolTipMessage;
         PseudoClass psuedoClass;
 
-        final boolean topicExists = proxy.getClusterSummary().hasTopic(topicName);
+        final boolean topicExists = proxy.hasTopic(topicName);
         if (topicExists) {
             psuedoClass = OK_TOPIC_EXISTS_PSEUDO_CLASS;
             toolTipMessage = String.format("Topic '%s' exists.", topicName);

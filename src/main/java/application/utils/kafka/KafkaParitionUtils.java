@@ -1,10 +1,10 @@
-package application.kafka;
+package application.utils.kafka;
 
 import org.apache.kafka.common.utils.Utils;
 
 import java.nio.charset.Charset;
 
-public class KafkaMessageToolPartitioner {
+public class KafkaParitionUtils {
 
     public static int partition(String key, int numPartitions) {
         if (key == null) {

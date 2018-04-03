@@ -77,7 +77,7 @@ public class NodesConfigProperties {
 
     private ConfigEntryBooleanValue getConfigEntryBooleanValue(Set<String> strings) {
         if (strings.size() == 0) {
-            // if could not get value in settings it might happen that we could not fetch
+            // if could not getAsProperty value in settings it might happen that we could not fetch
             // from cluster, e.g. describeCluster was not supported by broker
             //throw new InternalError("Cluster configuration was not fetched yet but we are asking for specific config entry value");
         }

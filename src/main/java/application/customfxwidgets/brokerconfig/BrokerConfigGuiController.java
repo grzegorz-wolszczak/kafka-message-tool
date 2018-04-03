@@ -7,9 +7,9 @@ import application.customfxwidgets.Displayable;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
+import application.kafka.KafkaClusterProxies;
 import application.kafka.dto.TopicToAdd;
 import application.customfxwidgets.ConfigEntriesView;
-import application.globals.KafkaClusterProxiesProperties;
 import application.kafka.ClusterStatusChecker;
 import application.kafka.KafkaClusterProxy;
 import application.kafka.TriStateConfigEntryValue;
@@ -64,6 +64,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
 
     private static final String FXML_FILE = "BrokerConfigView.fxml";
     private final ClusterStatusChecker statusChecker;
+    private KafkaClusterProxies kafkaClusterProxies;
     @FXML
     private TextField brokerConfigNameField;
 
@@ -152,9 +153,11 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
                                      Window parentWindow,
                                      Runnable refeshCallback,
                                      UserInteractor guiInteractor,
-                                     ClusterStatusChecker statusChecker) throws IOException {
+                                     ClusterStatusChecker statusChecker,
+                                     KafkaClusterProxies kafkaClusterProxies) throws IOException {
 
         this.statusChecker = statusChecker;
+        this.kafkaClusterProxies = kafkaClusterProxies;
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
 
         this.config = config;
@@ -218,7 +221,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         if (kafkaBrokerProxyProperty != null) {
             kafkaBrokerProxyProperty.removeListener(this::observedKafkaBrokerPropertyChanged);
         }
-        kafkaBrokerProxyProperty = KafkaClusterProxiesProperties.get(config.getHostInfo());
+        kafkaBrokerProxyProperty = kafkaClusterProxies.getAsProperty(config.getHostInfo());
         kafkaBrokerProxyProperty.addListener(this::observedKafkaBrokerPropertyChanged);
         clusterStatusTitledPane.visibleProperty().bind(Bindings.isNotNull(kafkaBrokerProxyProperty));
 
@@ -302,7 +305,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
     }
 
     private void fillUnassignedConsumersTab(KafkaClusterProxy proxy) {
-        final Set<UnassignedConsumerInfo> info = proxy.getClusterSummary().getUnassignedConsumersInfo();
+        final Set<UnassignedConsumerInfo> info = proxy.getUnassignedConsumersInfo();
         clusterSummaryTabPane.getTabs().removeAll(unassignedConsumersTab);
         if (info.isEmpty()) {
             Logger.trace("Unassigned consumers not found.");
@@ -343,7 +346,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
 
     private void refreshTopicTableView(KafkaClusterProxy proxy) {
 
-        final Set<TopicAggregatedSummary> aggregatedTopicSummary = proxy.getClusterSummary().getAggregatedTopicSummary();
+        final Set<TopicAggregatedSummary> aggregatedTopicSummary = proxy.getAggregatedTopicSummary();
 
         topicsTableView.getItems().clear();
         topicsTableView.setItems(FXCollections.observableArrayList(aggregatedTopicSummary));
@@ -372,7 +375,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
     private void showAssignedConsumerInfo(TableRow<TopicAggregatedSummary> row) {
         final String topicName = row.getItem().getTopicName();
         final KafkaClusterProxy currentProxy = kafkaBrokerProxyProperty.get();
-        final Set<AssignedConsumerInfo> consumers = currentProxy.getClusterSummary().getConsumersForTopic(topicName);
+        final Set<AssignedConsumerInfo> consumers = currentProxy.getConsumersForTopic(topicName);
         assignedConsumerListTableView.getItems().clear();
         assignedConsumerListTableView.setItems(FXCollections.observableArrayList(consumers));
     }
@@ -446,7 +449,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
     private void showTopicConfigPropertiesWindow(KafkaClusterProxy kafkaClusterProxy,
                                                  String topicName) {
 
-        final Set<ConfigEntry> topicProperties = kafkaClusterProxy.getClusterSummary().getTopicProperties(topicName);
+        final Set<ConfigEntry> topicProperties = kafkaClusterProxy.getTopicProperties(topicName);
         try {
             ConfigEntriesView entriesView = new ConfigEntriesView("Topic properties", topicProperties, topicPropertiesViewPreferences);
             userInteractor.showConfigEntriesInfoDialog(String.format("Properties for topic '%s': ", topicName), entriesView);
@@ -481,7 +484,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         Logger.trace("Refreshing cluster pane");
         clusterConfigEntriesTabPane.getTabs().clear();
 
-        final Set<ClusterNodeInfo> nodeInfos = proxy.getClusterSummary().getNodesInfo();
+        final Set<ClusterNodeInfo> nodeInfos = proxy.getNodesInfo();
         List<Tab> tabs = new ArrayList<>();
 
         for (ClusterNodeInfo nodeInfo : nodeInfos) {

@@ -91,7 +91,7 @@ public class TooltipCreator {
         try {
             // Get the non public field "BEHAVIOR"
             Field fieldBehavior = Tooltip.class.getDeclaredField("BEHAVIOR");
-            // Make the field accessible to be able to get and set its value
+            // Make the field accessible to be able to getAsProperty and set its value
             fieldBehavior.setAccessible(true);
             // Get the value of the static field
             Object objBehavior = fieldBehavior.get(null);

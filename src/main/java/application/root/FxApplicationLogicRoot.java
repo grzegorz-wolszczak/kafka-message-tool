@@ -6,6 +6,7 @@ import application.customfxwidgets.mainviewcontroller.ControllerRepositoryFactor
 import application.customfxwidgets.mainviewcontroller.DefaultControllerRepositoryFactory;
 import application.customfxwidgets.mainviewcontroller.MainApplicationController;
 import application.globals.AppGlobals;
+import application.kafka.KafkaClusterProxies;
 import application.globals.StageRepository;
 import application.kafka.ClusterStatusChecker;
 import application.kafka.DefaultKafkaMessageSender;
@@ -120,9 +121,11 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
         Logger.setLogLevel(applicationSettings.appSettings().getLogLevel());
 
         executorService = Executors.newSingleThreadExecutor();
+        final KafkaClusterProxies kafkaClusterProxies = new KafkaClusterProxies();
         final ControllerRepositoryFactory controllerRepositoryFactory =
-            new DefaultControllerRepositoryFactory(new ClusterStatusChecker(busySwitcher, interactor),
-                                                   new SyntaxHighlightingCodeAreaConfigurator(executorService));
+            new DefaultControllerRepositoryFactory(new ClusterStatusChecker(busySwitcher, interactor, kafkaClusterProxies),
+                                                   new SyntaxHighlightingCodeAreaConfigurator(executorService),
+                                                   kafkaClusterProxies);
 
         final DefaultActionHandlerFactory actionHandlerFactory = new DefaultActionHandlerFactory(interactor,
                                                                                                  modelDataProxy,

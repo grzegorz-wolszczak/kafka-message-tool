@@ -35,17 +35,16 @@ public class ClusterTopicInfo {
         return topicName;
     }
 
-    private Optional<ConfigEntry> findByName(String configEntryName)
-    {
+    public boolean isCompacted() {
+        final Optional<ConfigEntry> byName = findByName(TopicConfig.CLEANUP_POLICY_CONFIG);
+        return byName.map(configEntry -> configEntry.value().equalsIgnoreCase(TopicConfig.CLEANUP_POLICY_COMPACT)).orElse(false);
+    }
+
+    private Optional<ConfigEntry> findByName(String configEntryName) {
         final Optional<ConfigEntry> first = configEntries.stream()
             .filter(e -> e.name().equals(configEntryName))
             .findFirst();
         return first;
-    }
-
-    public boolean isCompacted(){
-        final Optional<ConfigEntry> byName = findByName(TopicConfig.CLEANUP_POLICY_CONFIG);
-        return byName.map(configEntry -> configEntry.value().equalsIgnoreCase(TopicConfig.CLEANUP_POLICY_COMPACT)).orElse(false);
     }
 
 }
