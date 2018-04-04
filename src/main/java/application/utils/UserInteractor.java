@@ -17,5 +17,5 @@ public interface UserInteractor {
 
     void showWarning(String header, String msg);
 
-    void showConfigEntriesInfoDialog(String topicName, ConfigEntriesView entriesView);
+    void showConfigEntriesInfoDialog(String title, String topicName, ConfigEntriesView entriesView);
 }

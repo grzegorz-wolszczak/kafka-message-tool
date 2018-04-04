@@ -84,9 +84,11 @@ public class UserGuiInteractor implements UserInteractor {
     }
 
     @Override
-    public void showConfigEntriesInfoDialog(String header,
+    public void showConfigEntriesInfoDialog(String title,
+                                            String header,
                                             ConfigEntriesView entriesView) {
         final Alert alert = getConfigEntriesViewDialog(header);
+        alert.setTitle(title);
         final DialogPane dialogPane = alert.getDialogPane();
         dialogPane.setContent(entriesView);
         alert.setResizable(true);

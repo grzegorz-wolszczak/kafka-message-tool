@@ -21,4 +21,9 @@ public enum TopicCleanupPolicy {
         return DELETE;
     }
 
+    @Override
+    public String toString() {
+        return value;
+    }
+
 }

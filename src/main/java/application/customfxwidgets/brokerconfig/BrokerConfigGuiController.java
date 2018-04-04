@@ -452,7 +452,9 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         final Set<ConfigEntry> topicProperties = kafkaClusterProxy.getTopicProperties(topicName);
         try {
             ConfigEntriesView entriesView = new ConfigEntriesView("Topic properties", topicProperties, topicPropertiesViewPreferences);
-            userInteractor.showConfigEntriesInfoDialog(String.format("Properties for topic '%s': ", topicName), entriesView);
+            userInteractor.showConfigEntriesInfoDialog("Topic properties",
+                                                       String.format("Properties for topic '%s': ", topicName),
+                                                       entriesView);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -543,8 +545,6 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
     private void createTopicButShowGuiErrorOnFailure(KafkaClusterProxy proxy,
                                                      TopicToAdd topicToAdd) {
         Logger.debug("Adding topic " + topicToAdd);
-
-        final String topicName = topicToAdd.topicNameProperty().get();
         try {
             proxy.createTopic(topicToAdd);
 
