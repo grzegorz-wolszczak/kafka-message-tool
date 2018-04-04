@@ -1,36 +1,20 @@
 package application.kafka;
 
-import application.kafka.dto.ClusterTopicInfo;
-import application.logging.Logger;
-import com.google.common.base.Throwables;
 import application.constants.ApplicationConstants;
 import application.exceptions.TopicAlreadyExistsError;
 import application.exceptions.TopicMarkedForDeletionError;
+import application.kafka.dto.ClusterTopicInfo;
+import application.logging.Logger;
 import application.utils.AppUtils;
+import com.google.common.base.Throwables;
 import kafka.server.KafkaConfig;
-import org.apache.kafka.clients.admin.Config;
-import org.apache.kafka.clients.admin.ConfigEntry;
-import org.apache.kafka.clients.admin.CreateTopicsResult;
-import org.apache.kafka.clients.admin.DeleteTopicsResult;
-import org.apache.kafka.clients.admin.DescribeConfigsResult;
-import org.apache.kafka.clients.admin.DescribeTopicsResult;
-import org.apache.kafka.clients.admin.ListTopicsOptions;
-import org.apache.kafka.clients.admin.ListTopicsResult;
-import org.apache.kafka.clients.admin.NewTopic;
-import org.apache.kafka.clients.admin.TopicDescription;
-import org.apache.kafka.clients.admin.TopicListing;
+import org.apache.kafka.clients.admin.*;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.config.ConfigResource;
-import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.errors.TopicExistsException;
 import org.apache.kafka.common.errors.UnknownTopicOrPartitionException;
 
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -43,6 +27,23 @@ public class TopicAdmin {
 
     TopicAdmin(org.apache.kafka.clients.admin.AdminClient kafkaClientsAdminClient) {
         this.kafkaClientsAdminClient = kafkaClientsAdminClient;
+    }
+
+    private static boolean topicExistsCheckWithClusterQuery(String topicName,
+                                                            org.apache.kafka.clients.admin.AdminClient
+                                                                    kafkaClientsAdminClient) throws Exception {
+
+        try {
+            final DescribeTopicsResult result = kafkaClientsAdminClient.describeTopics(singleton(topicName));
+            result.all().get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            return true;
+        } catch (ExecutionException e) {
+            if (Throwables.getRootCause(e) instanceof UnknownTopicOrPartitionException) {
+                return false;
+            } else {
+                throw e;
+            }
+        }
     }
 
     public void deleteTopic(String topicName) throws Exception {
@@ -58,13 +59,13 @@ public class TopicAdmin {
                                int partitionNumber,
                                int replicationFactor) throws Exception {
         Logger.trace(String.format("Creating topic '%s' [partitions:%d, replication factor:%d]",
-                                   topicName,
-                                   partitionNumber,
-                                   replicationFactor));
+                topicName,
+                partitionNumber,
+                replicationFactor));
 
         final NewTopic newTopic = new NewTopic(topicName,
-                                        partitionNumber,
-                                        (short) replicationFactor);
+                partitionNumber,
+                (short) replicationFactor);
         //Map<String, String> configs = new HashMap<>();
         //configs.put(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.CLEANUP_POLICY_COMPACT);
         //newTopic.configs(configs);
@@ -78,9 +79,9 @@ public class TopicAdmin {
                 if (Throwables.getRootCause(e) instanceof TopicExistsException) {
                     if (!topicExistsCheckWithClusterQuery(entry.getKey(), kafkaClientsAdminClient)) {
                         final String msg = String.format("Topic '%s' already exists but is marked for deletion.%n%n" +
-                                                             "!!! Note !!!%nIf broker property '%s' is set to 'false' it will NEVER be deleted",
-                                                         entry.getKey(),
-                                                         KafkaConfig.DeleteTopicEnableProp());
+                                        "!!! Note !!!%nIf broker property '%s' is set to 'false' it will NEVER be deleted",
+                                entry.getKey(),
+                                KafkaConfig.DeleteTopicEnableProp());
                         Logger.trace(msg);
                         throw new TopicMarkedForDeletionError(msg);
                     } else {
@@ -107,23 +108,6 @@ public class TopicAdmin {
         return Collections.emptySet();
     }
 
-    private static boolean topicExistsCheckWithClusterQuery(String topicName,
-                                                            org.apache.kafka.clients.admin.AdminClient
-                                                                kafkaClientsAdminClient) throws Exception {
-
-        try {
-            final DescribeTopicsResult result = kafkaClientsAdminClient.describeTopics(singleton(topicName));
-            result.all().get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            return true;
-        } catch (ExecutionException e) {
-            if (Throwables.getRootCause(e) instanceof UnknownTopicOrPartitionException) {
-                return false;
-            } else {
-                throw e;
-            }
-        }
-    }
-
     Set<ClusterTopicInfo> describeTopics() throws InterruptedException, ExecutionException, TimeoutException {
 
         Set<ClusterTopicInfo> result = new HashSet<>();
@@ -135,13 +119,13 @@ public class TopicAdmin {
         final Set<String> topicNames = listTopicsResult.names().get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         final DescribeTopicsResult describeTopicsResult = kafkaClientsAdminClient.describeTopics(topicNames);
         final Map<String, TopicDescription> stringTopicDescriptionMap = describeTopicsResult.all().get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS,
-                                                                                                       TimeUnit.MILLISECONDS);
+                TimeUnit.MILLISECONDS);
 
         for (Map.Entry<String, TopicDescription> entry : stringTopicDescriptionMap.entrySet()) {
             final TopicDescription topicDescription = entry.getValue();
             final ClusterTopicInfo clusterTopicInfo = new ClusterTopicInfo(topicDescription.name(),
-                                                                           topicDescription.partitions(),
-                                                                           getConfigEntriesForTopic(topicDescription.name()));
+                    topicDescription.partitions(),
+                    getConfigEntriesForTopic(topicDescription.name()));
             result.add(clusterTopicInfo);
         }
         return result;
