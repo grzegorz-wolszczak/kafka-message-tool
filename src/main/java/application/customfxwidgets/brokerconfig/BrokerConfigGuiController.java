@@ -19,10 +19,7 @@ import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.UnassignedConsumerInfo;
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
-import application.utils.GuiUtils;
-import application.utils.TooltipCreator;
-import application.utils.UserInteractor;
-import application.utils.ValidatorUtils;
+import application.utils.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
@@ -266,19 +263,21 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
 
     @FXML
     private void initialize() {
-        initializeTopicDetailTableViewColumns();
-        initializeAssignedConsumersTableViewColumns();
-        initializeUnassignedConsumersTableViewColumns();
+        initializeTopicDetailTableView();
+        initializeAssignedConsumersTableView();
+        initializeUnassignedConsumersTableView();
     }
 
-    private void initializeUnassignedConsumersTableViewColumns() {
+    private void initializeUnassignedConsumersTableView() {
+        TableUtils.installCopyPasteHandlerForSingleCell(unassignedConsumerListTableView);
         unassignedClientIdColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getClientId()));
         unassignedConsumerGroupColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getConsumerGroupId()));
         unassignedConsumerHostColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getHost()));
         unassignedConsumerIdColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getConsumerId()));
     }
 
-    private void initializeAssignedConsumersTableViewColumns() {
+    private void initializeAssignedConsumersTableView() {
+        TableUtils.installCopyPasteHandlerForSingleCell(assignedConsumerListTableView);
         assignedConsumerClientIdColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getClientId()));
         assignedConsumerGroupColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getConsumerGroupId()));
         assignedConsumerPartitionColumn.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getPartition()).asObject());
@@ -287,7 +286,8 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         assignedConsumerIdColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getConsumerId()));
     }
 
-    private void initializeTopicDetailTableViewColumns() {
+    private void initializeTopicDetailTableView() {
+        TableUtils.installCopyPasteHandlerForSingleCell(topicsTableView);
         topicNameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTopicName()));
         partitionCountColumn.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getPartitionsCount()).asObject());
         activeAssignedConsumersColumn.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getConsumersCount()).asObject());

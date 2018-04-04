@@ -1,6 +1,7 @@
 package application.customfxwidgets;
 
 import application.utils.GuiUtils;
+import application.utils.TableUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -59,6 +60,8 @@ public class ConfigEntriesView extends TitledPane {
     private void setTableContent() {
         configEntriesTableView.setItems(observableEntries);
         configEntriesTableView.getSortOrder().add(nameColumn);
+        TableUtils.installCopyPasteHandlerForSingleCell(configEntriesTableView);
+
     }
 
     private void configureColumns() {
