@@ -20,6 +20,7 @@ public class NodesConfigProperties {
             KafkaConfig.LogDirsProp(),
             KafkaConfig.ListenersProp(),
             KafkaConfig.BrokerIdProp(),
+            KafkaConfig.AdvertisedListenersProp(),
             // zookeeper.connect can differ if kafka cluster is connected do zookeeper cluster,
             // not just single zookeeper node
 
