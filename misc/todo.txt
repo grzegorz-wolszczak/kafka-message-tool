@@ -13,7 +13,7 @@ todo: big feature : enable providing multiple bootstrap servers in broker config
             question: how to detect that nodes with 'accessible' advertised listeners went down but the node(s) with
                 inaccessible advertised listeners are up ?
 
-todo: make topic names (in broker status window) copyable
+
 
 todo: add autocomplete (popup) in topic config for existing topics
 todo: add word wrap enable/disable checkbox for all CodeArea / LogArea
@@ -23,7 +23,7 @@ todo: add wordwrap checkbox for all text areas
 todo: syntax highlighting for message receiver ?
 todo: add status bar with popup hints (similar in Intelij IDEA) to communicate with the user, and remove 'logging window'
 todo: add config opiton - add opition: don't show warning about invalid configuraiton
-
+todo: on Linux (Mint with Xfce) - application fonts are ugly and too big - suggest other fonts for linux ?
 
 
 ### TODO_LOW_PRIORITY ###
