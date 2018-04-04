@@ -1,5 +1,8 @@
 
 
 
-v.1.0.0.0
+[v.1.0.1.0]
+- added cleanup.policy option (delete/compacted) to CreateTopic dialog
+
+[v.1.0.0.0]
 First working version

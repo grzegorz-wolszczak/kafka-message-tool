@@ -546,9 +546,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
 
         final String topicName = topicToAdd.topicNameProperty().get();
         try {
-            proxy.createTopic(topicName,
-                              topicToAdd.partitionsProperty().get(),
-                              topicToAdd.replicationFactorProperty().get());
+            proxy.createTopic(topicToAdd);
 
             refreshBrokerStatus(false);
         } catch (Exception e) {

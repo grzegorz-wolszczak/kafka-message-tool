@@ -23,6 +23,7 @@ Simple GUI tool (javaFX) to facilitate sending/receiving messages to/from kafka 
 **Credits**
  - Thanks to [RichtextFX](https://github.com/TomasMikula/RichTextFX) for providing cool CodeArea gui component 
  - Message syntax highlighting patterns for JSON were taken from [JFXParser](https://github.com/notnotme/JFXParser)
+ - Thanks to [this page](http://respostas.guj.com.br/47439-habilitar-copypaste-tableview-funcionando-duvida-editar-funcionalidade) for copy TableView cell content code
    
 
 

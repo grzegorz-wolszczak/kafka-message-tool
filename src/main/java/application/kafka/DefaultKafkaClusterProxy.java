@@ -5,6 +5,7 @@ import application.exceptions.ClusterConfigurationError;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
+import application.kafka.dto.TopicToAdd;
 import application.kafka.dto.UnassignedConsumerInfo;
 import application.logging.Logger;
 import application.utils.AppUtils;
@@ -138,10 +139,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
 
 
     @Override
-    public void createTopic(String topicName,
-                            int partitionNumber,
-                            int replicationFactor) throws Exception {
-        topicAdmin.createNewTopic(topicName, partitionNumber, replicationFactor);
+    public void createTopic(TopicToAdd topicToAdd) throws Exception {
+        topicAdmin.createNewTopic(topicToAdd);
     }
 
     @Override
