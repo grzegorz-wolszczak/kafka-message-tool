@@ -1,4 +1,4 @@
-package application.kafka;
+package application.kafka.listener;
 
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
@@ -6,18 +6,14 @@ import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.utils.AppUtils;
 import application.utils.HostInfo;
+import application.utils.RepeatableTimer;
 import application.utils.TimestampUtils;
 import application.utils.kafka.KafkaBrokerHostInfo;
-import javafx.application.Platform;
 import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
 
@@ -29,10 +25,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static application.utils.PropertiesUtils.prettyProperties;
 import static application.utils.TimestampUtils.timestampFromEpochMili;
+import static java.lang.Thread.sleep;
 
 public class DefaultKafkaListener implements Listener {
 
     private static final int ADDITIONAL_WAIT_DURATION_BEFORE_WAKEUP_MS = 2000;
+    public static final int REPEAT_RATE_MS = 500;
     private final StringProperty loggedText = new SimpleStringProperty();
     private final KafkaListenerConfig listenerConfig;
     private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
@@ -43,6 +41,8 @@ public class DefaultKafkaListener implements Listener {
     private Consumer<String, String> consumer;
     private FutureTask<Void> wakeUpTask;
     private Thread fetchThread;
+    private final SynchronizedStringBuffer buffer = new SynchronizedStringBuffer();
+    private final RepeatableTimer logCollectorTimer = new RepeatableTimer();
 
     public DefaultKafkaListener(KafkaListenerConfig listenerConfig) {
         this.listenerConfig = listenerConfig;
@@ -72,27 +72,8 @@ public class DefaultKafkaListener implements Listener {
         }
     }
 
-    @Override
-    public synchronized void appendLog(String text) {
-        synchronized (collector) {
-            collector.append(text);
-        }
-        Platform.runLater(() -> loggedText.set(text));
-    }
-
-    @Override
-    public synchronized String getCollectedLogs() {
-        synchronized (collector) {
-            return collector.toString();
-        }
-    }
-
-    @Override
-    public void clearLogs() {
-        synchronized (collector) {
-            collector.setLength(0);
-        }
-        loggedTextProperty().setValue("");
+    private synchronized void appendLog(String text) {
+        loggedText.set(text);
     }
 
     @Override
@@ -134,7 +115,7 @@ public class DefaultKafkaListener implements Listener {
         } finally {
             if (isRunning.get()) {
                 Logger.info(String.format("Consumer stopped (topic:%s, consumer group:%s)", topicConfig.getTopicName(),
-                                          listenerConfig.getConsumerGroup()));
+                        listenerConfig.getConsumerGroup()));
             }
             shouldBeRunning.set(false);
             isRunning.set(false);
@@ -145,8 +126,8 @@ public class DefaultKafkaListener implements Listener {
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
 
         Logger.info(String.format("Starting consumer '%s',  consumer group '%s'",
-                                  listenerConfig.getName(),
-                                  listenerConfig.getConsumerGroup()));
+                listenerConfig.getName(),
+                listenerConfig.getConsumerGroup()));
 
         this.brokerHost = brokerConfig.getHostInfo();
         consumer = setUpConsumer();
@@ -155,7 +136,7 @@ public class DefaultKafkaListener implements Listener {
         isRunning.set(true);
 
         Logger.info(String.format("Consumer started (topic:%s, consumer group:%s)", topicConfig.getTopicName(),
-                                  listenerConfig.getConsumerGroup()));
+                listenerConfig.getConsumerGroup()));
         final long pollTimeout = Long.parseLong(listenerConfig.getPollTimeout());
 
         while (shouldBeRunning.get()) {
@@ -190,11 +171,13 @@ public class DefaultKafkaListener implements Listener {
         cancelWakeupTask();
         logReceivedRecords(records);
         consumer.commitSync();
+
     }
 
     private void logReceivedRecords(ConsumerRecords<String, String> records) {
         records.forEach(record -> {
-            appendLog(prepareConsumerRecordToBeLogged(record));
+            buffer.appendContent(prepareConsumerRecordToBeLogged(record));
+            //appendLog(prepareConsumerRecordToBeLogged(record));
         });
     }
 
@@ -213,9 +196,9 @@ public class DefaultKafkaListener implements Listener {
     private FutureTask<Void> scheduleWakeupTask(long pollTimeoutMs) {
         FutureTask<Void> task = new FutureTask<>(() -> {
             final long wakeUpDurationMs = pollTimeoutMs + ADDITIONAL_WAIT_DURATION_BEFORE_WAKEUP_MS;
-            Thread.sleep(wakeUpDurationMs);
+            sleep(wakeUpDurationMs);
             Logger.warn(String.format("Waking up consumer (after %d ms), because consumer::poll() did not respond within its %d ms timeout."
-                , wakeUpDurationMs, pollTimeoutMs));
+                    , wakeUpDurationMs, pollTimeoutMs));
             wakeUpConsumer();
             return null;
         });
@@ -234,16 +217,19 @@ public class DefaultKafkaListener implements Listener {
 
     private String prepareConsumerRecordToBeLogged(ConsumerRecord<String, String> record) {
         return String.format("[%s] ConsumerRecord: (key:%s,  partition:%d, offset:%d, timestamp:%s)%nvalue '%s'%n",
-                             TimestampUtils.nowTimestamp(),
-                             record.key(),
-                             record.partition(),
-                             record.offset(),
-                             timestampFromEpochMili(record.timestamp()),
-                             record.value());
+                TimestampUtils.nowTimestamp(),
+                record.key(),
+                record.partition(),
+                record.offset(),
+                timestampFromEpochMili(record.timestamp()),
+                record.value());
     }
 
     private void tryStart() {
         stop();
+        logCollectorTimer.startExecutingRepeatedly(()->{
+            appendLog(buffer.getContent());
+        }, REPEAT_RATE_MS);
         fetchThread = new Thread(this::fetch, buildThreadNameForDebugging());
         fetchThread.start();
     }
@@ -253,7 +239,7 @@ public class DefaultKafkaListener implements Listener {
     }
 
     private void tryStop() {
-
+        logCollectorTimer.cancel();
         shouldBeRunning.set(false);
         cancelWakeupTask();
         wakeUpConsumer();

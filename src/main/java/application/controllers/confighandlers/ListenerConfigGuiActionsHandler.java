@@ -6,7 +6,7 @@ import application.controllers.helpers.ListViewActionsHandler;
 import application.controllers.helpers.TemplateGuiActionsHandler;
 import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
 import application.controllers.helpers.TabPaneSelectionInformer;
-import application.kafka.Listeners;
+import application.kafka.listener.Listeners;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
 import application.model.ToPojoConverter;

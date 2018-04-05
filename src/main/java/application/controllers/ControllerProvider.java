@@ -5,7 +5,7 @@ import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
 import application.customfxwidgets.senderconfig.SenderConfigGuiController;
 import application.customfxwidgets.topicconfig.TopicConfigGuiController;
 import application.kafka.KafkaMessageSender;
-import application.kafka.Listeners;
+import application.kafka.listener.Listeners;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaSenderConfig;

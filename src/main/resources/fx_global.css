@@ -7,9 +7,11 @@
     -fx-effect: dropshadow(gaussian, rgba(255, 255, 255, 0.5), 0, 0, 0, 1);
 }
 */
+/*
 .label, .check-box {
     -fx-font-weight: bold;
 }
+*/
 
 .button {
     -fx-text-fill: white;

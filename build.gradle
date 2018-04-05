@@ -40,12 +40,13 @@ apply plugin: 'com.github.johnrengelman.shadow'
 
 
 static String getShortenedTimestamp() {
-    new Date().format("MM.dd-HH.mm.ss", TimeZone.getTimeZone("UTC"))
+    new Date().format("MMdd-HHmmss", TimeZone.default)
 }
 
 
 // <app>-<major-patch>-<minor-patch>-<fix>
-version = "1.0.1.0"
+version = "1.0.2.0-snapshot.${getShortenedTimestamp()}"
+//version = "1.7.3.preview.${getShortenedTimestamp()}"
 
 println "Gradle project dir: ${projectDir}"
 
