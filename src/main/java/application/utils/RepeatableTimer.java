@@ -5,7 +5,7 @@ import application.root.Executable;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public final class RepeatableTimer  {
+public final class RepeatableTimer {
     private static final int EXECUTION_DELAY_MS = 0;
     private Timer timer = new Timer(this.getClass().getName());
 
@@ -25,14 +25,10 @@ public final class RepeatableTimer  {
     }
 
     public void cancel() {
-        try{
+        try {
             timer.cancel();
-        }
-        catch(java.lang.IllegalStateException ignored)
-        {
+        } catch (java.lang.IllegalStateException ignored) {
             // don't complain about cancelling already cancelled
         }
-
-
     }
 }

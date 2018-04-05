@@ -177,7 +177,6 @@ public class DefaultKafkaListener implements Listener {
     private void logReceivedRecords(ConsumerRecords<String, String> records) {
         records.forEach(record -> {
             buffer.appendContent(prepareConsumerRecordToBeLogged(record));
-            //appendLog(prepareConsumerRecordToBeLogged(record));
         });
     }
 

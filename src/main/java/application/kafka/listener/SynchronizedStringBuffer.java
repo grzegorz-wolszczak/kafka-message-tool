@@ -18,12 +18,11 @@ public class SynchronizedStringBuffer {
         return getOrAppendContentSync(null, Mode.GET_AND_CLEAR);
     }
 
-    public void appendContent(String content)
-    {
+    public void appendContent(String content) {
         getOrAppendContentSync(content, Mode.APPEND);
     }
 
-    private static enum Mode {
+    private enum Mode {
         GET_AND_CLEAR,
         APPEND
     }
