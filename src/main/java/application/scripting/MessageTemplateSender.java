@@ -54,6 +54,10 @@ public class MessageTemplateSender {
         resetScriptEngine();
         runScript(config.getRunBeforeAllMessagesScript());
         for (int i = 0; i < totalMessageCount; i++) {
+            if(Thread.currentThread().isInterrupted())
+            {
+                return;
+            }
             runScript(config.getRunBeforeEachMessageScript());
             final String evaluatedMessage = evaluateMessageContent(config.getMsgContentTemplate());
 

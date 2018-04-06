@@ -12,6 +12,7 @@ public class MessageSenderTaskExecutor {
     private final BooleanProperty stopButtonDisabledProperty;
     private final ExecutorService executorService;
     private FutureTask<Void> futureTask;
+    private Thread executorThread;
 
     public MessageSenderTaskExecutor(BooleanProperty startButtonDisabledProperty,
                                      BooleanProperty stopButtonDisabledProperty) {
@@ -34,7 +35,9 @@ public class MessageSenderTaskExecutor {
 
         // todo: consider thread pool - but remember that we must
         // stop all threadpool on application exit
-        new Thread(futureTask, "MessageSenderTaskExecutor-Thread").start();
+        executorThread = new Thread(futureTask, "MessageSenderTaskExecutor-Thread");
+        executorThread.start();
+
     }
 
     public void stop() {
@@ -42,9 +45,15 @@ public class MessageSenderTaskExecutor {
     }
 
     private void stopTask() {
+        if(executorThread != null)
+        {
+            executorThread.interrupt();
+        }
+
         if (futureTask != null) {
             futureTask.cancel(true);
         }
+
     }
 
     private void disableStartButton() {
