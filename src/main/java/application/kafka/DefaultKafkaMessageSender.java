@@ -10,12 +10,15 @@ import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
 import java.util.Properties;
-import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public final class DefaultKafkaMessageSender implements KafkaMessageSender {
     private static final int KAFKA_SENDER_SEND_TIMEOUT_MS = 3000;
     private static final int KAFKA_PRODUCER_MAX_BLOCK_MS = 1501;
+    public static final String KAFKA_STRING_SERIALIZER_CLASS_NAME = "org.apache.kafka.common.serialization.StringSerializer";
 
 
     public DefaultKafkaMessageSender() {
@@ -23,10 +26,8 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
     }
 
 
-
     @Override
     public void sendMessages(MessageOnTopicDto msgsToTopic) {
-
         trySendMessages(msgsToTopic);
     }
 
@@ -46,7 +47,7 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
 
     private void printMostAppropriateDebugBasedOnExcepionType(Exception e) {
         final Throwable cause = e.getCause();
-        if (cause != null && cause instanceof org.apache.kafka.common.errors.TimeoutException) {
+        if (cause instanceof org.apache.kafka.common.errors.TimeoutException) {
             Logger.error("Sending failed: " + e.getLocalizedMessage() + " (maybe invalid broker port?)");
         } else {
             Logger.error("Sending failed: " + e.getLocalizedMessage());
@@ -92,8 +93,8 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
         final Properties properties = new Properties();
 
         properties.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, hostInfo.toHostPortString());
-        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
-        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, "org.apache.kafka.common.serialization.StringSerializer");
+        properties.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, KAFKA_STRING_SERIALIZER_CLASS_NAME);
+        properties.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, KAFKA_STRING_SERIALIZER_CLASS_NAME);
         properties.put(ProducerConfig.ACKS_CONFIG, "all");
         properties.put(ProducerConfig.MAX_BLOCK_MS_CONFIG, String.valueOf(KAFKA_PRODUCER_MAX_BLOCK_MS));
         return properties;
