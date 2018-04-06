@@ -6,13 +6,14 @@ import application.customfxwidgets.TopicConfigComboBoxConfigurator;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
-import application.kafka.Listener;
-import application.kafka.Listeners;
+import application.kafka.listener.Listener;
+import application.kafka.listener.Listeners;
 import application.model.KafkaOffsetResetType;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.utils.GuiUtils;
 import application.utils.ValidatorUtils;
+import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -20,16 +21,14 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
+
+import static java.lang.Thread.sleep;
 
 public class ListenerConfigGuiController extends AnchorPane implements Displayable {
     private static final String FXML_FILE = "ListenerConfigView.fxml";
@@ -58,6 +57,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private Runnable refreshCallback;
     private ObservableList<KafkaTopicConfig> topicConfigs;
 
+
     public ListenerConfigGuiController(KafkaListenerConfig config,
                                        AnchorPane parentPane,
                                        ModelConfigObjectsGuiInformer guiInformer,
@@ -74,11 +74,11 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
 
         final StringExpression windowTitle = new ReadOnlyStringWrapper("Kafka listener configuration");
         displayBehaviour = new DetachableDisplayBehaviour(parentPane,
-                                                          windowTitle,
-                                                          this,
-                                                          detachPaneButton.selectedProperty(),
-                                                          config,
-                                                          guiInformer);
+                windowTitle,
+                this,
+                detachPaneButton.selectedProperty(),
+                config,
+                guiInformer);
 
 
         configureTopicConfigComboBox();
@@ -91,7 +91,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         GuiUtils.configureComboBoxToClearSelectedValueIfItsPreviousValueWasRemoved(topicConfigComboBox);
 
         comboBoxConfigurator = new TopicConfigComboBoxConfigurator<>(topicConfigComboBox,
-                                                                     config);
+                config);
         comboBoxConfigurator.configure();
     }
 
@@ -112,30 +112,38 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private void configureFetchTimeoutField() {
         fetchTimeoutTextField.textProperty().set(config.getPollTimeout());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(fetchTimeoutTextField,
-                                                         config::setPollTimeout,
-                                                         ValidatorUtils::isTimeoutInMsValid);
+                config::setPollTimeout,
+                ValidatorUtils::isTimeoutInMsValid);
     }
 
     private void configureConsumerGroupField() {
         consumerGroupTextField.setText(config.getConsumerGroup());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(consumerGroupTextField,
-                                                         config::setConsumerGroup,
-                                                         ValidatorUtils::isStringIdentifierValid);
+                config::setConsumerGroup,
+                ValidatorUtils::isStringIdentifierValid);
     }
 
     private void resetKafkaListenerBinding() {
         getActiveListenersForConfig().ifPresent(listener -> {
-            appendTextScrolledToBottom(listener.getCollectedLogs());
-            listener.loggedTextProperty().addListener((observableValue, s, t1) -> appendTextScrolledToBottom(listener.getCollectedLogs()));
+            listener.loggedTextProperty().addListener((observableValue, s, t1) -> appendTextScrolledToBottom(t1));
 
             startButton.disableProperty().bind(listener.isRunningProperty());
             stopButton.disableProperty().bind(listener.isRunningProperty().not());
         });
     }
 
-    private void appendTextScrolledToBottom(String collectedLogs1) {
-        outputTextArea.setText(collectedLogs1);
-        outputTextArea.appendText(""); // this forces textArea to scroll to bottom
+    private void appendTextScrolledToBottom(String textToAppend) {
+        try {
+            // Slow down calls to appendText
+            sleep(1);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        Platform.runLater(() -> {
+            outputTextArea.appendText(textToAppend);
+            //outputTextArea.appendText(""); // this forces textArea to scroll to bottom
+        });
+
     }
 
     private void configureMessageNameTextField() {
@@ -165,11 +173,9 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         topicConfigComboBox.setItems(topicConfigs);
     }
 
-
     @FXML
     private void clearButtonOnAction() {
         getActiveListenersForConfig().ifPresent(listener -> {
-            listener.clearLogs();
             outputTextArea.clear();
         });
     }
@@ -181,7 +187,6 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
 
     @FXML
     private void startButtonOnAction() {
-        resetKafkaListenerBinding();
         getActiveListenersForConfig().ifPresent(Listener::start);
 
     }
@@ -190,6 +195,8 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private void detachButtonOnAction() {
 
     }
+
+
 
 
 }

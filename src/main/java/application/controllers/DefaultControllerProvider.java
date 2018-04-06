@@ -10,7 +10,7 @@ import application.customfxwidgets.topicconfig.TopicConfigGuiController;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
 import application.kafka.ClusterStatusChecker;
 import application.kafka.KafkaMessageSender;
-import application.kafka.Listeners;
+import application.kafka.listener.Listeners;
 import application.logging.Logger;
 import application.model.ModelConfigObject;
 import application.model.modelobjects.KafkaBrokerConfig;
