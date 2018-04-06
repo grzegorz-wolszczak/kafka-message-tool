@@ -1,6 +1,10 @@
 
+[v.1.0.2.0]
+- improvement - performance improvement (but more work needed)- log window can accept more entries before it freezes (!sic)
+    added limitation to log records visible count
+
 [v.1.0.1.1]
-- fixed #1: App does not stop sendinig mutiple messages if cannot connect to broker on first message
+- fixed #1: App does not stop sending multiple messages if cannot connect to broker on first message
 - improvement - performance improvement - can now receive 10k messages on msg listener without gui freeze
 
 [v.1.0.1.0]

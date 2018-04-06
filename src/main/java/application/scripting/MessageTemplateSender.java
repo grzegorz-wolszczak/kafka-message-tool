@@ -25,7 +25,7 @@ public class MessageTemplateSender {
         try {
             trySend(config, isSimulationModeEnabled);
         } catch (ExecutionStopRequested e) {
-            Logger.warn("Sending stopped manually.");
+            Logger.warn("Sending stopped by user.");
         } catch (Exception e) {
             Logger.trace(ThrowableUtils.getFullStackTrace(e));
             Logger.error(ThrowableUtils.getMessageWithRootCause(e));

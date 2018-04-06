@@ -55,6 +55,8 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
         final Throwable cause = e.getCause();
         if (cause instanceof org.apache.kafka.common.errors.TimeoutException) {
             Logger.error("Sending failed: " + e.getLocalizedMessage() + " (maybe invalid broker port?)");
+        } else if (cause instanceof InterruptedException) {
+            Logger.warn("Sending stopped by user.");
         } else {
             Logger.error("Sending failed: " + e.getLocalizedMessage());
         }

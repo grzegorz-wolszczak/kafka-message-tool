@@ -13,7 +13,7 @@ import java.util.concurrent.TimeoutException;
 
 public class GroovyScriptEvaluator {
 
-    public static final String ENGINE_NAME = "groovy";
+    private static final String ENGINE_NAME = "groovy";
     private static final int EVALUATE_GROOVY_SCRIPT_TIMEOUT_SEC = 5;
     private final ScriptEngine engine;
     private SimpleScriptContext ctx;
