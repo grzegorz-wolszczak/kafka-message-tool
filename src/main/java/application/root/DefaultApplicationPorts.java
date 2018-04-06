@@ -24,12 +24,11 @@ public class DefaultApplicationPorts implements ApplicationPorts {
 
     @Override
     public void stop() {
-        sender.stop();
         listeners.stopAll();
     }
 
     @Override
     public void start() {
-        sender.start();
+
     }
 }
