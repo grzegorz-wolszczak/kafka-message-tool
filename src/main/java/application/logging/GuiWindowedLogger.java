@@ -94,9 +94,8 @@ public class GuiWindowedLogger implements ToolLogger {
         logArea.setStyleClass(previousLength, afterLength, styleClass);
         //System.out.println(String.format("Snippets count: %d", snippetsSize.size()));
 
-        while(snippetsSize.size()> MAX_ENTIRES)
-        {
-          //  System.out.println(String.format("Deleting because snippets size: %d", snippetsSize.size()));
+        while (snippetsSize.size() > MAX_ENTIRES) {
+            //  System.out.println(String.format("Deleting because snippets size: %d", snippetsSize.size()));
             final Integer snippetSizeToRemove = snippetsSize.removeLast();
             //final int areaTextLengthBefore = logArea.getText().length();
 //            final int accessibleTextLenghtBefore = logArea.getAccessibleText().length();

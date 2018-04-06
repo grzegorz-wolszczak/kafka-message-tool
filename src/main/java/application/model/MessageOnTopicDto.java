@@ -6,7 +6,6 @@ import application.model.modelobjects.KafkaTopicConfig;
 import application.utils.HostInfo;
 
 public final class MessageOnTopicDto {
-    private static KafkaSenderConfig config;
     private final HostInfo brokerHostInfo;
     private final String msgKey;
     private final String topicName;

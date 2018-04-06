@@ -45,8 +45,7 @@ public class MessageSenderTaskExecutor {
     }
 
     private void stopTask() {
-        if(executorThread != null)
-        {
+        if (executorThread != null) {
             executorThread.interrupt();
         }
 

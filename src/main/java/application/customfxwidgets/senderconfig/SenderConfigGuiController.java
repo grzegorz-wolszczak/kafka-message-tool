@@ -198,8 +198,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
 
 
     private void configureRepeatCountSpinner() {
-        //repeatCountSpinner.valu
-        //repeatCountSpinner.valueProperty().set(config.getRepeatCount());
+
 
         repeatCountSpinner.setValueFactory(new IntegerSpinnerValueFactory(MIN_REPEAT_COUNT,
                                                                           Integer.MAX_VALUE,
@@ -209,9 +208,13 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         final Consumer<String> repeatCountAsStringSetter = (value) -> config.setRepeatCount(Integer.valueOf(value));
         GuiUtils.configureTextFieldToAcceptOnlyValidData(repeatCountSpinner.getEditor(),
                                                          repeatCountAsStringSetter,
-                                                         e->StringUtils.isNumeric(e) && Long.valueOf(e)<= MAX_REPEAT_COUNT);
+                                                         this::isValidRepeatNumber);
         ValidatorUtils.configureTextFieldToAcceptOnlyDecimalValues(repeatCountSpinner.getEditor());
 
+    }
+
+    private boolean isValidRepeatNumber(String e) {
+        return StringUtils.isNumeric(e) && Integer.parseUnsignedInt(e) <= MAX_REPEAT_COUNT;
     }
 
     private void configureMessageNameTextField() {

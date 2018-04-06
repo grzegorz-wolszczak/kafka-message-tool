@@ -24,7 +24,6 @@ public class DetachableDisplayBehaviour implements DisplayBehaviour {
     private final ModelConfigObject trackedModeObject;
     private final DetachedPaneContent detachedPaneContent;
     private StringExpression windowTitleProperty;
-    private String windowTitle;
     private ModelConfigObjectsGuiInformer guiInformer;
     private Stage stage = StageRepository.get();
     private double sceneWidth = DEFAULT_WIDHT;
