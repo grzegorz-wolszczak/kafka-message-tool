@@ -53,6 +53,7 @@ public class MessageTemplateSender {
 
         resetScriptEngine();
         runScript(config.getRunBeforeAllMessagesScript());
+        kafkaSender.initiateFreshConnection(config.getRelatedConfig().getRelatedConfig().getHostInfo());
         for (int i = 0; i < totalMessageCount; i++) {
             runScript(config.getRunBeforeEachMessageScript());
             final String evaluatedMessage = evaluateMessageContent(config.getMsgContentTemplate());

@@ -23,9 +23,15 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
     private static final long SENDING_THREAD_SLEEP_MILLISECONDS = 250;
     private final LinkedBlockingQueue<MessageOnTopicDto> sendMsgQueue = new LinkedBlockingQueue<>();
     private AtomicBoolean shouldSendThreadBeRunning = new AtomicBoolean(true);
+    private KafkaProducer<String, String> producer;
 
     public DefaultKafkaMessageSender() {
 
+    }
+
+    @Override
+    public void initiateFreshConnection(HostInfo info) {
+        producer = getProducer(info);
     }
 
     @Override
@@ -73,10 +79,11 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
         });
     }
 
-    private void trySendMessages(MessageOnTopicDto msgsOnTopicToBeSent) {
+    private void trySendMessages(MessageOnTopicDto msgOnTopicToBeSent) {
 
         try {
-            sendMessagesToTopic(msgsOnTopicToBeSent);
+            refreshProducerIfNeeded(msgOnTopicToBeSent.getBrokerHostInfo());
+            sendMessagesToTopic(msgOnTopicToBeSent);
             Logger.info("Ok. Message(s) sent.");
         } catch (Exception e) {
             printMostAppropriateDebugBasedOnExcepionType(e);
@@ -97,10 +104,11 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
                ExecutionException,
                TimeoutException {
 
-        final KafkaProducer<String, String> producer = getProducer(messageOnTopic.getBrokerHostInfo());
+
+
         final String message = messageOnTopic.getMessage();
         final int msgCount = messageOnTopic.getMsgNum();
-        final int totalMsgCount= messageOnTopic.getTotalMsgCount();
+        final int totalMsgCount = messageOnTopic.getTotalMsgCount();
         final String topicName = messageOnTopic.getTopicName();
         final String key = messageOnTopic.getMessageKey();
 
@@ -115,7 +123,14 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
         Logger.trace(String.format("Sending record %s", record));
         if (!messageOnTopic.shouldSimulateSending()) {
             final Future<RecordMetadata> futureResult = producer.send(record);
-            futureResult.get(KAFKA_SENDER_SEND_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            final RecordMetadata recordMetadata = futureResult.get(KAFKA_SENDER_SEND_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+            Logger.trace(String.format("Record sent, metadata %s", recordMetadata));
+        }
+    }
+
+    private void refreshProducerIfNeeded(HostInfo brokerHostInfo) {
+        if (producer == null) {
+            initiateFreshConnection(brokerHostInfo);
         }
     }
 

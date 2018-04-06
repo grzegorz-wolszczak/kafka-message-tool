@@ -16,7 +16,7 @@
 .button {
     -fx-text-fill: white;
     -fx-font-family: "Arial Narrow";
-    -fx-font-weight: bold;
+    /* -fx-font-weight: bold;*/
     -fx-background-color: linear-gradient(#0096C9, #007CA7);
 
     -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.6), 5, 0.0, 0, 1);
@@ -44,7 +44,7 @@
 }
 
 .tab {
-    -fx-font-weight: bold;
+   /* -fx-font-weight: bold; */
     -fx-font-size: 12px;
 }
 

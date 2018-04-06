@@ -4,12 +4,16 @@ import javafx.application.Platform;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
+import java.util.ArrayDeque;
+
 import static application.utils.TimestampUtils.nowTimestamp;
 
 
 public class GuiWindowedLogger implements ToolLogger {
 
+    public static final int MAX_ENTIRES = 100;
     private final StyleClassedTextArea logArea;
+    private final ArrayDeque<Integer> snippetsSize = new ArrayDeque<>();
 
 
     public GuiWindowedLogger(StyleClassedTextArea logArea) {
@@ -76,8 +80,35 @@ public class GuiWindowedLogger implements ToolLogger {
 
     private void appendTextWithStyleClass(String formattedText, String styleClass) {
         final int previousLength = logArea.getText().length();
-        logArea.appendText(textToAppend(formattedText));
-        logArea.setStyleClass(previousLength, logArea.getText().length(), styleClass);
+        final String text = textToAppend(formattedText);
+        logArea.appendText(text);
+        final int afterLength = logArea.getText().length();
+
+        int snippetSize = afterLength - previousLength;
+
+//        System.out.println(String.format("\n\nPrevious area text len: %d, text to add len: %d, now area textLen: %d",
+//                                         previousLength, text.length(),  afterLength));
+
+        snippetsSize.addFirst(snippetSize);
+        //System.out.println(String.format("Adding snippet of length : %d", snippetSize));
+        logArea.setStyleClass(previousLength, afterLength, styleClass);
+        //System.out.println(String.format("Snippets count: %d", snippetsSize.size()));
+
+        while(snippetsSize.size()> MAX_ENTIRES)
+        {
+          //  System.out.println(String.format("Deleting because snippets size: %d", snippetsSize.size()));
+            final Integer snippetSizeToRemove = snippetsSize.removeLast();
+            //final int areaTextLengthBefore = logArea.getText().length();
+//            final int accessibleTextLenghtBefore = logArea.getAccessibleText().length();
+
+            logArea.deleteText(0, snippetSizeToRemove);
+
+            //final int areaTextLengthAfter = logArea.getText().length();
+//            final int accessibleTextLenghtAfter = logArea.getAccessibleText().length();
+
+            //System.out.println(String.format("Before area - text len:%d,  snippet size: %d, After area - text len:%d",
+            //                   areaTextLengthBefore,  snippetSizeToRemove, areaTextLengthAfter));
+        }
     }
 
     private String textToAppend(String formattedText) {

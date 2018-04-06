@@ -26,8 +26,8 @@
                   <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                   <ColumnConstraints halignment="LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="185.0" prefWidth="324.0" />
-                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="50.0" />
-                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="20.0" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
@@ -40,7 +40,7 @@
                <children>
                   <Label text="Config name" />
                   <Label text="Topic config" GridPane.rowIndex="1" />
-                  <TextField fx:id="messageNameTextField" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER" />
+                  <TextField fx:id="messageNameTextField" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER" />
                   <ComboBox fx:id="topicConfigComboBox" maxWidth="1.7976931348623157E308" minWidth="-Infinity" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                   <TextField fx:id="messageKeyTextField" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
                   <CheckBox fx:id="messageKeyCheckBox" mnemonicParsing="false" text="Message key" GridPane.rowIndex="2" />
