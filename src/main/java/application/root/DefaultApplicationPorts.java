@@ -1,7 +1,7 @@
 package application.root;
 
 import application.kafka.KafkaMessageSender;
-import application.kafka.Listeners;
+import application.kafka.listener.Listeners;
 
 public class DefaultApplicationPorts implements ApplicationPorts {
     private final KafkaMessageSender sender;
@@ -24,12 +24,11 @@ public class DefaultApplicationPorts implements ApplicationPorts {
 
     @Override
     public void stop() {
-        sender.stop();
         listeners.stopAll();
     }
 
     @Override
     public void start() {
-        sender.start();
+
     }
 }

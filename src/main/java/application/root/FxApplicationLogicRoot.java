@@ -10,7 +10,7 @@ import application.kafka.KafkaClusterProxies;
 import application.globals.StageRepository;
 import application.kafka.ClusterStatusChecker;
 import application.kafka.DefaultKafkaMessageSender;
-import application.kafka.KafkaListeners;
+import application.kafka.listener.KafkaListeners;
 import application.logging.DefaultLogger;
 import application.logging.GuiWindowedLogger;
 import application.logging.Logger;

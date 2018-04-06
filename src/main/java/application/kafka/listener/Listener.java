@@ -1,4 +1,4 @@
-package application.kafka;
+package application.kafka.listener;
 
 import application.model.modelobjects.KafkaListenerConfig;
 import javafx.beans.property.BooleanProperty;
@@ -12,12 +12,6 @@ public interface Listener {
     BooleanProperty isRunningProperty();
 
     void start();
-
-    void appendLog(String text);
-
-    String getCollectedLogs();
-
-    void clearLogs();
 
     void stop();
 }
