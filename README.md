@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/grzegorz-wolszczak/kafka-message-tool.svg?branch=master)](https://travis-ci.org/grzegorz-wolszczak/kafka-message-tool)
+
 # Kafka Message Tool
 Simple GUI tool (javaFX) to facilitate sending/receiving messages to/from kafka broker
 
