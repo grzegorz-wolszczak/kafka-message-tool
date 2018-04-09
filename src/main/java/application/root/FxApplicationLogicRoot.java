@@ -18,6 +18,7 @@ import application.model.DataModel;
 import application.model.DefaultModelDataProxy;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
+import application.notifications.AppNotifier;
 import application.persistence.ApplicationSettings;
 import application.persistence.DefaultApplicationSettings;
 import application.persistence.GlobalSettings;
@@ -131,14 +132,15 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
                                                                                                  modelDataProxy,
                                                                                                  mainStage,
                                                                                                  applicationPorts);
-
+        final AppNotifier appNotifier = new AppNotifier();
         final MainApplicationController mainController = new MainApplicationController(mainStage,
                                                                                        dataModel,
                                                                                        applicationSettings,
                                                                                        loggingPane,
                                                                                        controllerRepositoryFactory,
                                                                                        actionHandlerFactory,
-                                                                                       busySwitcher);
+                                                                                       busySwitcher,
+                                                                                       appNotifier);
         CustomFxWidgetsLoader.load(mainController, MAIN_APPLICATION_VIEW_FXML_FILE);
         mainController.setupControls();
 

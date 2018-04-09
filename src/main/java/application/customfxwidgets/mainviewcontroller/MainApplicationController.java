@@ -1,5 +1,6 @@
 package application.customfxwidgets.mainviewcontroller;
 
+import application.notifications.AppNotifier;
 import application.root.ApplicationBusySwitcher;
 import application.root.DefaultActionHandlerFactory;
 import application.constants.GuiStrings;
@@ -27,6 +28,7 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
+import org.controlsfx.control.StatusBar;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
@@ -71,12 +73,17 @@ public class MainApplicationController extends VBox {
     private ComboBox<LogLevel> logSeverityCombobox;
     @FXML
     private GridPane loggingTabGridPane;
+
+    @FXML
+    private StatusBar statusBar;
+
     private ControllerProvider controllerProvider;
     private ApplicationSettings appSettings;
     private VirtualizedScrollPane<StyleClassedTextArea> loggingPaneArea;
     private ControllerRepositoryFactory controllersRepositoryFactory;
     private DefaultActionHandlerFactory actionHandlerFactory;
     private ApplicationBusySwitcher busySwitcher;
+    private AppNotifier appNotifier;
 
     public MainApplicationController(Stage mainStage,
                                      DataModel model,
@@ -84,7 +91,8 @@ public class MainApplicationController extends VBox {
                                      VirtualizedScrollPane<StyleClassedTextArea> loggingPaneArea,
                                      ControllerRepositoryFactory controllersRepositoryFactory,
                                      DefaultActionHandlerFactory actionHandlerFactory,
-                                     ApplicationBusySwitcher busySwitcher) {
+                                     ApplicationBusySwitcher busySwitcher,
+                                     AppNotifier appNotifier) {
         appStage = mainStage;
         dataModel = model;
         this.appSettings = appSettings;
@@ -92,7 +100,9 @@ public class MainApplicationController extends VBox {
         this.controllersRepositoryFactory = controllersRepositoryFactory;
         this.actionHandlerFactory = actionHandlerFactory;
         this.busySwitcher = busySwitcher;
+        this.appNotifier = appNotifier;
     }
+
 
     public void setupControls() {
         connectStageGuiPropertiesFromSettings();
@@ -103,6 +113,12 @@ public class MainApplicationController extends VBox {
         initializeInternalDependencies();
         initializeListViewActionHandlers();
         registerNodesForBusyStateManagement();
+        setupStatusBar();
+
+    }
+
+    private void setupStatusBar() {
+        appNotifier.configureStatusBar(statusBar);
     }
 
     private void registerNodesForBusyStateManagement() {
