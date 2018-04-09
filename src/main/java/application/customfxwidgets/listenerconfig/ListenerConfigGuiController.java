@@ -141,7 +141,6 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         }
         Platform.runLater(() -> {
             outputTextArea.appendText(textToAppend);
-            //outputTextArea.appendText(""); // this forces textArea to scroll to bottom
         });
 
     }

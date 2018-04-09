@@ -10,6 +10,7 @@ import application.kafka.ClusterStatusChecker;
 import application.kafka.KafkaClusterProxies;
 import application.kafka.KafkaClusterProxy;
 import application.kafka.TriStateConfigEntryValue;
+import application.kafka.dto.TopicAggregatedSummary;
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
@@ -31,8 +32,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.textfield.TextFields;
 
 import java.io.IOException;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 
 public class TopicConfigGuiController extends AnchorPane implements Displayable {
@@ -187,7 +192,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
         if (oldValue != null) {
             final ObjectProperty<KafkaClusterProxy> oldProxy = kafkaClusterProxies.getAsProperty(oldValue.getHostInfo());
             Logger.trace(String.format("removing listener for cluster proxy property for %s", oldValue.getHostInfo()));
-            oldProxy.removeListener(this::udateTopicNameTextFieldAppearanceCallback);
+            oldProxy.removeListener(this::updateTopicNameTextFieldPropertiesCallback);
         }
 
         if (newValue == null) {
@@ -196,17 +201,26 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
         }
         final ObjectProperty<KafkaClusterProxy> newProxy = kafkaClusterProxies.getAsProperty(newValue.getHostInfo());
         Logger.trace(String.format("adding listener for cluster proxy property for %s", newValue.getHostInfo()));
-        newProxy.addListener(this::udateTopicNameTextFieldAppearanceCallback);
+        newProxy.addListener(this::updateTopicNameTextFieldPropertiesCallback);
     }
 
 
-    private void udateTopicNameTextFieldAppearanceCallback(ObservableValue<? extends KafkaClusterProxy> observable,
-                                                           KafkaClusterProxy oldValue,
-                                                           KafkaClusterProxy newValue) {
+    private void updateTopicNameTextFieldPropertiesCallback(ObservableValue<? extends KafkaClusterProxy> observable,
+                                                            KafkaClusterProxy oldValue,
+                                                            KafkaClusterProxy newValue) {
         Logger.trace(String.format("setting new topic name appearance for clusterProxy change listener: old %s, new %s",
                                    oldValue, newValue));
 
         setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(newValue);
+        setTopicNameFieldAutoCompletions(newValue);
+    }
+
+    private void setTopicNameFieldAutoCompletions(KafkaClusterProxy proxy) {
+        resetAutoComplection();
+        if (proxy == null) {
+            return;
+        }
+        setAutoComplection(proxy);
     }
 
 
@@ -226,7 +240,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
 
     private void setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(KafkaClusterProxy proxy) {
 
-        resetTopicNameFieldTooltipAndCssState();
+        resetTopicNameFieldProperties();
         final String topicName = topicNameField.getText();
         if (StringUtils.isBlank(topicName)) {
             return;
@@ -236,6 +250,17 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
             return;
         }
 
+        setCssStyleAndToolTip(proxy, topicName);
+    }
+
+    private void setAutoComplection(KafkaClusterProxy proxy) {
+        List<String> completions=proxy
+            .getAggregatedTopicSummary()
+            .stream().map(TopicAggregatedSummary::getTopicName).collect(Collectors.toList());
+        TextFields.bindAutoCompletion(topicNameField, completions);
+    }
+
+    private void setCssStyleAndToolTip(KafkaClusterProxy proxy, String topicName) {
         String toolTipMessage;
         PseudoClass psuedoClass;
 
@@ -260,9 +285,14 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
         topicNameField.setTooltip(TooltipCreator.createFrom(toolTipMessage));
     }
 
-    private void resetTopicNameFieldTooltipAndCssState() {
+    private void resetTopicNameFieldProperties() {
+
         resetTopicnameTextFieldTooltip();
         resetTopicNameTextFieldBackgroundCss();
+    }
+
+    private void resetAutoComplection() {
+        TextFields.bindAutoCompletion(topicNameField, Collections.emptyList());
     }
 
     private void resetTopicNameTextFieldBackgroundCss() {

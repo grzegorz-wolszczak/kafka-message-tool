@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.org/grzegorz-wolszczak/kafka-message-tool.svg?branch=master)](https://travis-ci.org/grzegorz-wolszczak/kafka-message-tool)
 
 # Kafka Message Tool
-Simple GUI tool (javaFX) to facilitate sending/receiving messages to/from kafka broker
+Simple GUI tool (javaFX) to facilitate sending/receiving messages to/from *Apache Kafka* broker
 
 **Features**
  - Display kafka broker configuration for each node in cluster
@@ -36,6 +36,7 @@ It is arbitrary and related to effort amount that was invested in implementing p
  - Thanks to [RichtextFX](https://github.com/TomasMikula/RichTextFX) for providing cool CodeArea gui component 
  - Message syntax highlighting patterns for JSON were taken from [JFXParser](https://github.com/notnotme/JFXParser)
  - Thanks to [this page](http://respostas.guj.com.br/47439-habilitar-copypaste-tableview-funcionando-duvida-editar-funcionalidade) for copy TableView cell content code
+ - Thanks to [controlfx](http://fxexperience.com/controlsfx/) for textfield with autocomplection and other cool controls 
    
 
 

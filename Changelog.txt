@@ -1,4 +1,8 @@
 
+[v.1.0.3.0]
+- added About window
+- added topic names autocompleciton in topic config window
+
 [v.1.0.2.0]
 - improvement - performance improvement (but more work needed)- log window can accept more entries before it freezes (!sic)
     added limitation to log records visible count

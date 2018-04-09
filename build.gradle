@@ -45,7 +45,7 @@ static String getShortenedTimestamp() {
 
 
 // <app>-<major-patch>-<minor-patch>-<fix>
-version = "1.0.3.0"
+version = "1.0.3.0-rc.1"
 
 println "Gradle project dir: ${projectDir}"
 
@@ -87,6 +87,7 @@ dependencies {
     compile group: 'com.google.guava', name: 'guava', version: '22.0'
     compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.13'
     compile group: 'org.fxmisc.richtext', name: 'richtextfx', version: '0.8.1'
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.14'
 }
 
 task wrapper(type: Wrapper) {
