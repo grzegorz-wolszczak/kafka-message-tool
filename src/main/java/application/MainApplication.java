@@ -11,7 +11,7 @@ public class MainApplication extends Application {
 
     private static final int ERROR_EXIT_STATUS = 1;
 
-    private final FxApplicationRoot app = new FxApplicationLogicRoot();
+    private final FxApplicationRoot app = new FxApplicationLogicRoot(this);
 
     public static void main(String[] args) {
         launch(args);

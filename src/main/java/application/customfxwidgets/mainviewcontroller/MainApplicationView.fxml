@@ -27,6 +27,11 @@
               <MenuItem mnemonicParsing="false" onAction="#menuItemSaveConfigOnAction" text="Save config" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#menuItemShowAboutWindow" text="About" />
+              </items>
+            </Menu>
         </menus>
       </MenuBar>
       <SplitPane fx:id="mainSplitPane" dividerPositions="0.5" orientation="VERTICAL" prefHeight="200.0" prefWidth="160.0" VBox.vgrow="ALWAYS">
