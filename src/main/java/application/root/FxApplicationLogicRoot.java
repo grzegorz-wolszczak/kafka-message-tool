@@ -1,5 +1,6 @@
 package application.root;
 
+import application.MainApplication;
 import application.constants.ApplicationConstants;
 import application.customfxwidgets.CustomFxWidgetsLoader;
 import application.customfxwidgets.mainviewcontroller.ControllerRepositoryFactory;
@@ -29,6 +30,7 @@ import application.utils.ApplicationVersionProvider;
 import application.utils.GuiUtils;
 import application.utils.UserGuiInteractor;
 import application.utils.kafka.KafkaProducers;
+import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -47,6 +49,11 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
     private ApplicationSettings applicationSettings;
     private Scene scene;
     private ExecutorService executorService;
+    private MainApplication mainApplication;
+
+    public FxApplicationLogicRoot(MainApplication mainApplication) {
+        this.mainApplication = mainApplication;
+    }
 
     @Override
     public void start(Stage stage) throws Exception {
@@ -76,6 +83,11 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
         stopAll();
     }
 
+    @Override
+    public Application getApplication() {
+        return mainApplication;
+    }
+
     private void initialize(Stage stage) {
         mainStage = stage;
         Logger.registerLogger(new DefaultLogger());
@@ -91,7 +103,7 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
 
     private void configureStage() {
         mainStage.setScene(scene);
-        mainStage.setTitle(String.format("Kafka Message Tool (%s)", ApplicationVersionProvider.get()));
+        mainStage.setTitle(String.format(ApplicationConstants.APPLICATION_NAME + " (%s)", ApplicationVersionProvider.get()));
         GuiUtils.addApplicationIcon(mainStage);
     }
 
@@ -135,6 +147,7 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
         final AppNotifier appNotifier = new AppNotifier();
         final MainApplicationController mainController = new MainApplicationController(mainStage,
                                                                                        dataModel,
+                                                                                       getApplication(),
                                                                                        applicationSettings,
                                                                                        loggingPane,
                                                                                        controllerRepositoryFactory,

@@ -82,7 +82,7 @@
                                                                   <TableColumn fx:id="assignedConsumerClientIdColumn" editable="false" prefWidth="157.0" text="Client id" />
                                                                   <TableColumn fx:id="assignedConsumerGroupColumn" editable="false" prefWidth="185.0" text="Consumer group" />
                                                                   <TableColumn fx:id="assignedConsumerPartitionColumn" editable="false" prefWidth="118.0" text="Assigned partition" />
-                                                                  <TableColumn fx:id="assignedConsumerNextMsgOffsetColumn" editable="false" prefWidth="113.0" text="Next msg offset" />
+                                                                  <TableColumn fx:id="assignedConsumerNextMsgOffsetColumn" editable="false" prefWidth="113.0" text="Next rcvd msg offset" />
                                                                   <TableColumn fx:id="assignedConsumerHostColumn" editable="false" prefWidth="84.0" text="Host" />
                                                                   <TableColumn fx:id="assignedConsumerIdColumn" editable="false" maxWidth="1.7976931348623157E308" prefWidth="366.0" text="Consumer id" />
                                                                </columns>

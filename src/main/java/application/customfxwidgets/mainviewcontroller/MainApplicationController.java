@@ -1,6 +1,7 @@
 package application.customfxwidgets.mainviewcontroller;
 
 import application.notifications.AppNotifier;
+import application.customfxwidgets.aboutwindow.AboutWindow;
 import application.root.ApplicationBusySwitcher;
 import application.root.DefaultActionHandlerFactory;
 import application.constants.GuiStrings;
@@ -15,6 +16,7 @@ import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.persistence.ApplicationSettings;
 import application.persistence.GuiSettings;
+import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -32,6 +34,7 @@ import org.controlsfx.control.StatusBar;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,6 +81,7 @@ public class MainApplicationController extends VBox {
     private StatusBar statusBar;
 
     private ControllerProvider controllerProvider;
+    private Application fxApplication;
     private ApplicationSettings appSettings;
     private VirtualizedScrollPane<StyleClassedTextArea> loggingPaneArea;
     private ControllerRepositoryFactory controllersRepositoryFactory;
@@ -87,6 +91,7 @@ public class MainApplicationController extends VBox {
 
     public MainApplicationController(Stage mainStage,
                                      DataModel model,
+                                     Application fxApplication,
                                      ApplicationSettings appSettings,
                                      VirtualizedScrollPane<StyleClassedTextArea> loggingPaneArea,
                                      ControllerRepositoryFactory controllersRepositoryFactory,
@@ -95,6 +100,7 @@ public class MainApplicationController extends VBox {
                                      AppNotifier appNotifier) {
         appStage = mainStage;
         dataModel = model;
+        this.fxApplication = fxApplication;
         this.appSettings = appSettings;
         this.loggingPaneArea = loggingPaneArea;
         this.controllersRepositoryFactory = controllersRepositoryFactory;
@@ -250,6 +256,19 @@ public class MainApplicationController extends VBox {
         appSettings.save();
     }
 
+    @FXML
+    private void menuItemShowAboutWindow(){
+        showAboutWindow();
+    }
+
+    private void showAboutWindow() {
+        try {
+            final AboutWindow aboutWindow = new AboutWindow(appStage, fxApplication);
+            aboutWindow.show();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     @FXML
     void onAnyListViewClicked() {

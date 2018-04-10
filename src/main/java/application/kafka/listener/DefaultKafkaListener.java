@@ -234,7 +234,7 @@ public class DefaultKafkaListener implements Listener {
     }
 
     private String buildThreadNameForDebugging() {
-        return "Thread-kafka-listener:" + listenerConfig.getName();
+        return "Thread-kafka-message-tool-listener:" + listenerConfig.getName();
     }
 
     private void tryStop() {

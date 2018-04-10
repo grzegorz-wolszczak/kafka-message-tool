@@ -45,7 +45,7 @@ static String getShortenedTimestamp() {
 
 
 // <app>-<major-patch>-<minor-patch>-<fix>
-version = "1.0.2.0"
+version = "1.0.3.0-rc.2"
 
 println "Gradle project dir: ${projectDir}"
 

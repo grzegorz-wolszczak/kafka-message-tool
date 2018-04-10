@@ -5,7 +5,10 @@ import groovy.transform.CompileStatic;
 
 @CompileStatic
 public class ApplicationConstants {
+    public static final String APPLICATION_NAME = "Kafka Message Tool";
     public static final String CONFIG_FILE_NAME = "KafkaMessageToolConfig.xml";
+    public static final String AUTHOR = "Grzegorz Wolszczak";
+    public static final String GITHUB_WEBSITE = "https://github.com/grzegorz-wolszczak/kafka-message-tool";
     public static final String INVALID_TEXT_FIELD_INPUT_PSEUDO_CLASS_NAME = "error";
     public static final String GLOBAL_CSS_FILE_NAME = "/fx_global.css";
     public static final String VERSION_PROPERTIES_FILE_NAME = "/version.properties";
