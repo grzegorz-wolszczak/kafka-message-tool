@@ -32,6 +32,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.textfield.AutoCompletionBinding;
 import org.controlsfx.control.textfield.TextFields;
 
 import java.io.IOException;
@@ -67,6 +68,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private ToggleButton detachPaneButton;
 
     private Runnable rerfeshCallback;
+    AutoCompletionBinding<String> stringAutoCompletionBinding;
 
     public TopicConfigGuiController(KafkaTopicConfig config,
                                     AnchorPane parentPane,
@@ -153,6 +155,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
                                                     KafkaBrokerConfig newValue) -> {
 
             updateTopicNameTextFieldAppearance(newValue);
+            resetTopicnameTextFieldAutoCompletionForNewBrokerConfig(newValue);
             setCallbackForChangingTopicNameAppearanceWhenBrokerConfigInternalPropertiesChanges(oldValue, newValue);
             setCallbackForUpdatingTopicNameTextFieldBackgroundIfCurrentClusterSummaryChanges(oldValue, newValue);
         });
@@ -180,10 +183,12 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private void updateTopicNameTextFieldAppearance(KafkaBrokerConfig brokerConfig) {
         if (brokerConfig == null) {
             setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(null);
+            resetTopicnameTextFieldAutoCompletionForClusterProxy(null);
             return;
         }
         final KafkaBrokerHostInfo hostInfo = brokerConfig.getHostInfo();
         final KafkaClusterProxy proxy = kafkaClusterProxies.get(hostInfo);
+        resetTopicnameTextFieldAutoCompletionForClusterProxy(proxy);
         setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(proxy);
     }
 
@@ -197,6 +202,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
 
         if (newValue == null) {
             Logger.trace("not adding new listener for proxy property because new broker config is null");
+            resetTopicnameTextFieldAutoCompletionForClusterProxy(null);
             return;
         }
         final ObjectProperty<KafkaClusterProxy> newProxy = kafkaClusterProxies.getAsProperty(newValue.getHostInfo());
@@ -212,16 +218,9 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
                                    oldValue, newValue));
 
         setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(newValue);
-        setTopicNameFieldAutoCompletions(newValue);
+        resetTopicnameTextFieldAutoCompletionForClusterProxy(newValue);
     }
 
-    private void setTopicNameFieldAutoCompletions(KafkaClusterProxy proxy) {
-        resetAutoComplection();
-        if (proxy == null) {
-            return;
-        }
-        setAutoComplection(proxy);
-    }
 
 
     private void configureTopicConfigNameField() {
@@ -253,13 +252,6 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
         setCssStyleAndToolTip(proxy, topicName);
     }
 
-    private void setAutoComplection(KafkaClusterProxy proxy) {
-        List<String> completions=proxy
-            .getAggregatedTopicSummary()
-            .stream().map(TopicAggregatedSummary::getTopicName).collect(Collectors.toList());
-        TextFields.bindAutoCompletion(topicNameField, completions);
-    }
-
     private void setCssStyleAndToolTip(KafkaClusterProxy proxy, String topicName) {
         String toolTipMessage;
         PseudoClass psuedoClass;
@@ -288,14 +280,47 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private void resetTopicNameFieldProperties() {
 
         resetTopicnameTextFieldTooltip();
-        resetTopicNameTextFieldBackgroundCss();
+        resetTopicnameTextFieldBackgroundCss();
     }
 
-    private void resetAutoComplection() {
-        TextFields.bindAutoCompletion(topicNameField, Collections.emptyList());
+
+    private void resetTopicnameTextFieldAutoCompletionForNewBrokerConfig(KafkaBrokerConfig brokerConfig) {
+        System.out.println("New config value: " + brokerConfig);
+        setTopicSuggestions(Collections.emptyList());
+        if(brokerConfig == null)
+        {
+            return;
+        }
+        final KafkaBrokerHostInfo hostInfo = brokerConfig.getHostInfo();
+        final KafkaClusterProxy proxy = kafkaClusterProxies.get(hostInfo);
+        resetTopicnameTextFieldAutoCompletionForClusterProxy(proxy);
     }
 
-    private void resetTopicNameTextFieldBackgroundCss() {
+    private void setTopicSuggestions(List<String> possibleSuggestions) {
+        System.out.println("Setting suggestions to : " + possibleSuggestions);
+        if(null != stringAutoCompletionBinding)
+        {
+            stringAutoCompletionBinding.dispose();
+        }
+        stringAutoCompletionBinding = TextFields.bindAutoCompletion(topicNameField, possibleSuggestions);
+    }
+
+    private void resetTopicnameTextFieldAutoCompletionForClusterProxy(KafkaClusterProxy proxy) {
+
+        setTopicSuggestions(Collections.emptyList());
+
+        if (proxy == null) {
+            return;
+        }
+
+        final List<String> suggestions=proxy
+                .getAggregatedTopicSummary()
+                .stream().map(TopicAggregatedSummary::getTopicName).collect(Collectors.toList());
+
+        setTopicSuggestions(suggestions);
+    }
+
+    private void resetTopicnameTextFieldBackgroundCss() {
         topicNameField.pseudoClassStateChanged(OK_TOPIC_EXISTS_PSEUDO_CLASS, false);
         topicNameField.pseudoClassStateChanged(TOPIC_WILL_BE_AUTOCREATED_PSEUDO_CLASS, false);
         topicNameField.pseudoClassStateChanged(CANNOT_USE_TOPIC_PSEUDO_CLASS, false);
