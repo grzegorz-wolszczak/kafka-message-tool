@@ -18,7 +18,7 @@ import static org.mockito.Mockito.when;
 
         final int partitions = kafkaClusterProxy.partitionsForTopic(topicName);
         final int expectedAssignedPartitions = KafkaParitionUtils.partition(messageKey, partitions);
-        Logger.info(String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions));
+        AppLogger.info(String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions));
  */
 
 public class ValidationsSpecification {

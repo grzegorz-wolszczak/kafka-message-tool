@@ -11,7 +11,7 @@ import application.kafka.KafkaClusterProxies;
 import application.kafka.KafkaClusterProxy;
 import application.kafka.TriStateConfigEntryValue;
 import application.kafka.dto.TopicAggregatedSummary;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.utils.GuiUtils;
@@ -190,17 +190,17 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
                                                                                                   KafkaBrokerConfig newValue) {
         if (oldValue != null) {
             final ObjectProperty<KafkaClusterProxy> oldProxy = kafkaClusterProxies.getAsProperty(oldValue.getHostInfo());
-            Logger.trace(String.format("removing listener for cluster proxy property for %s", oldValue.getHostInfo()));
+            AppLogger.trace(String.format("removing listener for cluster proxy property for %s", oldValue.getHostInfo()));
             oldProxy.removeListener(this::updateTopicNameTextFieldPropertiesCallback);
         }
 
         if (newValue == null) {
-            Logger.trace("not adding new listener for proxy property because new broker config is null");
+            AppLogger.trace("not adding new listener for proxy property because new broker config is null");
             resetTopicnameTextFieldAutoCompletionForClusterProxy(null);
             return;
         }
         final ObjectProperty<KafkaClusterProxy> newProxy = kafkaClusterProxies.getAsProperty(newValue.getHostInfo());
-        Logger.trace(String.format("adding listener for cluster proxy property for %s", newValue.getHostInfo()));
+        AppLogger.trace(String.format("adding listener for cluster proxy property for %s", newValue.getHostInfo()));
         newProxy.addListener(this::updateTopicNameTextFieldPropertiesCallback);
     }
 
@@ -208,8 +208,8 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private void updateTopicNameTextFieldPropertiesCallback(ObservableValue<? extends KafkaClusterProxy> observable,
                                                             KafkaClusterProxy oldValue,
                                                             KafkaClusterProxy newValue) {
-        Logger.trace(String.format("setting new topic name appearance for clusterProxy change listener: old %s, new %s",
-                oldValue, newValue));
+        AppLogger.trace(String.format("setting new topic name appearance for clusterProxy change listener: old %s, new %s",
+                                      oldValue, newValue));
 
         setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(newValue);
         resetTopicnameTextFieldAutoCompletionForClusterProxy(newValue);

@@ -12,9 +12,10 @@ import application.globals.StageRepository;
 import application.kafka.ClusterStatusChecker;
 import application.kafka.DefaultKafkaMessageSender;
 import application.kafka.listener.KafkaListeners;
-import application.logging.DefaultLogger;
+import application.logging.KafkaToolConsoleLogger;
 import application.logging.GuiWindowedLogger;
-import application.logging.Logger;
+import application.logging.AppLogger;
+import application.logging.LogEventDataFormatter;
 import application.model.DataModel;
 import application.model.DefaultModelDataProxy;
 import application.model.FromPojoConverter;
@@ -90,7 +91,7 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
 
     private void initialize(Stage stage) {
         mainStage = stage;
-        Logger.registerLogger(new DefaultLogger());
+        AppLogger.registerLogger(new KafkaToolConsoleLogger(new LogEventDataFormatter()));
         AppGlobals.initialize();
     }
 
@@ -128,10 +129,10 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
         final UserGuiInteractor interactor = new UserGuiInteractor(mainStage);
         final ApplicationBusySwitcher busySwitcher = new DefaultApplicationBusySwitcher(mainStage);
 
-        Logger.registerLogger(new GuiWindowedLogger(loggingPaneArea));
+        AppLogger.registerLogger(new GuiWindowedLogger(loggingPaneArea));
         applicationSettings = new DefaultApplicationSettings(xmlFileConfig);
         applicationSettings.load();
-        Logger.setLogLevel(applicationSettings.appSettings().getLogLevel());
+        AppLogger.setLogLevel(applicationSettings.appSettings().getLogLevel());
 
         executorService = Executors.newSingleThreadExecutor();
         final KafkaClusterProxies kafkaClusterProxies = new KafkaClusterProxies();
@@ -144,7 +145,6 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
                                                                                                  modelDataProxy,
                                                                                                  mainStage,
                                                                                                  applicationPorts);
-        final AppNotifier appNotifier = new AppNotifier();
         final MainApplicationController mainController = new MainApplicationController(mainStage,
                                                                                        dataModel,
                                                                                        getApplication(),
@@ -153,7 +153,7 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
                                                                                        controllerRepositoryFactory,
                                                                                        actionHandlerFactory,
                                                                                        busySwitcher,
-                                                                                       appNotifier);
+                                                                                       AppNotifier.getStatusNotifier());
         CustomFxWidgetsLoader.load(mainController, MAIN_APPLICATION_VIEW_FXML_FILE);
         mainController.setupControls();
 

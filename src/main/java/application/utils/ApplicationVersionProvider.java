@@ -1,7 +1,7 @@
 package application.utils;
 
 import application.constants.ApplicationConstants;
-import application.logging.Logger;
+import application.logging.AppLogger;
 
 import java.io.InputStream;
 import java.util.Properties;
@@ -21,7 +21,7 @@ public class ApplicationVersionProvider {
             return prop.getProperty("version", VERSION_NOT_FOUND);
         } catch (Throwable e) {
             //e.printStackTrace();
-            Logger.error(String.format("Could not find/load file %s",fileName));
+            AppLogger.error(String.format("Could not find/load file %s", fileName));
             return VERSION_NOT_FOUND;
         }
     }

@@ -3,7 +3,7 @@ package application.scripting;
 import application.constants.GroovyStringEscaper;
 import application.exceptions.ExecutionStopRequested;
 import application.kafka.KafkaMessageSender;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.MessageOnTopicDto;
 import application.model.modelobjects.KafkaSenderConfig;
 import application.utils.ThrowableUtils;
@@ -25,10 +25,10 @@ public class MessageTemplateSender {
         try {
             trySend(config, isSimulationModeEnabled);
         } catch (ExecutionStopRequested e) {
-            Logger.warn("Sending stopped by user.");
+            AppLogger.warn("Sending stopped by user.");
         } catch (Exception e) {
-            Logger.trace(ThrowableUtils.getFullStackTrace(e));
-            Logger.error(ThrowableUtils.getMessageWithRootCause(e));
+            AppLogger.trace(ThrowableUtils.getFullStackTrace(e));
+            AppLogger.error(ThrowableUtils.getMessageWithRootCause(e));
         }
 
     }
@@ -44,11 +44,11 @@ public class MessageTemplateSender {
 
         final Integer totalMessageCount = config.getRepeatCount();
 
-        Logger.info(String.format("Sending message [topic '%s', key '%s'], content template '%s', repeat count: %d",
-                                  config.getRelatedConfig().getTopicName(),
-                                  config.getMessageKey(),
-                                  config.getMsgContentTemplate(),
-                                  totalMessageCount
+        AppLogger.info(String.format("Sending message [topic '%s', key '%s'], content template '%s', repeat count: %d",
+                                     config.getRelatedConfig().getTopicName(),
+                                     config.getMessageKey(),
+                                     config.getMsgContentTemplate(),
+                                     totalMessageCount
         ));
 
         resetScriptEngine();

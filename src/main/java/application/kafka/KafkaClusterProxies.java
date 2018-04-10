@@ -1,7 +1,7 @@
 package application.kafka;
 
 import application.exceptions.ClusterConfigurationError;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.utils.HostInfo;
 import application.utils.HostPortValue;
 import javafx.beans.property.ObjectProperty;
@@ -37,7 +37,7 @@ public class KafkaClusterProxies {
                                                                TimeoutException,
                                                                InterruptedException {
         final HostPortValue hostPort = HostPortValue.from(hostInfo);
-        Logger.trace(String.format("Creating new broker proxy for '%s'", hostPort.toHostString()));
+        AppLogger.trace(String.format("Creating new broker proxy for '%s'", hostPort.toHostString()));
         closeOldProxyIfExistsFor(hostPort);
         final KafkaClusterProxy newProxy = KafkaClusterProxyFactory.create(hostPort);
         hostPortToProxy.put(hostPort, newProxy);

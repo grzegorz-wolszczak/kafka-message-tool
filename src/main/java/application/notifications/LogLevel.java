@@ -1,4 +1,4 @@
-package application.logging;
+package application.notifications;
 
 public enum LogLevel {
 

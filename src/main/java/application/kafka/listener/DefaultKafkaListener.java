@@ -1,6 +1,6 @@
 package application.kafka.listener;
 
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
@@ -68,7 +68,7 @@ public class DefaultKafkaListener implements Listener {
         try {
             tryStart();
         } catch (Throwable t) {
-            Logger.error("Starting consumer thread failed", t);
+            AppLogger.error("Starting consumer thread failed", t);
         }
     }
 
@@ -81,23 +81,23 @@ public class DefaultKafkaListener implements Listener {
         try {
             tryStop();
         } catch (Throwable e) {
-            Logger.warn("Problems with stopping consumer thread: ", e);
+            AppLogger.warn("Problems with stopping consumer thread: ", e);
         }
     }
 
     private Consumer<String, String> setUpConsumer() {
-        Logger.trace("Preparing consumer");
+        AppLogger.trace("Preparing consumer");
         final String topicName = listenerConfig.getRelatedConfig().getTopicName();
         final Consumer<String, String> consumer = createConsumer(brokerHost);
         final List<String> topics = Collections.singletonList(topicName);
-        Logger.trace(String.format("Subscribing for topics '%s'", topics));
+        AppLogger.trace(String.format("Subscribing for topics '%s'", topics));
         consumer.subscribe(topics);
         return consumer;
     }
 
     private void fetch() {
         if (!canUseTopicConfigForListener()) {
-            Logger.error("Could not start consumer. Topic config is invalid.");
+            AppLogger.error("Could not start consumer. Topic config is invalid.");
             return;
         }
 
@@ -107,15 +107,15 @@ public class DefaultKafkaListener implements Listener {
             tryFetch(topicConfig);
 
         } catch (WakeupException ignored) {
-            Logger.trace("Closing consumer due to wakeup()");
+            AppLogger.trace("Closing consumer due to wakeup()");
             closeConsumer();
 
         } catch (Throwable t) {
-            Logger.error("Exception for fetch()", t);
+            AppLogger.error("Exception for fetch()", t);
         } finally {
             if (isRunning.get()) {
-                Logger.info(String.format("Consumer stopped (topic:%s, consumer group:%s)", topicConfig.getTopicName(),
-                        listenerConfig.getConsumerGroup()));
+                AppLogger.info(String.format("Consumer stopped (topic:%s, consumer group:%s)", topicConfig.getTopicName(),
+                                             listenerConfig.getConsumerGroup()));
             }
             shouldBeRunning.set(false);
             isRunning.set(false);
@@ -125,9 +125,9 @@ public class DefaultKafkaListener implements Listener {
     private void tryFetch(KafkaTopicConfig topicConfig) {
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
 
-        Logger.info(String.format("Starting consumer '%s',  consumer group '%s'",
-                listenerConfig.getName(),
-                listenerConfig.getConsumerGroup()));
+        AppLogger.info(String.format("Starting consumer '%s',  consumer group '%s'",
+                                     listenerConfig.getName(),
+                                     listenerConfig.getConsumerGroup()));
 
         this.brokerHost = brokerConfig.getHostInfo();
         consumer = setUpConsumer();
@@ -135,8 +135,8 @@ public class DefaultKafkaListener implements Listener {
         shouldBeRunning.set(true);
         isRunning.set(true);
 
-        Logger.info(String.format("Consumer started (topic:%s, consumer group:%s)", topicConfig.getTopicName(),
-                listenerConfig.getConsumerGroup()));
+        AppLogger.info(String.format("Consumer started (topic:%s, consumer group:%s)", topicConfig.getTopicName(),
+                                     listenerConfig.getConsumerGroup()));
         final long pollTimeout = Long.parseLong(listenerConfig.getPollTimeout());
 
         while (shouldBeRunning.get()) {
@@ -196,7 +196,7 @@ public class DefaultKafkaListener implements Listener {
         FutureTask<Void> task = new FutureTask<>(() -> {
             final long wakeUpDurationMs = pollTimeoutMs + ADDITIONAL_WAIT_DURATION_BEFORE_WAKEUP_MS;
             sleep(wakeUpDurationMs);
-            Logger.warn(String.format("Waking up consumer (after %d ms), because consumer::poll() did not respond within its %d ms timeout."
+            AppLogger.warn(String.format("Waking up consumer (after %d ms), because consumer::poll() did not respond within its %d ms timeout."
                     , wakeUpDurationMs, pollTimeoutMs));
             wakeUpConsumer();
             return null;
@@ -253,7 +253,7 @@ public class DefaultKafkaListener implements Listener {
         config.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         config.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         config.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, listenerConfig.getOffsetResetConfig().value());
-        Logger.trace("Consumer properties:\n" + prettyProperties(config));
+        AppLogger.trace("Consumer properties:\n" + prettyProperties(config));
 
         return config;
     }

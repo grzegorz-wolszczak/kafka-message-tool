@@ -17,7 +17,7 @@ import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.UnassignedConsumerInfo;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.utils.*;
 import javafx.application.Platform;
@@ -308,11 +308,11 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         final Set<UnassignedConsumerInfo> info = proxy.getUnassignedConsumersInfo();
         clusterSummaryTabPane.getTabs().removeAll(unassignedConsumersTab);
         if (info.isEmpty()) {
-            Logger.trace("Unassigned consumers not found.");
+            AppLogger.trace("Unassigned consumers not found.");
             return;
         }
 
-        Logger.trace(String.format("Unassigned consumers found (count:%d)", info.size()));
+        AppLogger.trace(String.format("Unassigned consumers found (count:%d)", info.size()));
         clusterSummaryTabPane.getTabs().add(unassignedConsumersTab);
         unassignedConsumerListTableView.setItems(FXCollections.observableArrayList(info));
         unassignedConsumerListTableView.getSortOrder().add(unassignedClientIdColumn);
@@ -427,7 +427,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
             try {
                 createNewTopicAction(kafkaBrokerProxyProperty.get());
             } catch (Exception e) {
-                Logger.error("Could not createFrom config", e);
+                AppLogger.error("Could not createFrom config", e);
             }
         });
         return createTopicMenuItem;
@@ -440,7 +440,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
             try {
                 deleteTopic(kafkaBrokerProxyProperty.get(), summary);
             } catch (Exception e) {
-                Logger.error("Could not delete config", e);
+                AppLogger.error("Could not delete config", e);
             }
         });
         return deleteTopicMenuItem;
@@ -483,7 +483,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
     }
 
     private void refreshClusterSummaryPaneContent(KafkaClusterProxy proxy) {
-        Logger.trace("Refreshing cluster pane");
+        AppLogger.trace("Refreshing cluster pane");
         clusterConfigEntriesTabPane.getTabs().clear();
 
         final Set<ClusterNodeInfo> nodeInfos = proxy.getNodesInfo();
@@ -544,7 +544,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
 
     private void createTopicButShowGuiErrorOnFailure(KafkaClusterProxy proxy,
                                                      TopicToAdd topicToAdd) {
-        Logger.debug("Adding topic " + topicToAdd);
+        AppLogger.debug("Adding topic " + topicToAdd);
         try {
             proxy.createTopic(topicToAdd);
 

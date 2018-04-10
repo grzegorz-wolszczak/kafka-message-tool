@@ -5,7 +5,7 @@ import application.exceptions.TopicAlreadyExistsError;
 import application.exceptions.TopicMarkedForDeletionError;
 import application.kafka.dto.ClusterTopicInfo;
 import application.kafka.dto.TopicToAdd;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.utils.AppUtils;
 import com.google.common.base.Throwables;
 import kafka.server.KafkaConfig;
@@ -48,7 +48,7 @@ public class TopicAdmin {
 
     public void deleteTopic(String topicName) throws Exception {
 
-        Logger.trace(String.format("Deleting topic '%s'", topicName));
+        AppLogger.trace(String.format("Deleting topic '%s'", topicName));
         final DeleteTopicsResult result = kafkaClientsAdminClient.deleteTopics(Collections.singletonList(topicName));
         for (Map.Entry<String, KafkaFuture<Void>> entry : result.values().entrySet()) {
             entry.getValue().get(ApplicationConstants.DELETE_TOPIC_FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS);
@@ -57,11 +57,11 @@ public class TopicAdmin {
 
     public void createNewTopic(TopicToAdd topicToAdd) throws Exception {
         final String topicName = topicToAdd.getTopicName();
-        Logger.trace(String.format("Creating topic '%s' [partitions:%d, replication factor:%d, cleanup policy:%s]",
-                                   topicName,
-                                   topicToAdd.getPartitions(),
-                                   topicToAdd.getReplicationFactor(),
-                                   topicToAdd.getCleanupPolicy()));
+        AppLogger.trace(String.format("Creating topic '%s' [partitions:%d, replication factor:%d, cleanup policy:%s]",
+                                      topicName,
+                                      topicToAdd.getPartitions(),
+                                      topicToAdd.getReplicationFactor(),
+                                      topicToAdd.getCleanupPolicy()));
 
         final NewTopic newTopic = new NewTopic(topicName,
                                                topicToAdd.getPartitions(),
@@ -76,7 +76,7 @@ public class TopicAdmin {
         for (Map.Entry<String, KafkaFuture<Void>> entry : result.values().entrySet()) {
             try {
                 entry.getValue().get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-                Logger.trace(String.format("Topic '%s' created", entry.getKey()));
+                AppLogger.trace(String.format("Topic '%s' created", entry.getKey()));
             } catch (InterruptedException | ExecutionException e) {
                 if (Throwables.getRootCause(e) instanceof TopicExistsException) {
                     if (!topicExistsCheckWithClusterQuery(entry.getKey(), kafkaClientsAdminClient)) {
@@ -84,11 +84,11 @@ public class TopicAdmin {
                                                              "!!! Note !!!%nIf broker property '%s' is set to 'false' it will NEVER be deleted",
                                                          entry.getKey(),
                                                          KafkaConfig.DeleteTopicEnableProp());
-                        Logger.trace(msg);
+                        AppLogger.trace(msg);
                         throw new TopicMarkedForDeletionError(msg);
                     } else {
                         final String msg = String.format("Topic '%s' already exist", topicName);
-                        Logger.trace(msg);
+                        AppLogger.trace(msg);
                         throw new TopicAlreadyExistsError(msg);
                     }
                 }
@@ -102,10 +102,10 @@ public class TopicAdmin {
         try {
             final Config config = topicConfiEntries.all().get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS).get(configResource);
             final Collection<ConfigEntry> entries = config.entries();
-            Logger.debug(String.format("Config entries for topic '%s' : %n%s", topicName, AppUtils.configEntriesToPrettyString(entries)));
+            AppLogger.debug(String.format("Config entries for topic '%s' : %n%s", topicName, AppUtils.configEntriesToPrettyString(entries)));
             return new HashSet<>(entries);
         } catch (Exception e) {
-            Logger.error(String.format("Could not retrieve config resource for topic '%s'", topicName), e);
+            AppLogger.error(String.format("Could not retrieve config resource for topic '%s'", topicName), e);
         }
         return Collections.emptySet();
     }
@@ -140,7 +140,7 @@ public class TopicAdmin {
         Set<ClusterTopicInfo> result = new HashSet<>();
         final ListTopicsResult listTopicsResult = kafkaClientsAdminClient.listTopics(new ListTopicsOptions().listInternal(false));
         final Collection<TopicListing> listings = listTopicsResult.listings().get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        Logger.debug(String.format("describeTopics.listings %s", listings));
+        AppLogger.debug(String.format("describeTopics.listings %s", listings));
 
 
         final Set<String> topicNames = listTopicsResult.names().get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS);

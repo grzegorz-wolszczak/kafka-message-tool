@@ -1,6 +1,7 @@
 package application.kafka;
 
-import application.logging.Logger;
+import application.logging.AppLogger;
+import application.notifications.AppNotifier;
 import application.root.ApplicationBusySwitcher;
 import application.utils.HostInfo;
 import application.utils.ThrowableUtils;
@@ -30,7 +31,8 @@ public class ClusterStatusChecker {
                 final KafkaClusterProxy proxy = kafkaClusterProxies.getFreshFor(hostInfo);
                 showWarningOnInvalidClusterConfig(proxy, shouldShowWarningOnInvalidConfig);
             } catch (Throwable e) {
-                Logger.error(e);
+                AppLogger.error(e);
+                AppNotifier.reportException(e);
                 showGuiErrorMessage("Could not fetch cluster status.", ThrowableUtils.getMessage(e));
             } finally {
                 Platform.runLater(() -> {
@@ -49,7 +51,7 @@ public class ClusterStatusChecker {
         if (shouldShowWarningOnInvalidConfig) {
             proxy.reportInvalidClusterConfigurationTo((msg) -> {
                 userInteractor.showWarning("Invalid cluster configuration", msg);
-                Logger.warn("Invalid cluster config\n" + msg);
+                AppLogger.warn("Invalid cluster config\n" + msg);
             });
         }
     }

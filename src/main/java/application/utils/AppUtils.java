@@ -1,7 +1,7 @@
 package application.utils;
 
+import application.logging.AppLogger;
 import application.root.Executable;
-import application.logging.Logger;
 import org.apache.kafka.clients.admin.ConfigEntry;
 
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class AppUtils {
         try {
             executable.execute();
         } catch (Exception e) {
-            Logger.warn("Exception happened " + ThrowableUtils.getMessage(e));
+            AppLogger.warn("Exception happened " + ThrowableUtils.getMessage(e));
         }
     }
 }

@@ -15,15 +15,23 @@ public class ApplicationStatusBar {
     private Label warningLabel = new Label();
 
     public ApplicationStatusBar(StatusBar statusBar) {
-        warningBlinker = new LabelBlinker(warningLabel, Color.BLUE);
-        errorBlinker = new LabelBlinker(errorLabel, Color.RED);
+        setupLabels();
         statusBar.getRightItems().addAll(new Separator(Orientation.VERTICAL),
                                          warningLabel,
                                          new Separator(Orientation.VERTICAL),
                                          errorLabel);
+        updateLabels();
+
+    }
+
+    private void setupLabels() {
+        warningBlinker = new LabelBlinker(warningLabel, Color.BLUE);
+        errorBlinker = new LabelBlinker(errorLabel, Color.RED);
+    }
+
+    private void updateLabels() {
         updateErrorLabel();
         updateWarningLabel();
-
     }
 
     public void notifyAboutWarning() {
@@ -44,5 +52,15 @@ public class ApplicationStatusBar {
 
     private void updateErrorLabel() {
         errorLabel.setText(String.format("E:%d", errorCount));
+    }
+
+    public void clearWarningsAndErrors(){
+        zeroCounters();
+        updateLabels();
+    }
+
+    private void zeroCounters() {
+        warningsCount =0;
+        errorCount = 0;
     }
 }

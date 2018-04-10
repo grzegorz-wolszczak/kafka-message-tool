@@ -2,7 +2,7 @@ package application.scripting;
 
 import application.exceptions.ExecutionStopRequested;
 import application.exceptions.KafkaToolError;
-import application.logging.Logger;
+import application.logging.AppLogger;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -32,21 +32,21 @@ public class GroovyScriptEvaluator {
     }
 
     public void runScript(String script) throws Exception {
-        Logger.trace(String.format("evaluation script: %s", script));
+        AppLogger.trace(String.format("evaluation script: %s", script));
         final FutureTask<Object> evaluateScriptTask = new FutureTask<>(() -> engine.eval(script, ctx));
         // todo : consider thread pool, but remember that thead pool must be shutdown before application exit
         new Thread(evaluateScriptTask, "EvaluateGroovyScriptTask").start();
 
         try {
             final Object result = evaluateScriptTask.get(EVALUATE_GROOVY_SCRIPT_TIMEOUT_SEC, TimeUnit.SECONDS);
-            Logger.trace(String.format("Evaluation result: %s", result));
+            AppLogger.trace(String.format("Evaluation result: %s", result));
         } catch (TimeoutException e) {
             throw new KafkaToolError(String.format("EvaluationTimeout. Could not evaluate groovy script within %d seconds.",
                                                    EVALUATE_GROOVY_SCRIPT_TIMEOUT_SEC));
 
         } catch (InterruptedException e) {
             // this exception can happen if user clicks "stop" button
-            Logger.trace(String.format("Evaluation of script '%s' stopped. InterruptedException", script));
+            AppLogger.trace(String.format("Evaluation of script '%s' stopped. InterruptedException", script));
             throw new ExecutionStopRequested(e);
 
         } catch (Exception e) {

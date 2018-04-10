@@ -1,6 +1,6 @@
 package application.kafka;
 
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.MessageOnTopicDto;
 import application.utils.HostInfo;
 import application.utils.kafka.KafkaProducers;
@@ -42,11 +42,11 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
         try {
             refreshProducerIfNeeded(msgOnTopicToBeSent.getBrokerHostInfo());
             sendMessagesToTopic(msgOnTopicToBeSent);
-            Logger.info("Ok. Message(s) sent.");
+            AppLogger.info("Ok. Message(s) sent.");
         } catch (Exception e) {
             printMostAppropriateDebugBasedOnExcepionType(e);
         } catch (Throwable e) {
-            Logger.error("Sending thread exception", e);
+            AppLogger.error("Sending thread exception", e);
         }
 
     }
@@ -54,11 +54,11 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
     private void printMostAppropriateDebugBasedOnExcepionType(Exception e) {
         final Throwable cause = e.getCause();
         if (cause instanceof org.apache.kafka.common.errors.TimeoutException) {
-            Logger.error("Sending failed: " + e.getLocalizedMessage() + " (maybe invalid broker port?)");
+            AppLogger.error("Sending failed: " + e.getLocalizedMessage() + " (maybe invalid broker port?)");
         } else if (cause instanceof InterruptedException) {
-            Logger.warn("Sending stopped by user.");
+            AppLogger.warn("Sending stopped by user.");
         } else {
-            Logger.error("Sending failed: " + e.getLocalizedMessage());
+            AppLogger.error("Sending failed: " + e.getLocalizedMessage());
         }
     }
 
@@ -76,17 +76,17 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
 
 
         final ProducerRecord<String, String> record = createRecord(topicName, key, message);
-        Logger.info(String.format("%sSending record %d/%d (timeout ms: %d)%nmessage content= '%s'",
-                                  messageOnTopic.shouldSimulateSending() ? "(simulation) " : "",
-                                  msgCount,
-                                  totalMsgCount,
-                                  KAFKA_SENDER_SEND_TIMEOUT_MS,
-                                  message));
-        Logger.trace(String.format("Sending record %s", record));
+        AppLogger.info(String.format("%sSending record %d/%d (timeout ms: %d)%nmessage content= '%s'",
+                                     messageOnTopic.shouldSimulateSending() ? "(simulation) " : "",
+                                     msgCount,
+                                     totalMsgCount,
+                                     KAFKA_SENDER_SEND_TIMEOUT_MS,
+                                     message));
+        AppLogger.trace(String.format("Sending record %s", record));
         if (!messageOnTopic.shouldSimulateSending()) {
             final Future<RecordMetadata> futureResult = producer.send(record);
             final RecordMetadata recordMetadata = futureResult.get(KAFKA_SENDER_SEND_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            Logger.trace(String.format("Record sent, metadata %s", recordMetadata));
+            AppLogger.trace(String.format("Record sent, metadata %s", recordMetadata));
         }
     }
 

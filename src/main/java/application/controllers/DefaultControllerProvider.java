@@ -3,6 +3,7 @@ package application.controllers;
 import application.customfxwidgets.brokerconfig.BrokerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
 import application.kafka.KafkaClusterProxies;
+import application.logging.AppLogger;
 import application.scripting.GroovyScriptEvaluator;
 import application.scripting.MessageTemplateSender;
 import application.customfxwidgets.senderconfig.SenderConfigGuiController;
@@ -11,7 +12,6 @@ import application.displaybehaviour.ModelConfigObjectsGuiInformer;
 import application.kafka.ClusterStatusChecker;
 import application.kafka.KafkaMessageSender;
 import application.kafka.listener.Listeners;
-import application.logging.Logger;
 import application.model.ModelConfigObject;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaListenerConfig;
@@ -70,7 +70,7 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                      statusChecker,
                                                      kafkaClusterProxies);
             } catch (IOException e) {
-                Logger.error(e);
+                AppLogger.error(e);
                 return null;
             }
         });
@@ -92,7 +92,7 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                        refreshCallback,
                                                        topicConfigs);
             } catch (IOException e) {
-                Logger.error(e);
+                AppLogger.error(e);
                 return null;
             }
         });
@@ -113,7 +113,7 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                     statusChecker,
                                                     kafkaClusterProxies);
             } catch (IOException e) {
-                Logger.error(e);
+                AppLogger.error(e);
                 return null;
             }
         });
@@ -160,7 +160,7 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                      messageContentScrollPane,
                                                      kafkaClusterProxies);
             } catch (IOException e) {
-                Logger.error(e);
+                AppLogger.error(e);
                 return null;
             }
         });
@@ -177,13 +177,13 @@ public class DefaultControllerProvider implements ControllerProvider {
 
         if (!controllerMap.containsKey(uuid)) {
             final Controller controller = controllerMap.getOrDefault(uuid, controllerSupplier.get());
-            Logger.trace(String.format("Creating new controller, hash: %s, (name: %s, {%s})",
-                                       AppUtils.realHash(controller), config.getName(), uuid));
+            AppLogger.trace(String.format("Creating new controller, hash: %s, (name: %s, {%s})",
+                                          AppUtils.realHash(controller), config.getName(), uuid));
             controllerMap.put(uuid, controller);
         }
         final Controller controller = controllerMap.get(uuid);
-        Logger.trace(String.format("Returning controller,    hash: %s, (name: %s, {%s})",
-                                   AppUtils.realHash(controller), config.getName(), uuid));
+        AppLogger.trace(String.format("Returning controller,    hash: %s, (name: %s, {%s})",
+                                      AppUtils.realHash(controller), config.getName(), uuid));
         return controller;
     }
 

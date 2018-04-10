@@ -1,8 +1,8 @@
 
-import application.logging.LogLevel;
+import application.logging.AppLogger;
+import application.notifications.LogLevel;
 import autofixture.publicinterface.Any;
 import application.logging.ToolLogger;
-import application.logging.Logger;
 
 import org.mockito.Mockito;
 import org.testng.annotations.Test;
@@ -19,15 +19,15 @@ public class LoggerSpecification {
         // GIVEN
         final String anyLog = Any.string();
         ToolLogger toolLogger = mock(ToolLogger.class);
-        Logger.setLogLevel(LogLevel.ERROR);
-        Logger.registerLogger(toolLogger);
+        AppLogger.setLogLevel(LogLevel.ERROR);
+        AppLogger.registerLogger(toolLogger);
 
 
         // WHEN
-        Logger.error(anyLog);
-        Logger.warn(anyLog);
-        Logger.info(anyLog);
-        Logger.debug(anyLog);
+        AppLogger.error(anyLog);
+        AppLogger.warn(anyLog);
+        AppLogger.info(anyLog);
+        AppLogger.debug(anyLog);
 
 
         // THEN
@@ -43,15 +43,15 @@ public class LoggerSpecification {
         // GIVEN
         final String anyLog = Any.string();
         ToolLogger toolLogger = mock(ToolLogger.class);
-        Logger.setLogLevel(LogLevel.WARN);
-        Logger.registerLogger(toolLogger);
+        AppLogger.setLogLevel(LogLevel.WARN);
+        AppLogger.registerLogger(toolLogger);
 
 
         // WHEN
-        Logger.error(anyLog);
-        Logger.warn(anyLog);
-        Logger.info(anyLog);
-        Logger.debug(anyLog);
+        AppLogger.error(anyLog);
+        AppLogger.warn(anyLog);
+        AppLogger.info(anyLog);
+        AppLogger.debug(anyLog);
 
 
         // THEN
@@ -67,15 +67,15 @@ public class LoggerSpecification {
         // GIVEN
         final String anyLog = Any.string();
         ToolLogger toolLogger = mock(ToolLogger.class);
-        Logger.setLogLevel(LogLevel.INFO);
-        Logger.registerLogger(toolLogger);
+        AppLogger.setLogLevel(LogLevel.INFO);
+        AppLogger.registerLogger(toolLogger);
 
 
         // WHEN
-        Logger.error(anyLog);
-        Logger.warn(anyLog);
-        Logger.info(anyLog);
-        Logger.debug(anyLog);
+        AppLogger.error(anyLog);
+        AppLogger.warn(anyLog);
+        AppLogger.info(anyLog);
+        AppLogger.debug(anyLog);
 
 
         // THEN
@@ -91,15 +91,15 @@ public class LoggerSpecification {
         // GIVEN
         final String anyLog = Any.string();
         ToolLogger toolLogger = mock(ToolLogger.class);
-        Logger.registerLogger(toolLogger);
-        Logger.setLogLevel(LogLevel.DEBUG);
+        AppLogger.registerLogger(toolLogger);
+        AppLogger.setLogLevel(LogLevel.DEBUG);
 
 
         // WHEN
-        Logger.error(anyLog);
-        Logger.warn(anyLog);
-        Logger.info(anyLog);
-        Logger.debug(anyLog);
+        AppLogger.error(anyLog);
+        AppLogger.warn(anyLog);
+        AppLogger.info(anyLog);
+        AppLogger.debug(anyLog);
 
 
         // THEN

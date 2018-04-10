@@ -1,11 +1,26 @@
 package application.notifications;
 
-import org.controlsfx.control.StatusBar;
+import application.logging.AppLogger;
+
+import java.time.Instant;
+
 
 public class AppNotifier {
-    private ApplicationStatusBar appStatusBar;
 
-    public void configureStatusBar(StatusBar statusBar) {
-        appStatusBar = new ApplicationStatusBar(statusBar);
+    public static StatusNotifier getStatusNotifier() {
+        return STATUS_NOTIFIER;
+    }
+
+    private static final StatusNotifier STATUS_NOTIFIER = new StatusNotifier();
+
+    public static void reportException(Throwable e)
+    {
+        final LogEventData logEventData = LogEventData.LogEventDataBuilder.builder()
+            .withTimestamp(Instant.now())
+            .withCause(e)
+            .withLevel(LogLevel.ERROR)
+            .build();
+        AppLogger.processLogEvent(logEventData);
+        STATUS_NOTIFIER.notifyAboutError();
     }
 }

@@ -1,5 +1,7 @@
 package application.logging;
 
+import application.notifications.LogEventData;
+import application.notifications.LogLevel;
 import javafx.application.Platform;
 import org.apache.commons.lang3.exception.ExceptionUtils;
 import org.fxmisc.richtext.StyleClassedTextArea;
@@ -14,6 +16,7 @@ public class GuiWindowedLogger implements ToolLogger {
     public static final int MAX_ENTIRES = 100;
     private final StyleClassedTextArea logArea;
     private final ArrayDeque<Integer> logRecordSizes = new ArrayDeque<>();
+    private LogLevel currentLevel = LogLevel.INFO;
 
 
     public GuiWindowedLogger(StyleClassedTextArea logArea) {
@@ -64,6 +67,16 @@ public class GuiWindowedLogger implements ToolLogger {
             logArea.clear();
             logRecordSizes.clear();
         });
+    }
+
+    @Override
+    public void processLogEvent(LogEventData logEvent) {
+
+    }
+
+    @Override
+    public void setLogLevel(LogLevel level) {
+        currentLevel = level;
     }
 
 

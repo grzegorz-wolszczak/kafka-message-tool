@@ -9,7 +9,7 @@ import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
 import application.kafka.KafkaClusterProxies;
 import application.kafka.KafkaClusterProxy;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
@@ -265,12 +265,12 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         final KafkaClusterProxy kafkaClusterProxy = kafkaClusterProxies.get(brokerConfig.getHostInfo());
         final int partitions = kafkaClusterProxy.partitionsForTopic(topicConfig.getTopicName());
         final int expectedAssignedPartitions = KafkaParitionUtils.partition(messageKey, partitions);
-        Logger.info(String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions));
+        AppLogger.info(String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions));
     }
 
     private void showInfoWhyTargetPartitionCouldNotBeCalculated(String reason) {
         final String msgPrefix = "Could not calculate target partition for message: ";
-        Logger.info(String.format("%s%s", msgPrefix, reason));
+        AppLogger.info(String.format("%s%s", msgPrefix, reason));
     }
 
     private void configureMessageKeyCheckbox() {
@@ -284,14 +284,14 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
 
         final KafkaTopicConfig topicConfig = config.getRelatedConfig();
         if (topicConfig == null) {
-            Logger.error("Could not send msg, topic configuration is not assigned.");
+            AppLogger.error("Could not send msg, topic configuration is not assigned.");
             return;
         }
 
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
         if (brokerConfig == null) {
-            Logger.error(String.format("Invalid topic config '%s' (broker config not assigned)",
-                                       topicConfig.getTopicName()));
+            AppLogger.error(String.format("Invalid topic config '%s' (broker config not assigned)",
+                                          topicConfig.getTopicName()));
             return;
         }
 

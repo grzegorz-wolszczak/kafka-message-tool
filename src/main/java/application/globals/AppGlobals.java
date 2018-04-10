@@ -1,6 +1,6 @@
 package application.globals;
 
-import application.logging.Logger;
+import application.logging.AppLogger;
 import javafx.scene.image.Image;
 
 import java.net.URL;
@@ -21,14 +21,14 @@ public class AppGlobals {
     private void loadAppIconIfPossible() {
         final URL fileUrl = getClass().getResource(APPLICATION_ICON_PNG);
         if (fileUrl == null) {
-            Logger.error(String.format("Could not set application action from file '%s'", APPLICATION_ICON_PNG));
+            AppLogger.error(String.format("Could not set application action from file '%s'", APPLICATION_ICON_PNG));
             return;
         }
         final String url = fileUrl.toExternalForm();
         try {
             applicationIcon = new Image(url);
         } catch (Exception ex) {
-            Logger.error(
+            AppLogger.error(
                 String.format(
                     "Could not set application action from url '%s'", fileUrl), ex);
         }

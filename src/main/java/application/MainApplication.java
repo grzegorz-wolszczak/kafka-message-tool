@@ -1,6 +1,6 @@
 package application;
 
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.root.FxApplicationLogicRoot;
 import application.root.FxApplicationRoot;
 import javafx.application.Application;
@@ -23,7 +23,7 @@ public class MainApplication extends Application {
         try {
             app.start(primaryStage);
         } catch (Throwable e) {
-            Logger.error("Error while starting application", e);
+            AppLogger.error("Error while starting application", e);
             System.exit(ERROR_EXIT_STATUS);
         }
     }

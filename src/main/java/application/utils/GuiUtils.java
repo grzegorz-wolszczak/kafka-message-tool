@@ -2,7 +2,7 @@ package application.utils;
 
 import application.constants.ApplicationConstants;
 import application.globals.AppGlobals;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.ModelConfigObject;
 import javafx.beans.value.ChangeListener;
 import javafx.collections.ObservableList;
@@ -99,7 +99,7 @@ public class GuiUtils {
     public static void loadCssIfPossible(Scene scene, String fileName) {
         final URL cssFileUrl = GuiUtils.class.getClass().getResource(fileName);
         if (cssFileUrl == null) {
-            Logger.error(String.format("Could not find and load CSS file %s ", fileName));
+            AppLogger.error(String.format("Could not find and load CSS file %s ", fileName));
         } else {
             scene.getStylesheets().add(cssFileUrl.toExternalForm());
         }

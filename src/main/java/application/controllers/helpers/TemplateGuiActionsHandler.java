@@ -1,6 +1,6 @@
 package application.controllers.helpers;
 
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.ModelConfigObject;
 
 import java.io.IOException;
@@ -64,7 +64,7 @@ abstract public class TemplateGuiActionsHandler<ModelObject extends ModelConfigO
             loadController(config);
         } catch (IOException e) {
             e.printStackTrace();
-            Logger.error("Could not load config pane", e);
+            AppLogger.error("Could not load config pane", e);
 
         }
     }

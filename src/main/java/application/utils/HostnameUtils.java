@@ -1,7 +1,7 @@
 
 package application.utils;
 
-import application.logging.Logger;
+import application.logging.AppLogger;
 import org.apache.commons.validator.routines.InetAddressValidator;
 
 import java.net.InetAddress;
@@ -34,9 +34,9 @@ public class HostnameUtils {
 
     public static boolean isHostnameReachable(String hostname, int timeoutMs) {
 
-        Logger.debug(String.format("Checking if hostname '%s' is available (timeout:%d ms)",
-                                   hostname,
-                                   timeoutMs));
+        AppLogger.debug(String.format("Checking if hostname '%s' is available (timeout:%d ms)",
+                                      hostname,
+                                      timeoutMs));
         FutureTask<Boolean> booleanFutureTask = createCheckReachabilityTask(hostname, timeoutMs);
         boolean result = false;
         try {
@@ -44,13 +44,13 @@ public class HostnameUtils {
             result = booleanFutureTask.get(timeoutMs, TimeUnit.MILLISECONDS);
 
         } catch (InterruptedException e) {
-            Logger.debug(String.format("Hostname %s is not available (InterruptedException)", hostname));
+            AppLogger.debug(String.format("Hostname %s is not available (InterruptedException)", hostname));
         } catch (ExecutionException e) {
-            Logger.debug(String.format("Hostname %s is not reachable (ExecutionException)", hostname));
+            AppLogger.debug(String.format("Hostname %s is not reachable (ExecutionException)", hostname));
         } catch (TimeoutException e) {
-            Logger.debug(String.format("Hostname %s is not reachable (Timeout)", hostname));
+            AppLogger.debug(String.format("Hostname %s is not reachable (Timeout)", hostname));
         } catch (Throwable e) {
-            Logger.error("Unknown exception", e);
+            AppLogger.error("Unknown exception", e);
         }
         booleanFutureTask.cancel(true);
 
@@ -101,7 +101,7 @@ public class HostnameUtils {
                 }
             }
         } catch (SocketException exception) {
-            Logger.error("Could not fetch localhost ip addresses", exception);
+            AppLogger.error("Could not fetch localhost ip addresses", exception);
         }
     }
 
@@ -109,18 +109,18 @@ public class HostnameUtils {
     private static Set<String> resolveIpsForHostname(String hostname) throws UnknownHostException {
 
         hostname = hostname.toLowerCase();
-        Logger.trace(String.format("Resolving ip(s) for '%s'", hostname));
+        AppLogger.trace(String.format("Resolving ip(s) for '%s'", hostname));
         if (InetAddressValidator.getInstance().isValidInet4Address(hostname)) {
-            Logger.trace(String.format("Returning %s", hostname));
+            AppLogger.trace(String.format("Returning %s", hostname));
             return Collections.singleton(hostname);
         }
         if (hostname.equalsIgnoreCase("localhost")) {
             final Set<String> localhostIpAddresses = HostnameUtils.getInstance().getLocalhostIpAddresses();
-            Logger.trace(String.format("Returning %s", localhostIpAddresses));
+            AppLogger.trace(String.format("Returning %s", localhostIpAddresses));
             return localhostIpAddresses;
         }
         final Set<String> hostIps = Collections.singleton(HostnameUtils.resolveHostName(hostname));
-        Logger.trace(String.format("Returning '%s'", hostIps));
+        AppLogger.trace(String.format("Returning '%s'", hostIps));
         return hostIps;
     }
 }

@@ -7,7 +7,7 @@ import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.TopicToAdd;
 import application.kafka.dto.UnassignedConsumerInfo;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.utils.AppUtils;
 import application.utils.HostPortValue;
 import application.utils.HostnameUtils;
@@ -58,7 +58,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
                                     org.apache.kafka.clients.admin.AdminClient kafkaClientsAdminClient,
                                     kafka.admin.AdminClient kafkaAdminClient
     ) throws ClusterConfigurationError, InterruptedException, ExecutionException, TimeoutException {
-        Logger.trace("New DefaultKafkaClusterProxy: real Hash : " + AppUtils.realHash(this));
+        AppLogger.trace("New DefaultKafkaClusterProxy: real Hash : " + AppUtils.realHash(this));
         this.hostPort = hostPort;
         this.topicAdmin = topicAdmin;
         this.kafkaClientsAdminClient = kafkaClientsAdminClient;
@@ -80,10 +80,10 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
 
     @Override
     public void close() {
-        Logger.trace("Closing kafka admin proxy");
+        AppLogger.trace("Closing kafka admin proxy");
         kafkaClientsAdminClient.close(ApplicationConstants.CLOSE_CONNECTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         kafkaAdminClient.close();
-        Logger.trace("Closing done");
+        AppLogger.trace("Closing done");
     }
 
     @Override
@@ -185,29 +185,29 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
 
     private void throwIfInvalidConfigMakesClusterUnusable() throws ClusterConfigurationError {
         try {
-            Logger.trace("calling kafkaAdminClient.findAllBrokers() ");
+            AppLogger.trace("calling kafkaAdminClient.findAllBrokers() ");
             final List<Node> nodes = seqAsJavaList(kafkaAdminClient.findAllBrokers());
             final List<String> advertisedListeners = new ArrayList<>();
             for (Node node : nodes) {
                 final String host1 = node.host();
                 final int port = node.port();
                 final String advertisedListener = String.format("%s:%d", host1, port);
-                Logger.debug("Found advertised listener: " + advertisedListener);
+                AppLogger.debug("Found advertised listener: " + advertisedListener);
                 advertisedListeners.add(advertisedListener);
 
-                Logger.trace(String.format("Checking if advertised listener '%s' is reachable", host1));
+                AppLogger.trace(String.format("Checking if advertised listener '%s' is reachable", host1));
                 if (HostnameUtils.isHostnameReachable(host1, ApplicationConstants.HOSTNAME_REACHABLE_TIMEOUT_MS)) {
-                    Logger.trace("Yes");
+                    AppLogger.trace("Yes");
                     return;
                 }
-                Logger.trace("No");
+                AppLogger.trace("No");
             }
             final String msg = String.format("Cluster config for 'advertised.listeners' is invalid.%n%n" +
                                                  "* None of advertised listeners '%s' are reachable from outside world.%n" +
                                                  "* Producers/consumers would be unable to use this kafka cluster.", advertisedListeners);
             throw new ClusterConfigurationError(msg);
         } catch (RuntimeException e) {
-            Logger.trace(e);
+            AppLogger.trace(e);
             e.printStackTrace();
         }
     }
@@ -231,19 +231,19 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     private Map<TopicPartition, Object> getPartitionsForConsumerGroup(String consumerGroup) {
         final scala.collection.immutable.Map<TopicPartition, Object> abc = kafkaAdminClient.listGroupOffsets(consumerGroup);
         final Map<TopicPartition, Object> paritionsForConsumerGroup = JavaConversions.mapAsJavaMap(abc);
-        Logger.debug(String.format("Fetched partitions for consumer group '%s' -> '%s'", consumerGroup, paritionsForConsumerGroup));
+        AppLogger.debug(String.format("Fetched partitions for consumer group '%s' -> '%s'", consumerGroup, paritionsForConsumerGroup));
         return paritionsForConsumerGroup;
     }
 
     private String getOffsetForPartition(Map<TopicPartition, Object> offsets, TopicPartition topicPartition) {
-        Logger.trace(String.format("Searching for offset for %s in %s", topicPartition, offsets));
+        AppLogger.trace(String.format("Searching for offset for %s in %s", topicPartition, offsets));
         if (!offsets.containsKey(topicPartition)) {
-            Logger.trace("Not found");
+            AppLogger.trace("Not found");
             return "NOT_FOUND";
         }
         final Object offset = offsets.get(topicPartition);
         final String offsetAsString = String.valueOf(offset);
-        Logger.trace(String.format("Found : %s", offsetAsString));
+        AppLogger.trace(String.format("Found : %s", offsetAsString));
         return offsetAsString;
     }
 
@@ -260,7 +260,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
             final List<AdminClient.ConsumerSummary> summaries = seqAsJavaList(consumerGroupSummary.consumers().get());
 
             summaries.forEach(consumerSummary -> {
-                Logger.debug("Consumer summary " + consumerSummary);
+                AppLogger.debug("Consumer summary " + consumerSummary);
 
                 final List<TopicPartition> topicPartitions = seqAsJavaList(consumerSummary.assignment());
                 if (topicPartitions.isEmpty()) {
@@ -321,7 +321,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
 
     private void describeNodeConfig(int controllerNodeId, Node node) throws InterruptedException, ExecutionException {
         if (!doesNodeSupportDescribeConfigApi(node)) {
-            Logger.warn(String.format("Node '%s' does not support describeConfig api. Cannot show cluster properties", node));
+            AppLogger.warn(String.format("Node '%s' does not support describeConfig api. Cannot show cluster properties", node));
             return;
         }
 
@@ -348,7 +348,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
                                          version.minVersion,
                                          version.maxVersion));
         });
-        Logger.debug(builder.toString());
+        AppLogger.debug(builder.toString());
     }
 }
 

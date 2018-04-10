@@ -1,6 +1,6 @@
 package application.persistence;
 
-import application.logging.LogLevel;
+import application.notifications.LogLevel;
 import application.model.XmlElementNames;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleObjectProperty;

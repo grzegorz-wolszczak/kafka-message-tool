@@ -1,7 +1,7 @@
 package application.persistence;
 
 import application.constants.ApplicationConstants;
-import application.logging.Logger;
+import application.logging.AppLogger;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
 
@@ -53,11 +53,11 @@ public class XmlFileConfig implements LoadableSavable {
         xmlConfig.setGuiSettings(guiSettings);
         xmlConfig.setGlobalSettings(globalSettings);
 
-        Logger.debug(String.format("Saving config to file '%s'", configFilePath));
+        AppLogger.debug(String.format("Saving config to file '%s'", configFilePath));
         try {
             saveConfigFile(xmlConfig);
         } catch (Exception e) {
-            Logger.error("Could not save  file.", e);
+            AppLogger.error("Could not save  file.", e);
         }
     }
 
@@ -71,12 +71,12 @@ public class XmlFileConfig implements LoadableSavable {
         final Marshaller marshaller = jaxbContext.createMarshaller();
         marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
         marshaller.marshal(xmlConfig, new File(configFilePath));
-        Logger.debug("OK: Config file saved.");
+        AppLogger.debug("OK: Config file saved.");
     }
 
 
     private void readFromConfigFile() {
-        Logger.debug(String.format("Reading config createFrom file '%s'", configFilePath));
+        AppLogger.debug(String.format("Reading config createFrom file '%s'", configFilePath));
 
         try {
             loadConfigFile();
@@ -84,13 +84,13 @@ public class XmlFileConfig implements LoadableSavable {
         } catch (UnmarshalException e) {
             final Throwable cause = e.getLinkedException();
             if (cause instanceof FileNotFoundException) {
-                Logger.warn("Config file not found.");
+                AppLogger.warn("Config file not found.");
             } else {
-                Logger.error("Could not load config file", e);
+                AppLogger.error("Could not load config file", e);
             }
         } catch (JAXBException e) {
             e.printStackTrace();
-            Logger.error("Could not load configuration. Exception happened: \n", e);
+            AppLogger.error("Could not load configuration. Exception happened: \n", e);
         }
     }
 

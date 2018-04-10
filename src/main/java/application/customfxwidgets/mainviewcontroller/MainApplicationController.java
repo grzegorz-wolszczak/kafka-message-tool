@@ -1,14 +1,14 @@
 package application.customfxwidgets.mainviewcontroller;
 
-import application.notifications.AppNotifier;
+import application.logging.AppLogger;
+import application.notifications.StatusNotifier;
 import application.customfxwidgets.aboutwindow.AboutWindow;
 import application.root.ApplicationBusySwitcher;
 import application.root.DefaultActionHandlerFactory;
 import application.constants.GuiStrings;
 import application.controllers.ControllerProvider;
 import application.controllers.helpers.ModelObjectGuiActionsHandler;
-import application.logging.LogLevel;
-import application.logging.Logger;
+import application.notifications.LogLevel;
 import application.model.DataModel;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaListenerConfig;
@@ -87,7 +87,7 @@ public class MainApplicationController extends VBox {
     private ControllerRepositoryFactory controllersRepositoryFactory;
     private DefaultActionHandlerFactory actionHandlerFactory;
     private ApplicationBusySwitcher busySwitcher;
-    private AppNotifier appNotifier;
+    private StatusNotifier statusNotifier;
 
     public MainApplicationController(Stage mainStage,
                                      DataModel model,
@@ -97,7 +97,7 @@ public class MainApplicationController extends VBox {
                                      ControllerRepositoryFactory controllersRepositoryFactory,
                                      DefaultActionHandlerFactory actionHandlerFactory,
                                      ApplicationBusySwitcher busySwitcher,
-                                     AppNotifier appNotifier) {
+                                     StatusNotifier statusNotifier) {
         appStage = mainStage;
         dataModel = model;
         this.fxApplication = fxApplication;
@@ -106,7 +106,7 @@ public class MainApplicationController extends VBox {
         this.controllersRepositoryFactory = controllersRepositoryFactory;
         this.actionHandlerFactory = actionHandlerFactory;
         this.busySwitcher = busySwitcher;
-        this.appNotifier = appNotifier;
+        this.statusNotifier = statusNotifier;
     }
 
 
@@ -124,7 +124,7 @@ public class MainApplicationController extends VBox {
     }
 
     private void setupStatusBar() {
-        appNotifier.configureStatusBar(statusBar);
+        statusNotifier.configureStatusBar(statusBar);
     }
 
     private void registerNodesForBusyStateManagement() {
@@ -181,7 +181,7 @@ public class MainApplicationController extends VBox {
                                                                   .logLevelProperty());
 
         logSeverityCombobox.valueProperty().addListener((ignored01, ignored02, t1) ->
-                                                            Logger.setLogLevel(t1));
+                                                            AppLogger.setLogLevel(t1));
 
     }
 
@@ -243,7 +243,7 @@ public class MainApplicationController extends VBox {
 
     @FXML
     private void clearLogsButtonOnAction() {
-        Logger.clear();
+        AppLogger.clear();
     }
 
     @FXML
