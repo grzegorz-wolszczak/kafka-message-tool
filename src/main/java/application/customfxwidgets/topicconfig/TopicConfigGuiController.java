@@ -49,26 +49,20 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private final KafkaTopicConfig config;
     private final DisplayBehaviour displayBehaviour;
     private final ClusterStatusChecker statusChecker;
-    private KafkaClusterProxies kafkaClusterProxies;
     private final TopicConfigComboBoxConfigurator<KafkaBrokerConfig> comboBoxConfigurator;
-
+    AutoCompletionBinding<String> stringAutoCompletionBinding;
+    private KafkaClusterProxies kafkaClusterProxies;
     @FXML
     private ComboBox<KafkaBrokerConfig> kafkaBrokerComboBox;
-
     @FXML
     private TextField topicConfigNameField;
-
     @FXML
     private TextField topicNameField;
-
     @FXML
     private Button connectionCheckButton;
-
     @FXML
     private ToggleButton detachPaneButton;
-
     private Runnable rerfeshCallback;
-    AutoCompletionBinding<String> stringAutoCompletionBinding;
 
     public TopicConfigGuiController(KafkaTopicConfig config,
                                     AnchorPane parentPane,
@@ -87,11 +81,11 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
 
         StringExpression windowTitle = composeBrokerConfigWindowTitle();
         displayBehaviour = new DetachableDisplayBehaviour(parentPane,
-                                                          windowTitle,
-                                                          this,
-                                                          detachPaneButton.selectedProperty(),
-                                                          config,
-                                                          guiInformer);
+                windowTitle,
+                this,
+                detachPaneButton.selectedProperty(),
+                config,
+                guiInformer);
 
         configureComboBox(brokerConfigs);
         GuiUtils.configureComboBoxToClearSelectedValueIfItsPreviousValueWasRemoved(kafkaBrokerComboBox);
@@ -123,23 +117,23 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
 
     private StringExpression composeBrokerConfigWindowTitle() {
         return new ReadOnlyStringWrapper("Topic configuration")
-            .concat(" '").concat(config.nameProperty()).concat("' (")
-            .concat("topic:")
-            .concat(config.topicNameProperty())
-            .concat(")");
+                .concat(" '").concat(config.nameProperty()).concat("' (")
+                .concat("topic:")
+                .concat(config.topicNameProperty())
+                .concat(")");
     }
 
     private void setCallbackToUpdateTopicNameAppearanceWhenTopicNameChanges() {
         topicNameField.textProperty().addListener((observable, oldValue, newValue) ->
-                                                      updateTopicNameTextFieldAppearance(config.getRelatedConfig()));
+                updateTopicNameTextFieldAppearance(config.getRelatedConfig()));
     }
 
     private void configureTopicNameField() {
         topicNameField.setText(config.getTopicName());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(topicNameField,
-                                                         config::setTopicName,
-                                                         ValidatorUtils::isStringIdentifierValid,
-                                                         rerfeshCallback);
+                config::setTopicName,
+                ValidatorUtils::isStringIdentifierValid,
+                rerfeshCallback);
     }
 
     private void resetBrokerConfigToFireUpAllCallbacksForTheFirstTimeToSetupControls() {
@@ -215,20 +209,19 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
                                                             KafkaClusterProxy oldValue,
                                                             KafkaClusterProxy newValue) {
         Logger.trace(String.format("setting new topic name appearance for clusterProxy change listener: old %s, new %s",
-                                   oldValue, newValue));
+                oldValue, newValue));
 
         setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(newValue);
         resetTopicnameTextFieldAutoCompletionForClusterProxy(newValue);
     }
 
 
-
     private void configureTopicConfigNameField() {
         topicConfigNameField.setText(config.getName());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(topicConfigNameField,
-                                                         config::setName,
-                                                         ValidatorUtils::isStringIdentifierValid,
-                                                         rerfeshCallback);
+                config::setName,
+                ValidatorUtils::isStringIdentifierValid,
+                rerfeshCallback);
     }
 
     @FXML
@@ -265,8 +258,8 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
             if (proxy.isTopicAutoCreationEnabled() != TriStateConfigEntryValue.False) {
                 psuedoClass = TOPIC_WILL_BE_AUTOCREATED_PSEUDO_CLASS;
                 toolTipMessage = String.format("Topic '%s' does not exist yet " +
-                                                   "but will be auto-created by first connected consumer/publisher.",
-                                               topicName);
+                                "but will be auto-created by first connected consumer/publisher.",
+                        topicName);
             } else {
                 psuedoClass = CANNOT_USE_TOPIC_PSEUDO_CLASS;
                 toolTipMessage = String.format("Topic '%s' does not exists. Must be created manually.", topicName);
@@ -285,10 +278,9 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
 
 
     private void resetTopicnameTextFieldAutoCompletionForNewBrokerConfig(KafkaBrokerConfig brokerConfig) {
-        System.out.println("New config value: " + brokerConfig);
+
         setTopicSuggestions(Collections.emptyList());
-        if(brokerConfig == null)
-        {
+        if (brokerConfig == null) {
             return;
         }
         final KafkaBrokerHostInfo hostInfo = brokerConfig.getHostInfo();
@@ -297,9 +289,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     }
 
     private void setTopicSuggestions(List<String> possibleSuggestions) {
-        System.out.println("Setting suggestions to : " + possibleSuggestions);
-        if(null != stringAutoCompletionBinding)
-        {
+        if (null != stringAutoCompletionBinding) {
             stringAutoCompletionBinding.dispose();
         }
         stringAutoCompletionBinding = TextFields.bindAutoCompletion(topicNameField, possibleSuggestions);
@@ -313,7 +303,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
             return;
         }
 
-        final List<String> suggestions=proxy
+        final List<String> suggestions = proxy
                 .getAggregatedTopicSummary()
                 .stream().map(TopicAggregatedSummary::getTopicName).collect(Collectors.toList());
 
