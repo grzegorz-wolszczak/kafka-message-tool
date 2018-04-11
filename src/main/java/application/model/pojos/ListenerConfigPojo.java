@@ -15,6 +15,8 @@ public class ListenerConfigPojo implements Copyable<ListenerConfigPojo>{
     private String consumerGroup;
     private String pollTimeout;
     private String offsetResetConfig;
+    private String receivedMsgLimitCount;
+    private boolean receivedMsgLimitEnabled;
 
     @XmlElement(name = XmlElementNames.CONFIG_NAME)
     public String getConfigName() {
@@ -82,6 +84,27 @@ public class ListenerConfigPojo implements Copyable<ListenerConfigPojo>{
         p.setConsumerGroup(getConsumerGroup());
         p.setPollTimeout(getPollTimeout());
         p.setOffsetResetConfig(getOffsetResetConfig());
+        p.setReceivedMsgLimitCount(getReceivedMsgLimitCount());
+        p.setReceivedMsgLimitEnabled(getReceivedMsgLimitEnabled());
         return p;
+    }
+
+
+    @XmlElement(name= XmlElementNames.RECEIVED_MSG_LIMIT_COUNT)
+    public void setReceivedMsgLimitCount(String receivedMsgLimitCount) {
+        this.receivedMsgLimitCount = receivedMsgLimitCount;
+    }
+
+    @XmlElement(name= XmlElementNames.RECEIVED_MSG_LIMIT_ENABLED)
+    public void setReceivedMsgLimitEnabled(boolean receivedMsgLimitEnabled) {
+        this.receivedMsgLimitEnabled = receivedMsgLimitEnabled;
+    }
+
+    public boolean getReceivedMsgLimitEnabled() {
+        return receivedMsgLimitEnabled;
+    }
+
+    public String getReceivedMsgLimitCount() {
+        return receivedMsgLimitCount;
     }
 }

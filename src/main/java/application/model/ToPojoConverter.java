@@ -51,6 +51,8 @@ public class ToPojoConverter {
         pojo.setTopicConfigUuid(config.getTopicConfigUuid());
         pojo.setConfigName(config.getName());
         pojo.setUuid(config.getUuid());
+        pojo.setReceivedMsgLimitEnabled(config.getReceivedMsgLimitEnabled());
+        pojo.setReceivedMsgLimitCount(config.getReceivedMsgLimitCount());
         return pojo;
     }
 }

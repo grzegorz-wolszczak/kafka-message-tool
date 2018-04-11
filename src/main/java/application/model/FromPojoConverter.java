@@ -112,6 +112,12 @@ public class FromPojoConverter {
         if (StringUtils.isNotBlank(pojo.getOffsetResetConfig())) {
             c.setOffsetResetConfig(getResetTypeOfDefaultIfInvalidValue(pojo));
         }
+        if (StringUtils.isNotBlank(pojo.getReceivedMsgLimitCount())) {
+            c.setReceivedMsgLimitCount(pojo.getReceivedMsgLimitCount());
+        }
+
+        c.setReceivedMsgLimitEnabled(pojo.getReceivedMsgLimitEnabled());
+
         return c;
     }
 
@@ -175,6 +181,8 @@ public class FromPojoConverter {
         c.setOffsetResetConfig(DEFAULT_OFFSET_RESET_TYPE);
         c.setName(ApplicationConstants.DEFAULT_LISTENER_CONFIG_NAME);
         c.setUuid(UUID.randomUUID().toString());
+        c.setReceivedMsgLimitEnabled(false);
+        c.setReceivedMsgLimitCount("1");
     }
 
     private void setSenderConfigDefaults(KafkaSenderConfig c) {

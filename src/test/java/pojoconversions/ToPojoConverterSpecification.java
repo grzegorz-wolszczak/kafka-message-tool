@@ -106,6 +106,8 @@ public class ToPojoConverterSpecification {
         config.setPollTimeout("1234");
         config.setOffsetResetConfig(KafkaOffsetResetType.NONE);
         config.setConsumerGroup("ConsumerGroup");
+        config.setReceivedMsgLimitCount("678");
+        config.setReceivedMsgLimitEnabled(true);
 
         relatedConfig.setUuid("related_uuid");
         config.setRelatedConfig(relatedConfig);
@@ -121,6 +123,9 @@ public class ToPojoConverterSpecification {
         assertThat(pojo.getConsumerGroup()).isEqualTo("ConsumerGroup");
         assertThat(pojo.getPollTimeout()).isEqualTo("1234");
         assertThat(pojo.getOffsetResetConfig()).isEqualTo("none");
+        assertThat(pojo.getReceivedMsgLimitCount()).isEqualTo("678");
+        assertThat(pojo.getReceivedMsgLimitEnabled()).isTrue();
+
 
     }
 }

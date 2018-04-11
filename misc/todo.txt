@@ -26,6 +26,13 @@ todo: add config opiton - add opition: don't show warning about invalid configur
 todo: on Linux (Mint with Xfce) - application fonts are ugly and too big - suggest other fonts for linux ?
 
 
+### Refactor
+todo: replace (wherever possible)
+from: GuiUtils.configureTextFieldToAcceptOnlyValidData
+to: configureTextFieldToAcceptOnlyDecimalValues
+
+        ValidatorUtils.configureTextFieldToAcceptOnlyDecimalValues(receiveMsgLimitTextField);
+
 ### TODO_LOW_PRIORITY ###
 todo: feature: replace 'status' button with 'connect/disconnect' . Connect will result in fetching info every e.g. 1 second
 todo: low_priority: report in details inconsistent configuration (which node has what settings)
@@ -40,5 +47,7 @@ todo: add checkbox to NOT send empty messages (if they get evaluated to empty st
 ### NOT DONE - DONT KNOW SOLUTION ###
 expand table column width to content
 print replication factor for topic in summary
+
+
 
 

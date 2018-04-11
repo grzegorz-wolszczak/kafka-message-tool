@@ -1,4 +1,3 @@
-
 package application.utils;
 
 import javafx.scene.control.TextField;
@@ -19,12 +18,24 @@ public class ValidatorUtils {
     }
 
     public static Boolean isPortValid(String port) {
+
         if (!isStringIdentifierValid(port)) {
             return false;
         }
         try {
             Integer value = Integer.valueOf(port);
             return value >= 0 && value <= MAX_PORT_VALUE;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public static Boolean isValidGraterThanZeroInteger(String value) {
+        if (!isStringIdentifierValid(value)) {
+            return false;
+        }
+        try {
+            return Integer.parseUnsignedInt(value) >0;
         } catch (Exception e) {
             return false;
         }
@@ -47,17 +58,17 @@ public class ValidatorUtils {
 
         DecimalFormat format = new DecimalFormat("#");
 
-        final TextFormatter<Object> decimalTextFormatter = new TextFormatter<>(c -> {
-            if (c.getControlNewText().isEmpty()) {
-                return c;
+        final TextFormatter<Object> decimalTextFormatter = new TextFormatter<>(change -> {
+            if (change.getControlNewText().isEmpty()) {
+                return change;
             }
             ParsePosition parsePosition = new ParsePosition(0);
-            Object object = format.parse(c.getControlNewText(), parsePosition);
+            Object object = format.parse(change.getControlNewText(), parsePosition);
 
-            if (object == null || parsePosition.getIndex() < c.getControlNewText().length()) {
+            if (object == null || parsePosition.getIndex() < change.getControlNewText().length()) {
                 return null;
             } else {
-                return c;
+                return change;
             }
         });
         textField.setTextFormatter(decimalTextFormatter);

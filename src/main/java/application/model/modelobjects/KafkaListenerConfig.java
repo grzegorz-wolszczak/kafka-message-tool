@@ -3,7 +3,9 @@ package application.model.modelobjects;
 import application.model.KafkaOffsetResetType;
 import application.model.ModelConfigObject;
 import application.model.RelatedConfigHolder;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
@@ -21,6 +23,9 @@ public class KafkaListenerConfig implements ModelConfigObject, RelatedConfigHold
     private final StringProperty consumerGroup = new SimpleStringProperty(DEFAULT_CONSUMER_GROUP_ID);
     private final StringProperty pollTimeout = new SimpleStringProperty(DEFAULT_FETCH_TIMEOUT);
     private final ObjectProperty<KafkaOffsetResetType> offsetResetConfig = new SimpleObjectProperty<>(KafkaOffsetResetType.EARLIEST);
+    private final BooleanProperty receivedMsgLimitEnabled = new SimpleBooleanProperty(false);
+    private final StringProperty receivedMsgLimitCount = new SimpleStringProperty("1");
+
     public KafkaListenerConfig(String s) {
         name.setValue(s);
     }
@@ -117,4 +122,28 @@ public class KafkaListenerConfig implements ModelConfigObject, RelatedConfigHold
         return name.getValue();
     }
 
+
+    public boolean getReceivedMsgLimitEnabled() {
+        return receivedMsgLimitEnabled.get();
+    }
+
+    public void setReceivedMsgLimitEnabled(boolean value) {
+        receivedMsgLimitEnabled.set(value);
+    }
+
+    public BooleanProperty receivedMsgLimitEnabledProperty() {
+        return receivedMsgLimitEnabled;
+    }
+
+    public String getReceivedMsgLimitCount() {
+        return receivedMsgLimitCount.get();
+    }
+
+    public void setReceivedMsgLimitCount(String value) {
+        receivedMsgLimitCount.set(value);
+    }
+
+    public StringProperty receivedMsgLimitCountProperty() {
+        return receivedMsgLimitCount;
+    }
 }
