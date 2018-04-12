@@ -1,7 +1,10 @@
 
 [v.1.0.3.0]
-- added About window
-- added topic names autocompleciton in topic config window
+- feature - added About window
+    issue #4
+- feature - added topic names autocompleciton in topic config window
+- feature - user can define how many messages should be received by kafka listener
+    issue #3, #5
 
 [v.1.0.2.0]
 - improvement - performance improvement (but more work needed)- log window can accept more entries before it freezes (!sic)
@@ -12,7 +15,7 @@
 - improvement - performance improvement - can now receive 10k messages on msg listener without gui freeze
 
 [v.1.0.1.0]
-- added cleanup.policy option (delete/compacted) to CreateTopic dialog
+- feautre - added cleanup.policy option (delete/compacted) to CreateTopic dialog
 
 [v.1.0.0.0]
 First working version
