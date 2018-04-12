@@ -201,9 +201,6 @@ public class DefaultKafkaListener implements Listener {
     }
 
     private boolean wasReceivedMsgLimitReached(int receivedMessagesCount) {
-        System.out.println("listenerConfig.getReceivedMsgLimitEnabled() " + listenerConfig.getReceivedMsgLimitEnabled());
-        System.out.println("receivedMessagesCount " + receivedMessagesCount);
-        System.out.println("receivedMessageLimit " + receivedMessageLimit);
         if (listenerConfig.getReceivedMsgLimitEnabled() &&
             receivedMessagesCount >= receivedMessageLimit) {
             return true;

@@ -33,7 +33,6 @@ public class AboutWindow extends AnchorPane {
     @FXML
     private Button closeButton;
 
-
     @FXML
     private TextFlow textFlow;
 

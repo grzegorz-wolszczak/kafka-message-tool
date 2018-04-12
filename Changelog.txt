@@ -5,6 +5,7 @@
 - feature - added topic names autocompleciton in topic config window
 - feature - user can define how many messages should be received by kafka listener
     issue #3, #5
+- feature - added saving kafka listener content to file (popup menu option)
 
 [v.1.0.2.0]
 - improvement - performance improvement (but more work needed)- log window can accept more entries before it freezes (!sic)
