@@ -52,6 +52,13 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private ComboBox<KafkaOffsetResetType> offsetResetComboBox;
     @FXML
     private ToggleButton detachPaneButton;
+
+    @FXML
+    private TextField receiveMsgLimitTextField;
+
+    @FXML
+    private CheckBox receiveMsgLimitCheckBox;
+
     private KafkaListenerConfig config;
     private Listeners activeConsumers;
     private Runnable refreshCallback;
@@ -86,6 +93,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         configureMessageNameTextField();
         configureConsumerGroupField();
         configureFetchTimeoutField();
+        configureReceiveMsgLimitControls();
         resetKafkaListenerBinding();
         configureGuiControlDisableStateBasedOnStartButtonState();
         GuiUtils.configureComboBoxToClearSelectedValueIfItsPreviousValueWasRemoved(topicConfigComboBox);
@@ -93,6 +101,23 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         comboBoxConfigurator = new TopicConfigComboBoxConfigurator<>(topicConfigComboBox,
                 config);
         comboBoxConfigurator.configure();
+    }
+
+    private void configureReceiveMsgLimitControls() {
+
+        receiveMsgLimitCheckBox.setSelected(config.getReceivedMsgLimitEnabled());
+        receiveMsgLimitCheckBox.selectedProperty().bindBidirectional(config.receivedMsgLimitEnabledProperty());
+
+        receiveMsgLimitTextField.disableProperty().bind(receiveMsgLimitCheckBox.selectedProperty().not());
+
+//        GuiUtils.configureTextFieldToAcceptOnlyValidData(receiveMsgLimitTextField,
+//                                                         config::setPollTimeout,
+//                                                         ValidatorUtils::isValidGraterThanZeroInteger);
+
+        ValidatorUtils.configureTextFieldToAcceptOnlyDecimalValues(receiveMsgLimitTextField);
+        receiveMsgLimitTextField.setText(config.getReceivedMsgLimitCount());
+        config.receivedMsgLimitCountProperty().bind(receiveMsgLimitTextField.textProperty());
+
     }
 
     @Override

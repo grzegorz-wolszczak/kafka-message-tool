@@ -78,6 +78,7 @@ public class FromPojoConverterSpecification {
         assertThat(converted.getTopicName()).isEqualTo("test");
         assertThat(converted.getUuid()).isNotBlank();
         assertThat(converted.getName()).isEqualTo("<new topic config>");
+
     }
 
     @Test
@@ -184,6 +185,8 @@ public class FromPojoConverterSpecification {
         assertThat(config.getTopicConfigUuid()).isNull();
         assertThat(config.getName()).isEqualTo("<new message listener config>");
         assertThat(config.getUuid()).isNotBlank();
+        assertThat(config.getReceivedMsgLimitCount()).isEqualTo("1");
+        assertThat(config.getReceivedMsgLimitEnabled()).isFalse();
     }
 
     @Test
@@ -202,6 +205,8 @@ public class FromPojoConverterSpecification {
         pojo.setPollTimeout("3000");
         pojo.setTopicConfigUuid(relatedUuid);
         pojo.setUuid("some_uuid");
+        pojo.setReceivedMsgLimitEnabled(true);
+        pojo.setReceivedMsgLimitCount("34");
         // WHEN
         KafkaListenerConfig config = c.fromPojo(pojo);
 
@@ -213,6 +218,8 @@ public class FromPojoConverterSpecification {
         assertThat(config.getRelatedConfig()).isEqualTo(relatedConfig);
         assertThat(config.getName()).isEqualTo("<empty_listener_config_name>");
         assertThat(config.getUuid()).isNotBlank();
+        assertThat(config.getReceivedMsgLimitEnabled()).isTrue();
+        assertThat(config.getReceivedMsgLimitCount()).isEqualTo("34");
     }
 
     @Test

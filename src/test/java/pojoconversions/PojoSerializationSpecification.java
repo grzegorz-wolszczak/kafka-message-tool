@@ -131,6 +131,8 @@ public class PojoSerializationSpecification {
                 "<ConsumerGroup>pp</ConsumerGroup>" +
                 "<PollTimeout>1234</PollTimeout>" +
                 "<OffsetConfigProperty>none</OffsetConfigProperty>" +
+                "<ReceivedMsgLimitEnabled>true</ReceivedMsgLimitEnabled>" +
+                "<ReceivedMsgLimitCount>45</ReceivedMsgLimitCount>" +
                 "</ListenerConfig>";
 
         // WHEN (unmarshalling)
@@ -144,6 +146,8 @@ public class PojoSerializationSpecification {
         assertThat(pojo.getConsumerGroup()).isEqualTo("pp");
         assertThat(pojo.getPollTimeout()).isEqualTo("1234");
         assertThat(pojo.getOffsetResetConfig()).isEqualTo("none");
+        assertThat(pojo.getReceivedMsgLimitEnabled()).isTrue();
+        assertThat(pojo.getReceivedMsgLimitCount()).isEqualTo("45");
 
 
 
