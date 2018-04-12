@@ -1,11 +1,11 @@
 package application.utils;
 
 import application.customfxwidgets.ConfigEntriesView;
-
-import java.util.Optional;
+import javafx.stage.Window;
 
 public interface UserInteractor {
-    Optional<String> getTextFromUser(String contentText);
+
+    Window getOwnerWindow();
 
     void showError(String headerText, String contentText);
 
@@ -16,6 +16,8 @@ public interface UserInteractor {
                              String content);
 
     void showWarning(String header, String msg);
+
+    void showInfo(String header, String msg);
 
     void showConfigEntriesInfoDialog(String title, String topicName, ConfigEntriesView entriesView);
 }

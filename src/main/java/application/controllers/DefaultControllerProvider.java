@@ -2,6 +2,7 @@ package application.controllers;
 
 import application.customfxwidgets.brokerconfig.BrokerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
+import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.kafka.KafkaClusterProxies;
 import application.scripting.GroovyScriptEvaluator;
 import application.scripting.MessageTemplateSender;
@@ -81,7 +82,9 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                      AnchorPane parentPane,
                                                      Listeners activeConsumers,
                                                      Runnable refreshCallback,
-                                                     ObservableList<KafkaTopicConfig> topicConfigs) {
+                                                     ObservableList<KafkaTopicConfig> topicConfigs,
+                                                     ToFileSaver toFileSaver
+    ) {
 
         return getControllerFor(config, listenersControllers, () -> {
             try {
@@ -90,7 +93,8 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                        guiInformer,
                                                        activeConsumers,
                                                        refreshCallback,
-                                                       topicConfigs);
+                                                       topicConfigs,
+                                                       toFileSaver);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;

@@ -8,6 +8,7 @@ import application.controllers.confighandlers.TopicConfigGuiActionsHandler;
 import application.controllers.helpers.ListViewActionsHandler;
 import application.controllers.helpers.TabPaneSelectionInformer;
 import application.controllers.helpers.TemplateGuiActionsHandler;
+import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.model.ModelDataProxy;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaListenerConfig;
@@ -95,7 +96,8 @@ public class DefaultActionHandlerFactory implements ActionHandlerFactory {
                                                    repository,
                                                    rightContentPane,
                                                    topicConfigListView,
-                                                   applicationPorts.getListeners());
+                                                   applicationPorts.getListeners(),
+                                                   new ToFileSaver(interactor));
     }
 
 
