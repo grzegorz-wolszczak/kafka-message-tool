@@ -26,8 +26,7 @@
                   <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                   <ColumnConstraints halignment="LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="185.0" prefWidth="324.0" />
-                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="20.0" />
-                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" />
+                  <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
               </columnConstraints>
               <rowConstraints>
                 <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
@@ -45,7 +44,7 @@
                   <TextField fx:id="messageKeyTextField" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
                   <CheckBox fx:id="messageKeyCheckBox" mnemonicParsing="false" text="Message key" GridPane.rowIndex="2" />
                 <Button fx:id="sendMsgPushButton" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSendButtonClicked" prefHeight="25.0" text="Send" GridPane.rowIndex="5" />
-                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Detach pane" GridPane.columnIndex="5" />
+                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Detach" GridPane.columnIndex="4" />
                   <Label text="Repeat count" GridPane.rowIndex="3" />
                   <Spinner fx:id="repeatCountSpinner" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="3" />
                   <CheckBox fx:id="sendingSimulationModeCheckBox" mnemonicParsing="false" text="Sending simulation mode" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="5" />
