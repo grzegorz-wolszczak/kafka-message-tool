@@ -109,13 +109,12 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     }
 
     @FXML
-    private void initialize(){
+    private void initialize() {
         setupSuggestionProviderForTextField();
     }
 
     private void setupSuggestionProviderForTextField() {
-        if(null == stringAutoCompletionBinding)
-        {
+        if (null == stringAutoCompletionBinding) {
             stringAutoCompletionBinding = TextFields.bindAutoCompletion(topicNameField, suggestionProvider);
             stringAutoCompletionBinding.setHideOnEscape(true);
         }
@@ -305,8 +304,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
 
     private void setTopicSuggestions(List<String> possibleSuggestions) {
 
-        if(possibleSuggestions.isEmpty())
-        {
+        if (possibleSuggestions.isEmpty()) {
             suggestionProvider.clearSuggestions();
             return;
         }
