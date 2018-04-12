@@ -138,10 +138,6 @@ public class UserGuiInteractor implements UserInteractor {
     }
 
 
-    private void showError(String content) {
-        showErrorDialog("", content);
-    }
-
     private void showWarningDialog(String header, String msg) {
         showAlertDialog(AlertType.WARNING, header, msg);
     }

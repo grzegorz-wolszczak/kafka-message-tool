@@ -70,6 +70,8 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private Listeners activeConsumers;
     private Runnable refreshCallback;
     private ObservableList<KafkaTopicConfig> topicConfigs;
+    private final AnchorPane parentPane;
+    private final ModelConfigObjectsGuiInformer guiInformer;
     private ToFileSaver toFileSaver;
 
 
@@ -80,6 +82,8 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
                                        Runnable refreshCallback,
                                        ObservableList<KafkaTopicConfig> topicConfigs,
                                        ToFileSaver toFileSaver) throws IOException {
+        this.parentPane = parentPane;
+        this.guiInformer = guiInformer;
         this.toFileSaver = toFileSaver;
 
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
@@ -96,8 +100,6 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
                                                           detachPaneButton.selectedProperty(),
                                                           config,
                                                           guiInformer);
-
-
         configureTopicConfigComboBox();
         configureOffsetResetComboBox();
         configureMessageNameTextField();
@@ -121,8 +123,13 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
 
     @FXML
     private void initialize() {
+        configureDisplayBehaviour();
         configureToFileSaver();
         addAdditionalOptionsToTextAreaPopupMenu();
+    }
+
+    private void configureDisplayBehaviour() {
+
     }
 
     private void configureToFileSaver() {
