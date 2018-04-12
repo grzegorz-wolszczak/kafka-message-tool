@@ -18,6 +18,7 @@ import application.utils.GuiUtils;
 import application.utils.TooltipCreator;
 import application.utils.ValidatorUtils;
 import application.utils.kafka.KafkaBrokerHostInfo;
+import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ObjectProperty;
@@ -50,7 +51,8 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private final DisplayBehaviour displayBehaviour;
     private final ClusterStatusChecker statusChecker;
     private final TopicConfigComboBoxConfigurator<KafkaBrokerConfig> comboBoxConfigurator;
-    AutoCompletionBinding<String> stringAutoCompletionBinding;
+    private final SuggestionProvider<String> suggestionProvider = SuggestionProvider.create(Collections.emptyList());
+    private AutoCompletionBinding<String> stringAutoCompletionBinding;
     private KafkaClusterProxies kafkaClusterProxies;
     @FXML
     private ComboBox<KafkaBrokerConfig> kafkaBrokerComboBox;
@@ -104,6 +106,19 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     @Override
     public void display() {
         displayBehaviour.display();
+    }
+
+    @FXML
+    private void initialize(){
+        setupSuggestionProviderForTextField();
+    }
+
+    private void setupSuggestionProviderForTextField() {
+        if(null == stringAutoCompletionBinding)
+        {
+            stringAutoCompletionBinding = TextFields.bindAutoCompletion(topicNameField, suggestionProvider);
+            stringAutoCompletionBinding.setHideOnEscape(true);
+        }
     }
 
     private void configureComboBox(ObservableList<KafkaBrokerConfig> brokerConfigs) {
@@ -289,10 +304,15 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     }
 
     private void setTopicSuggestions(List<String> possibleSuggestions) {
-        if (null != stringAutoCompletionBinding) {
-            stringAutoCompletionBinding.dispose();
+
+        if(possibleSuggestions.isEmpty())
+        {
+            suggestionProvider.clearSuggestions();
+            return;
         }
-        stringAutoCompletionBinding = TextFields.bindAutoCompletion(topicNameField, possibleSuggestions);
+
+        suggestionProvider.addPossibleSuggestions(possibleSuggestions);
+
     }
 
     private void resetTopicnameTextFieldAutoCompletionForClusterProxy(KafkaClusterProxy proxy) {
