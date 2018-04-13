@@ -2,6 +2,7 @@ package application.controllers;
 
 import application.customfxwidgets.brokerconfig.BrokerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
+import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.customfxwidgets.senderconfig.SenderConfigGuiController;
 import application.customfxwidgets.topicconfig.TopicConfigGuiController;
 import application.kafka.KafkaMessageSender;
@@ -26,7 +27,9 @@ public interface ControllerProvider {
                                               AnchorPane parentPane,
                                               Listeners activeConsumers,
                                               Runnable refreshCallback,
-                                              ObservableList<KafkaTopicConfig> topicConfigs);
+                                              ObservableList<KafkaTopicConfig> topicConfigs,
+                                              ToFileSaver toFileSaver);
+
 
     TopicConfigGuiController getController(KafkaTopicConfig config,
                                            AnchorPane parentPane,

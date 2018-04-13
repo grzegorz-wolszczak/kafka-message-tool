@@ -11,45 +11,22 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.DialogPane;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextInputDialog;
 import javafx.stage.Window;
 
 import java.util.Optional;
 
 public class UserGuiInteractor implements UserInteractor {
 
+    @Override
+    public Window getOwnerWindow() {
+        return owner;
+    }
+
     private final Window owner;
     private Alert configEntriesViewAlert;
 
     public UserGuiInteractor(Window owner) {
         this.owner = owner;
-    }
-
-    @Override
-    public Optional<String> getTextFromUser(String contentText) {
-        Optional<String> result = Optional.empty();
-
-        boolean shouldContinue = true;
-        while (shouldContinue) {
-            final TextInputDialog dialog = new TextInputDialog("");
-            dialog.initOwner(owner);
-            dialog.setContentText(contentText);
-
-            decorateWithCss(dialog);
-            result = dialog.showAndWait();
-
-            if (result.isPresent()) {
-                final String name = result.get();
-                if (!ValidatorUtils.isStringIdentifierValid(name)) {
-                    showError("Invalid value");
-                } else {
-                    shouldContinue = false;
-                }
-            } else {
-                shouldContinue = false;
-            }
-        }
-        return result;
     }
 
     @Override
@@ -81,6 +58,11 @@ public class UserGuiInteractor implements UserInteractor {
     @Override
     public void showWarning(String header, String msg) {
         showWarningDialog(header, msg);
+    }
+
+    @Override
+    public void showInfo(String header, String msg) {
+        showInfoDialog(header, msg);
     }
 
     @Override
@@ -155,12 +137,13 @@ public class UserGuiInteractor implements UserInteractor {
         return configEntriesViewAlert;
     }
 
-    private void showError(String content) {
-        showErrorDialog("", content);
-    }
 
     private void showWarningDialog(String header, String msg) {
         showAlertDialog(AlertType.WARNING, header, msg);
+    }
+
+    private void showInfoDialog(String header, String msg) {
+        showAlertDialog(AlertType.INFORMATION, header, msg);
     }
 
 

@@ -6,6 +6,7 @@ import application.controllers.helpers.ListViewActionsHandler;
 import application.controllers.helpers.TemplateGuiActionsHandler;
 import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
 import application.controllers.helpers.TabPaneSelectionInformer;
+import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.kafka.listener.Listeners;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
@@ -26,6 +27,7 @@ public class ListenerConfigGuiActionsHandler extends TemplateGuiActionsHandler<K
     private final ControllerProvider controllerProvider;
     private final AnchorPane parentPane;
     private final FromPojoConverter fromPojoConverter;
+    private ToFileSaver toFileSaver;
     private ListView<KafkaTopicConfig> topicConfigs;
     private Listeners activeConsumers;
 
@@ -35,7 +37,8 @@ public class ListenerConfigGuiActionsHandler extends TemplateGuiActionsHandler<K
                                            ControllerProvider controllerProvider,
                                            AnchorPane parentPane,
                                            ListView<KafkaTopicConfig> topicConfigs,
-                                           Listeners activeConsumers) {
+                                           Listeners activeConsumers,
+                                           ToFileSaver toFileSaver) {
         super(tabSelectionInformer, listViewActionsHandler);
 
         this.listViewActionsHandler = listViewActionsHandler;
@@ -45,6 +48,7 @@ public class ListenerConfigGuiActionsHandler extends TemplateGuiActionsHandler<K
         this.topicConfigs = topicConfigs;
         this.activeConsumers = activeConsumers;
         this.fromPojoConverter = new FromPojoConverter(modelDataProxy);
+        this.toFileSaver = toFileSaver;
     }
 
 
@@ -55,7 +59,8 @@ public class ListenerConfigGuiActionsHandler extends TemplateGuiActionsHandler<K
                                                                                         parentPane,
                                                                                         activeConsumers,
                                                                                         listViewActionsHandler::refresh,
-                                                                                        topicConfigs.getItems());
+                                                                                        topicConfigs.getItems(),
+                                                                                        toFileSaver);
         controller.display();
     }
 

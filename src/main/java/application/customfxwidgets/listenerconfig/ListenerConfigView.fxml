@@ -25,8 +25,7 @@
                   <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                   <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                   <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
-                  <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="20.0" />
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="150.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
               </columnConstraints>
               <rowConstraints>
                   <RowConstraints fillHeight="false" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="NEVER" />
@@ -52,7 +51,7 @@
                   </TitledPane>
                   <Label text="Topic config" GridPane.rowIndex="1" />
                   <ComboBox fx:id="topicConfigComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
-                  <Button fx:id="clearButon" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clearButtonOnAction" text="Clear" GridPane.columnIndex="5" GridPane.rowIndex="7" />
+                  <Button fx:id="clearButon" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clearButtonOnAction" text="Clear" GridPane.columnIndex="4" GridPane.rowIndex="7" />
                   <Button fx:id="startButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#startButtonOnAction" text="Start" GridPane.rowIndex="7" />
                   <Button fx:id="stopButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stopButtonOnAction" text="Stop" GridPane.columnIndex="1" GridPane.rowIndex="7" />
                   <Label text="Consumer group" GridPane.rowIndex="2" />
@@ -61,7 +60,7 @@
                   <TextField fx:id="fetchTimeoutTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                   <Label text="Offset reset config" GridPane.rowIndex="4" />
                   <ComboBox fx:id="offsetResetComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#detachButtonOnAction" text="Detach pane" GridPane.columnIndex="5" />
+                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#detachButtonOnAction" text="Detach" GridPane.columnIndex="4" />
                   <CheckBox fx:id="receiveMsgLimitCheckBox" mnemonicParsing="false" text="Receive limit" GridPane.rowIndex="5" />
                   <TextField fx:id="receiveMsgLimitTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
                </children>

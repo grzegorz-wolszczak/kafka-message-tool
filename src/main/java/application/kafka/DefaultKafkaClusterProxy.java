@@ -342,7 +342,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
 
     private void printApiVersionForNode(Node node, List<ApiVersionsResponse.ApiVersion> apiVersions) {
         StringBuilder builder = new StringBuilder();
-        builder.append(String.format("\n### Api version for node %s ###%n", node));
+        builder.append(String.format("%n### Api version for node %s ###%n", node));
         apiVersions.forEach(version -> {
             builder.append(String.format("ApiKey '%s', min:%d .. max:%d%n", ApiKeys.forId(version.apiKey),
                                          version.minVersion,
