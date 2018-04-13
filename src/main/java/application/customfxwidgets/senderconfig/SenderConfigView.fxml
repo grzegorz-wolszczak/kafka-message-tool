@@ -16,9 +16,9 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<fx:root prefHeight="606.0" prefWidth="857.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="785.0" prefWidth="1109.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <TitledPane collapsible="false" text="Message sender configuration" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+      <TitledPane collapsible="false" prefWidth="1070.0" text="Message sender configuration" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
             <GridPane hgap="5.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="398.0" prefWidth="588.0" vgap="5.0">
               <columnConstraints>
@@ -62,6 +62,11 @@
                                        <children>
                                           <TabPane layoutX="187.0" layoutY="53.0" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                             <tabs>
+                                                <Tab fx:id="beforeAllMsgSharedScriptTab" text="[SHARED]_RUN_ONCE_BEFORE_FIRST">
+                                                  <content>
+                                                    <AnchorPane fx:id="beforeAllSharedTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                                                  </content>
+                                                </Tab>
                                               <Tab fx:id="beforeAllMsgScriptTab" text="&lt;RUN_ONCE_BEFORE_FIRST_MESSAGE&gt;">
                                                 <content>
                                                   <AnchorPane fx:id="beforeAllTabAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />

@@ -13,28 +13,19 @@ import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
+import application.persistence.ApplicationSettings;
 import application.scripting.MessageTemplateSender;
-import application.utils.GuiUtils;
-import application.utils.TooltipCreator;
-import application.utils.ValidationStatus;
-import application.utils.Validations;
-import application.utils.ValidatorUtils;
+import application.utils.*;
 import application.utils.kafka.KafkaParitionUtils;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.Spinner;
+import javafx.scene.control.*;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -53,17 +44,20 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     private final TopicConfigComboBoxConfigurator comboBoxConfigurator;
 
     private final MessageTemplateSender msgTemplateSender;
+    private final VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesSharedScriptScrollPane;
     private final VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesScriptScrollPane;
-    private final VirtualizedScrollPane<StyleClassedTextArea> beforeEachMessageScriptTextArea;
+    private final VirtualizedScrollPane<StyleClassedTextArea> beforeEachMessageScriptScrollPane;
     private final VirtualizedScrollPane<StyleClassedTextArea> messageContentScrollPane;
     private final KafkaSenderConfig config;
     private final Runnable refreshCallback;
     private final ObservableList<KafkaTopicConfig> topicConfigs;
     private final MessageSenderTaskExecutor taskExecutor;
+    private final StyleClassedTextArea beforeAllmessagesSharedScriptCodeArea;
     private final StyleClassedTextArea beforeAllMessagesScriptCodeArea;
     private final StyleClassedTextArea beforeEachMessagesScriptCodeArea;
     private final StyleClassedTextArea messageContentTextArea;
     private KafkaClusterProxies kafkaClusterProxies;
+    private ApplicationSettings applicationSettings;
     @FXML
     private TextField messageNameTextField;
     @FXML
@@ -79,6 +73,8 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     @FXML
     private AnchorPane beforeAllTabAnchorPane;
     @FXML
+    private AnchorPane beforeAllSharedTabAnchorPane;
+    @FXML
     private AnchorPane beforeEachMsgTabAnchorPane;
     @FXML
     private AnchorPane bodyTemplateTabAnchorPane;
@@ -88,6 +84,10 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     private Tab beforeAllMsgScriptTab;
     @FXML
     private Tab beforeEachMsgScriptTab;
+
+    @FXML
+    private Tab beforeAllMsgSharedScriptTab;
+
     @FXML
     private Tab bodyTemplateTab;
     @FXML
@@ -106,17 +106,25 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
                                      Runnable refreshCallback,
                                      ObservableList<KafkaTopicConfig> topicConfigs,
                                      MessageTemplateSender msgTemplateSender,
+                                     VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesSharedScriptScrollPane,
                                      VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesScriptScrollPane,
                                      VirtualizedScrollPane<StyleClassedTextArea> beforeEachMessageScriptScrollPane,
                                      VirtualizedScrollPane<StyleClassedTextArea> messageContentScrollPane,
-                                     KafkaClusterProxies kafkaClusterProxies) throws IOException {
+                                     KafkaClusterProxies kafkaClusterProxies,
+                                     ApplicationSettings applicationSettings) throws IOException {
         this.msgTemplateSender = msgTemplateSender;
-        this.beforeAllMessagesScriptScrollPane = beforeAllMessagesScriptScrollPane;
-        this.kafkaClusterProxies = kafkaClusterProxies;
-        beforeAllMessagesScriptCodeArea = this.beforeAllMessagesScriptScrollPane.getContent();
 
-        this.beforeEachMessageScriptTextArea = beforeEachMessageScriptScrollPane;
-        beforeEachMessagesScriptCodeArea = this.beforeEachMessageScriptTextArea.getContent();
+        this.beforeAllMessagesSharedScriptScrollPane = beforeAllMessagesSharedScriptScrollPane;
+        this.beforeAllMessagesScriptScrollPane = beforeAllMessagesScriptScrollPane;
+        this.beforeEachMessageScriptScrollPane = beforeEachMessageScriptScrollPane;
+
+        this.kafkaClusterProxies = kafkaClusterProxies;
+        this.applicationSettings = applicationSettings;
+
+        beforeAllmessagesSharedScriptCodeArea = this.beforeAllMessagesSharedScriptScrollPane.getContent();
+        beforeAllMessagesScriptCodeArea = this.beforeAllMessagesScriptScrollPane.getContent();
+        beforeEachMessagesScriptCodeArea = this.beforeEachMessageScriptScrollPane.getContent();
+
 
         this.messageContentScrollPane = messageContentScrollPane;
         messageContentTextArea = this.messageContentScrollPane.getContent();
@@ -169,7 +177,10 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
 
         scriptingTab.setText(GuiStrings.GROOVY_SCRIPTING_TAB_NAME);
 
-        beforeAllMsgScriptTab.setText(GuiStrings.BEFORE_FIRST_MSGS_SCRIPT_TAB);
+        beforeAllMsgSharedScriptTab.setText(GuiStrings.BEFORE_FIRST_MSGS_SHARED_SCRIPT_TAB_NAME);
+        beforeAllMsgSharedScriptTab.setTooltip(TooltipCreator.createFrom(GuiStrings.BEFORE_FIRST_MSG_SHARED_TAB_TOOLTIP));
+
+        beforeAllMsgScriptTab.setText(GuiStrings.BEFORE_FIRST_MSGS_SCRIPT_TAB_NAME);
         beforeAllMsgScriptTab.setTooltip(TooltipCreator.createFrom(GuiStrings.BEFORE_FIRST_MSG_TAB_TOOLTIP));
 
         beforeEachMsgScriptTab.setText(GuiStrings.BEFORE_EACH_MSGS_SCRIPT_TAB);
@@ -179,21 +190,54 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     }
 
     private void configureScriptsTextAreas() {
-        beforeAllTabAnchorPane.getChildren().clear();
-        beforeAllTabAnchorPane.getChildren().add(beforeAllMessagesScriptScrollPane);
-        GuiUtils.expandNodeToAnchorPaneBorders(beforeAllMessagesScriptScrollPane, MARGINS_SIZE);
 
-        beforeEachMsgTabAnchorPane.getChildren().clear();
-        beforeEachMsgTabAnchorPane.getChildren().add(beforeEachMessageScriptTextArea);
-        GuiUtils.expandNodeToAnchorPaneBorders(beforeEachMessageScriptTextArea, MARGINS_SIZE);
+        configureTextAreaLayouts();
+        configureTextAreasTextChangeActions();
+    }
 
+    private void configureTextAreasTextChangeActions() {
+        final StringProperty sharedScriptProperty = applicationSettings.appSettings().runBeforeFirstMessageSharedScriptContentProperty();
+        beforeAllmessagesSharedScriptCodeArea.appendText(sharedScriptProperty.get());
+
+
+        beforeAllmessagesSharedScriptCodeArea.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (oldValue.equals(newValue) || sharedScriptProperty.get().equals(newValue)) {
+                return;
+            }
+
+            sharedScriptProperty.setValue(newValue);
+        });
+
+        sharedScriptProperty.addListener((observable, oldValue, newValue) -> {
+            if (oldValue.equals(newValue) || beforeAllmessagesSharedScriptCodeArea.getText().equals(newValue)) {
+                return;
+            }
+
+            beforeAllmessagesSharedScriptCodeArea.replaceText(0,
+                    beforeAllmessagesSharedScriptCodeArea.getLength(),
+                    newValue);
+        });
 
         beforeAllMessagesScriptCodeArea.appendText(config.runBeforeAllMessagesScriptProperty().get());
         config.runBeforeAllMessagesScriptProperty().bind(beforeAllMessagesScriptCodeArea.textProperty());
 
-
         beforeEachMessagesScriptCodeArea.appendText(config.runBeforeEachMessageScriptProperty().get());
         config.runBeforeEachMessageScriptProperty().bind(beforeEachMessagesScriptCodeArea.textProperty());
+    }
+
+    private void configureTextAreaLayouts() {
+        beforeAllSharedTabAnchorPane.getChildren().clear();
+        beforeAllSharedTabAnchorPane.getChildren().add(beforeAllMessagesSharedScriptScrollPane);
+        GuiUtils.expandNodeToAnchorPaneBorders(beforeAllMessagesSharedScriptScrollPane, MARGINS_SIZE);
+
+        beforeAllTabAnchorPane.getChildren().clear();
+        beforeAllTabAnchorPane.getChildren().add(beforeAllMessagesScriptScrollPane);
+        GuiUtils.expandNodeToAnchorPaneBorders(beforeAllMessagesScriptScrollPane, MARGINS_SIZE);
+
+
+        beforeEachMsgTabAnchorPane.getChildren().clear();
+        beforeEachMsgTabAnchorPane.getChildren().add(beforeEachMessageScriptScrollPane);
+        GuiUtils.expandNodeToAnchorPaneBorders(beforeEachMessageScriptScrollPane, MARGINS_SIZE);
     }
 
 
@@ -296,7 +340,9 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         }
 
 
-        taskExecutor.run(() -> msgTemplateSender.send(config, sendingSimulationModeCheckBox.isSelected()));
+        taskExecutor.run(() -> msgTemplateSender.send(config,
+                applicationSettings.appSettings().getRunBeforeFirstMessageSharedScriptContent(),
+                sendingSimulationModeCheckBox.isSelected()));
 
     }
 

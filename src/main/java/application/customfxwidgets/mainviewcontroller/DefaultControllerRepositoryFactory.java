@@ -10,6 +10,7 @@ import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
+import application.persistence.ApplicationSettings;
 import application.scripting.codearea.SyntaxHighlightingCodeAreaConfigurator;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
@@ -18,13 +19,16 @@ public class DefaultControllerRepositoryFactory implements ControllerRepositoryF
     private ClusterStatusChecker statusChecker;
     private SyntaxHighlightingCodeAreaConfigurator syntaxHighlightingConfigurator;
     private KafkaClusterProxies kafkaClusterProxies;
+    private ApplicationSettings applicationSettings;
 
     public DefaultControllerRepositoryFactory(ClusterStatusChecker statusChecker,
                                               SyntaxHighlightingCodeAreaConfigurator syntaxHighlightingConfigurator,
-                                              KafkaClusterProxies kafkaClusterProxies) {
+                                              KafkaClusterProxies kafkaClusterProxies,
+                                              ApplicationSettings applicationSettings) {
         this.statusChecker = statusChecker;
         this.syntaxHighlightingConfigurator = syntaxHighlightingConfigurator;
         this.kafkaClusterProxies = kafkaClusterProxies;
+        this.applicationSettings = applicationSettings;
     }
 
     @Override
@@ -42,7 +46,8 @@ public class DefaultControllerRepositoryFactory implements ControllerRepositoryF
         return new DefaultControllerProvider(guiInformer,
                                              statusChecker,
                                              syntaxHighlightingConfigurator,
-                                             kafkaClusterProxies);
+                                             kafkaClusterProxies,
+                                             applicationSettings);
 
     }
 }

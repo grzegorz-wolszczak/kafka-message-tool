@@ -6,6 +6,9 @@
 - feature - user can define how many messages should be received by kafka listener
     issue #3, #5
 - feature - added saving kafka listener content to file (popup menu option)
+- fixed - regression: sending simulating mode working again
+- feature - added shared 'message template scripting'. Messge template content that is visible from
+    all senders. This can help in setting 'global variables' across all senders
 
 [v.1.0.2.0]
 - improvement - performance improvement (but more work needed)- log window can accept more entries before it freezes (!sic)

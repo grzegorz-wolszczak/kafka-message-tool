@@ -137,7 +137,8 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
         final ControllerRepositoryFactory controllerRepositoryFactory =
             new DefaultControllerRepositoryFactory(new ClusterStatusChecker(busySwitcher, interactor, kafkaClusterProxies),
                                                    new SyntaxHighlightingCodeAreaConfigurator(executorService),
-                                                   kafkaClusterProxies);
+                                                   kafkaClusterProxies,
+                                                   applicationSettings);
 
         final DefaultActionHandlerFactory actionHandlerFactory = new DefaultActionHandlerFactory(interactor,
                                                                                                  modelDataProxy,

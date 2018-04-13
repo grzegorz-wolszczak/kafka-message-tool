@@ -17,28 +17,28 @@ import javafx.scene.layout.AnchorPane;
 import javafx.stage.Window;
 
 public interface ControllerProvider {
-    BrokerConfigGuiController getControllerFor(KafkaBrokerConfig config,
-                                               AnchorPane parentPane,
-                                               Runnable refeshCallback,
-                                               UserInteractor guiInteractor,
-                                               Window parentWindow);
+    BrokerConfigGuiController getBrokerConfigGuiController(KafkaBrokerConfig config,
+                                                           AnchorPane parentPane,
+                                                           Runnable refeshCallback,
+                                                           UserInteractor guiInteractor,
+                                                           Window parentWindow);
 
-    ListenerConfigGuiController getController(KafkaListenerConfig config,
-                                              AnchorPane parentPane,
-                                              Listeners activeConsumers,
-                                              Runnable refreshCallback,
-                                              ObservableList<KafkaTopicConfig> topicConfigs,
-                                              ToFileSaver toFileSaver);
+    ListenerConfigGuiController getListenerConfigGuiController(KafkaListenerConfig config,
+                                                               AnchorPane parentPane,
+                                                               Listeners activeConsumers,
+                                                               Runnable refreshCallback,
+                                                               ObservableList<KafkaTopicConfig> topicConfigs,
+                                                               ToFileSaver toFileSaver);
 
 
-    TopicConfigGuiController getController(KafkaTopicConfig config,
-                                           AnchorPane parentPane,
-                                           Runnable refreshCallback,
-                                           ObservableList<KafkaBrokerConfig> brokerConfigs);
+    TopicConfigGuiController getTopicConfigGuiController(KafkaTopicConfig config,
+                                                         AnchorPane parentPane,
+                                                         Runnable refreshCallback,
+                                                         ObservableList<KafkaBrokerConfig> brokerConfigs);
 
-    SenderConfigGuiController getController(KafkaSenderConfig config,
-                                            AnchorPane parentPane,
-                                            KafkaMessageSender sender,
-                                            Runnable refreshCallback,
-                                            ObservableList<KafkaTopicConfig> topicConfigs);
+    SenderConfigGuiController getSenderConfigGuiController(KafkaSenderConfig config,
+                                                           AnchorPane parentPane,
+                                                           KafkaMessageSender sender,
+                                                           Runnable refreshCallback,
+                                                           ObservableList<KafkaTopicConfig> topicConfigs);
 }

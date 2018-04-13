@@ -44,6 +44,7 @@ public class XmlElementNames {
     public static final String UPPER_SPLIT_PANE_DIVIDER_POSITION = "UpperSplitPaneDividerPosition";
     public static final String GLOBAL_SETTINGS = "GlobalApplicationSettings";
     public static final String GLOBAL_LOG_LEVEL = "GlobalLogLevel";
+    public static final String BEFORE_FIST_MESSAGE_SHARED_SCRIPT_CONTENT = "ExecuteBeforeFirstMessageSharedScript";
 
     public static final String RECEIVED_MSG_LIMIT_ENABLED = "ReceivedMsgLimitEnabled";
     public static final String RECEIVED_MSG_LIMIT_COUNT = "ReceivedMsgLimitCount";

@@ -21,9 +21,10 @@ public class MessageTemplateSender {
     }
 
     public void send(KafkaSenderConfig config,
+                     String sharedScriptContent,
                      boolean isSimulationModeEnabled) {
         try {
-            trySend(config, isSimulationModeEnabled);
+            trySend(config, sharedScriptContent, isSimulationModeEnabled);
         } catch (ExecutionStopRequested e) {
             Logger.warn("Sending stopped by user.");
         } catch (Exception e) {
@@ -40,6 +41,7 @@ public class MessageTemplateSender {
     }
 
     private void trySend(KafkaSenderConfig config,
+                         String sharedScriptContent,
                          boolean isSimulationModeEnabled) throws Exception {
 
         final Integer totalMessageCount = config.getRepeatCount();
@@ -52,8 +54,10 @@ public class MessageTemplateSender {
         ));
 
         resetScriptEngine();
+        runScript(sharedScriptContent);
         runScript(config.getRunBeforeAllMessagesScript());
-        kafkaSender.initiateFreshConnection(config.getRelatedConfig().getRelatedConfig().getHostInfo());
+        kafkaSender.initiateFreshConnection(config.getRelatedConfig().getRelatedConfig().getHostInfo(),
+                isSimulationModeEnabled);
         for (int i = 0; i < totalMessageCount; i++) {
             if (Thread.currentThread().isInterrupted()) {
                 return;

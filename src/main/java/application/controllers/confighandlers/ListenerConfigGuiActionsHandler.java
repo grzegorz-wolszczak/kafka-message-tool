@@ -55,7 +55,7 @@ public class ListenerConfigGuiActionsHandler extends TemplateGuiActionsHandler<K
     @Override
     protected void loadController(KafkaListenerConfig config) {
 
-        final ListenerConfigGuiController controller = controllerProvider.getController(config,
+        final ListenerConfigGuiController controller = controllerProvider.getListenerConfigGuiController(config,
                                                                                         parentPane,
                                                                                         activeConsumers,
                                                                                         listViewActionsHandler::refresh,

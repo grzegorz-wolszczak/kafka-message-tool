@@ -4,6 +4,7 @@ import application.customfxwidgets.brokerconfig.BrokerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.kafka.KafkaClusterProxies;
+import application.persistence.ApplicationSettings;
 import application.scripting.GroovyScriptEvaluator;
 import application.scripting.MessageTemplateSender;
 import application.customfxwidgets.senderconfig.SenderConfigGuiController;
@@ -42,24 +43,27 @@ public class DefaultControllerProvider implements ControllerProvider {
     private final ModelConfigObjectsGuiInformer guiInformer;
     private final SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator;
     private KafkaClusterProxies kafkaClusterProxies;
+    private ApplicationSettings applicationSettings;
 
     public DefaultControllerProvider(ModelConfigObjectsGuiInformer guiInformer,
                                      ClusterStatusChecker statusChecker,
                                      SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator,
-                                     KafkaClusterProxies kafkaClusterProxies) {
+                                     KafkaClusterProxies kafkaClusterProxies,
+                                     ApplicationSettings applicationSettings) {
         this.guiInformer = guiInformer;
         this.statusChecker = statusChecker;
         this.syntaxHighlightConfigurator = syntaxHighlightConfigurator;
         this.kafkaClusterProxies = kafkaClusterProxies;
+        this.applicationSettings = applicationSettings;
     }
 
 
     @Override
-    public BrokerConfigGuiController getControllerFor(KafkaBrokerConfig config,
-                                                      AnchorPane parentPane,
-                                                      Runnable refeshCallback,
-                                                      UserInteractor guiInteractor,
-                                                      Window parentWindow) {
+    public BrokerConfigGuiController getBrokerConfigGuiController(KafkaBrokerConfig config,
+                                                                  AnchorPane parentPane,
+                                                                  Runnable refeshCallback,
+                                                                  UserInteractor guiInteractor,
+                                                                  Window parentWindow) {
         return getControllerFor(config, brokerControllers, () -> {
             try {
                 return new BrokerConfigGuiController(config,
@@ -78,12 +82,12 @@ public class DefaultControllerProvider implements ControllerProvider {
     }
 
     @Override
-    public ListenerConfigGuiController getController(KafkaListenerConfig config,
-                                                     AnchorPane parentPane,
-                                                     Listeners activeConsumers,
-                                                     Runnable refreshCallback,
-                                                     ObservableList<KafkaTopicConfig> topicConfigs,
-                                                     ToFileSaver toFileSaver
+    public ListenerConfigGuiController getListenerConfigGuiController(KafkaListenerConfig config,
+                                                                      AnchorPane parentPane,
+                                                                      Listeners activeConsumers,
+                                                                      Runnable refreshCallback,
+                                                                      ObservableList<KafkaTopicConfig> topicConfigs,
+                                                                      ToFileSaver toFileSaver
     ) {
 
         return getControllerFor(config, listenersControllers, () -> {
@@ -103,10 +107,10 @@ public class DefaultControllerProvider implements ControllerProvider {
     }
 
     @Override
-    public TopicConfigGuiController getController(KafkaTopicConfig config,
-                                                  AnchorPane parentPane,
-                                                  Runnable refreshCallback,
-                                                  ObservableList<KafkaBrokerConfig> brokerConfigs) {
+    public TopicConfigGuiController getTopicConfigGuiController(KafkaTopicConfig config,
+                                                                AnchorPane parentPane,
+                                                                Runnable refreshCallback,
+                                                                ObservableList<KafkaBrokerConfig> brokerConfigs) {
         return getControllerFor(config, topicControllers, () -> {
             try {
                 return new TopicConfigGuiController(config,
@@ -125,16 +129,20 @@ public class DefaultControllerProvider implements ControllerProvider {
 
 
     @Override
-    public SenderConfigGuiController getController(KafkaSenderConfig config,
-                                                   AnchorPane parentPane,
-                                                   KafkaMessageSender sender,
-                                                   Runnable refreshCallback,
-                                                   ObservableList<KafkaTopicConfig> topicConfigs) {
+    public SenderConfigGuiController getSenderConfigGuiController(KafkaSenderConfig config,
+                                                                  AnchorPane parentPane,
+                                                                  KafkaMessageSender sender,
+                                                                  Runnable refreshCallback,
+                                                                  ObservableList<KafkaTopicConfig> topicConfigs) {
 
         return getControllerFor(config, messageControllers, () -> {
             try {
                 final MessageTemplateSender msgTemplateEvaluator = new MessageTemplateSender(sender,
                                                                                              new GroovyScriptEvaluator());
+
+                final CodeArea beforeAllCodeAreaShared = new CodeArea();
+                final VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesSharedScriptScrollPane =
+                        new VirtualizedScrollPane<>(beforeAllCodeAreaShared);
 
                 final CodeArea beforeAllCodeArea = new CodeArea();
                 final VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesScriptScrollPane =
@@ -149,6 +157,7 @@ public class DefaultControllerProvider implements ControllerProvider {
                 final VirtualizedScrollPane<StyleClassedTextArea> messageContentScrollPane =
                     new VirtualizedScrollPane<>(messageContentCodeArea);
 
+                syntaxHighlightConfigurator.configureGroovySyntaxHighlighting(beforeAllCodeAreaShared);
                 syntaxHighlightConfigurator.configureGroovySyntaxHighlighting(beforeAllCodeArea);
                 syntaxHighlightConfigurator.configureGroovySyntaxHighlighting(beforeEachCodeArea);
                 syntaxHighlightConfigurator.configureJsonSyntaxHighlighting(messageContentCodeArea);
@@ -159,10 +168,12 @@ public class DefaultControllerProvider implements ControllerProvider {
                                                      refreshCallback,
                                                      topicConfigs,
                                                      msgTemplateEvaluator,
+                                                     beforeAllMessagesSharedScriptScrollPane,
                                                      beforeAllMessagesScriptScrollPane,
                                                      beforeEachMessageScriptScrollPane,
                                                      messageContentScrollPane,
-                                                     kafkaClusterProxies);
+                                                     kafkaClusterProxies,
+                                                     applicationSettings);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;

@@ -50,7 +50,7 @@ public class SenderConfigGuiActionsHandler extends TemplateGuiActionsHandler<Kaf
 
     @Override
     protected void loadController(KafkaSenderConfig config) {
-        final SenderConfigGuiController controller = controllerProvider.getController(config,
+        final SenderConfigGuiController controller = controllerProvider.getSenderConfigGuiController(config,
                                                                                       parentPane,
                                                                                       sender,
                                                                                       listViewActionsHandler::refresh,
