@@ -2,7 +2,7 @@ package application.scripting;
 
 import application.constants.GroovyStringEscaper;
 import application.exceptions.ExecutionStopRequested;
-import application.kafka.KafkaMessageSender;
+import application.kafka.sender.KafkaMessageSender;
 import application.logging.Logger;
 import application.model.MessageOnTopicDto;
 import application.model.modelobjects.KafkaSenderConfig;

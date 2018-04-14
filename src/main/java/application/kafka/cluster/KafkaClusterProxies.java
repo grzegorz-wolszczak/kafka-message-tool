@@ -1,4 +1,4 @@
-package application.kafka;
+package application.kafka.cluster;
 
 import application.exceptions.ClusterConfigurationError;
 import application.logging.Logger;

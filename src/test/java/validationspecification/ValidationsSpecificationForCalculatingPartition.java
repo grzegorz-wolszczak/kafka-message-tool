@@ -1,5 +1,7 @@
-import application.kafka.KafkaClusterProxies;
-import application.kafka.KafkaClusterProxy;
+package validationspecification;
+
+import application.kafka.cluster.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxy;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
@@ -13,15 +15,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-/*
-
-
-        final int partitions = kafkaClusterProxy.partitionsForTopic(topicName);
-        final int expectedAssignedPartitions = KafkaParitionUtils.partition(messageKey, partitions);
-        Logger.info(String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions));
- */
-
-public class ValidationsSpecification {
+public class ValidationsSpecificationForCalculatingPartition {
 
     private final KafkaBrokerConfig brokerConfig = new KafkaBrokerConfig();
     private final KafkaTopicConfig topicConfig = new KafkaTopicConfig();
@@ -30,7 +24,7 @@ public class ValidationsSpecification {
     private final KafkaClusterProxy clusterProxy = mock(KafkaClusterProxy.class);
 
     @Test
-    public void shouldReturnFailureDueToMessageKeyNotSetWhileValidationConfigForCalculatingParition() {
+    public void shouldReturnFailureDueToMessageKeyNotSetWhileValidationConfigForCalculatingPartition() {
         // GIVEN
         final KafkaSenderConfig config = configWithDisabledMessageKey();
 
@@ -108,6 +102,8 @@ public class ValidationsSpecification {
         assertThat(s.validationFailureMessage()).isEqualTo(String.format("Topic '%s' does not exist on broker", topicName));
 
     }
+
+
 
     @BeforeMethod
     private void setUpAllConfigs() {

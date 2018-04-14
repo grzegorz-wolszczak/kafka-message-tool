@@ -1,7 +1,7 @@
 package application.utils;
 
-import application.kafka.KafkaClusterProxies;
-import application.kafka.KafkaClusterProxy;
+import application.kafka.cluster.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxy;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
@@ -10,12 +10,9 @@ import org.apache.commons.lang3.StringUtils;
 public class Validations {
     public static ValidationStatus validateForCalculatingPartition(KafkaSenderConfig config,
                                                                    KafkaClusterProxies clusterProxies) {
-        if (!config.getMessageKeyEnabled()) {
-            return ValidationStatus.failure("Message key is not set");
-        }
-
-        if (StringUtils.isBlank(config.getMessageKey())) {
-            return ValidationStatus.failure("Message key is blank");
+        final ValidationStatus x = validateMessageKey(config);
+        if (x.isFailure()) {
+            return x;
         }
 
         final KafkaTopicConfig topicConfig = config.getRelatedConfig();
@@ -23,6 +20,24 @@ public class Validations {
             return ValidationStatus.failure("Topic config not set");
         }
 
+        final ValidationStatus brokerValidationStatus = validateBrokerConfigValidAndStatusIsKnown(topicConfig, clusterProxies);
+        if (brokerValidationStatus.isFailure()) {
+            return brokerValidationStatus;
+        }
+
+        final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
+        final KafkaClusterProxy kafkaClusterProxy = clusterProxies.get(brokerConfig.getHostInfo());
+
+        final String topicName = topicConfig.getTopicName();
+        if (!kafkaClusterProxy.hasTopic(topicName)) {
+            return ValidationStatus.failure(
+                String.format("Topic '%s' does not exist on broker", topicName)
+            );
+        }
+        return ValidationStatus.success();
+    }
+
+    private static ValidationStatus validateBrokerConfigValidAndStatusIsKnown(KafkaTopicConfig topicConfig, KafkaClusterProxies clusterProxies) {
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
         if (brokerConfig == null) {
             return ValidationStatus.failure("Broker config not set");
@@ -32,12 +47,16 @@ public class Validations {
         if (kafkaClusterProxy == null) {
             return ValidationStatus.failure("Broker status unknown");
         }
+        return ValidationStatus.success();
+    }
 
-        final String topicName = topicConfig.getTopicName();
-        if (!kafkaClusterProxy.hasTopic(topicName)) {
-            return ValidationStatus.failure(
-                String.format("Topic '%s' does not exist on broker", topicName)
-            );
+    private static ValidationStatus validateMessageKey(KafkaSenderConfig config) {
+        if (!config.getMessageKeyEnabled()) {
+            return ValidationStatus.failure("Message key is not set");
+        }
+
+        if (StringUtils.isBlank(config.getMessageKey())) {
+            return ValidationStatus.failure("Message key is blank");
         }
         return ValidationStatus.success();
     }

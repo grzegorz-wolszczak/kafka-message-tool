@@ -12,7 +12,7 @@ class AssertHelpers {
         def text = """...before... ${textToBeMatched} ...after..."""
         def matcher = pattern.matcher(text);
 
-        println "text '${text}', to be found ${textToBeMatched}, pattern ${pattern}"
+        //println "text '${text}', to be found ${textToBeMatched}, pattern ${pattern}"
 
         assert matcher.find()
         assert matcher.group(groupName) == textToBeMatched
@@ -24,7 +24,7 @@ class AssertHelpers {
         def text = """...before... ${textToBeMatched} ...midle... ${textToBeMatched} ...after..."""
         def matcher = pattern.matcher(text);
 
-        println "text '${text}', to be found ${textToBeMatched}, pattern ${pattern}"
+        //println "text '${text}', to be found ${textToBeMatched}, pattern ${pattern}"
 
         assert matcher.find()
         assert matcher.group(groupName) == textToBeMatched

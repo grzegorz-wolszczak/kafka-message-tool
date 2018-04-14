@@ -1,6 +1,6 @@
 package application.kafka.dto;
 
-import application.kafka.TopicCleanupPolicy;
+import application.kafka.cluster.TopicCleanupPolicy;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleIntegerProperty;

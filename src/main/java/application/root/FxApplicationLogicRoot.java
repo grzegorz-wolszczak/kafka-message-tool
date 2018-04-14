@@ -7,10 +7,10 @@ import application.customfxwidgets.mainviewcontroller.ControllerRepositoryFactor
 import application.customfxwidgets.mainviewcontroller.DefaultControllerRepositoryFactory;
 import application.customfxwidgets.mainviewcontroller.MainApplicationController;
 import application.globals.AppGlobals;
-import application.kafka.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxies;
 import application.globals.StageRepository;
-import application.kafka.ClusterStatusChecker;
-import application.kafka.DefaultKafkaMessageSender;
+import application.kafka.cluster.ClusterStatusChecker;
+import application.kafka.sender.DefaultKafkaMessageSender;
 import application.kafka.listener.KafkaListeners;
 import application.logging.DefaultLogger;
 import application.logging.GuiWindowedLogger;

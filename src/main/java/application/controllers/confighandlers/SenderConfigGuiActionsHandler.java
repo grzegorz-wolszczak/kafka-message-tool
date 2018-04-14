@@ -6,7 +6,7 @@ import application.controllers.helpers.ListViewActionsHandler;
 import application.controllers.helpers.TabPaneSelectionInformer;
 import application.controllers.helpers.TemplateGuiActionsHandler;
 import application.customfxwidgets.senderconfig.SenderConfigGuiController;
-import application.kafka.KafkaMessageSender;
+import application.kafka.sender.KafkaMessageSender;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
 import application.model.ToPojoConverter;

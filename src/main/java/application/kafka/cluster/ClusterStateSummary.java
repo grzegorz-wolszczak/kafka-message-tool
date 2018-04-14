@@ -1,4 +1,4 @@
-package application.kafka;
+package application.kafka.cluster;
 
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;

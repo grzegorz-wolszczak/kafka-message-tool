@@ -1,5 +1,5 @@
 
-package application.kafka;
+package application.kafka.sender;
 
 import application.model.MessageOnTopicDto;
 import application.utils.HostInfo;

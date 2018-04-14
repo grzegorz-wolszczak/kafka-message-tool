@@ -2,7 +2,7 @@ package application.customfxwidgets;
 
 import application.constants.ApplicationConstants;
 import application.globals.StageRepository;
-import application.kafka.TopicCleanupPolicy;
+import application.kafka.cluster.TopicCleanupPolicy;
 import application.kafka.dto.TopicToAdd;
 import application.utils.GuiUtils;
 import application.utils.UserGuiInteractor;

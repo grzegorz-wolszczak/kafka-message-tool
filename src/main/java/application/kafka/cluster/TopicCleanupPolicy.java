@@ -1,4 +1,4 @@
-package application.kafka;
+package application.kafka.cluster;
 
 public enum TopicCleanupPolicy {
     DELETE("delete"),

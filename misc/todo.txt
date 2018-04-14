@@ -21,7 +21,7 @@ todo: add 'after EACH message' to be 'symmetric' when sending message template i
 todo: refactor kafka proxy class
 todo: add wordwrap checkbox for all text areas
 todo: syntax highlighting for message receiver ?
-todo: add status bar with popup hints (similar in Intelij IDEA) to communicate with the user, and remove 'logging window'
+todo: add isSuccess bar with popup hints (similar in Intelij IDEA) to communicate with the user, and remove 'logging window'
 todo: add config opiton - add opition: don't show warning about invalid configuraiton
 todo: on Linux (Mint with Xfce) - application fonts are ugly and too big - suggest other fonts for linux ?
 
@@ -34,7 +34,7 @@ to: configureTextFieldToAcceptOnlyDecimalValues
         ValidatorUtils.configureTextFieldToAcceptOnlyDecimalValues(receiveMsgLimitTextField);
 
 ### TODO_LOW_PRIORITY ###
-todo: feature: replace 'status' button with 'connect/disconnect' . Connect will result in fetching info every e.g. 1 second
+todo: feature: replace 'isSuccess' button with 'connect/disconnect' . Connect will result in fetching info every e.g. 1 second
 todo: low_priority: report in details inconsistent configuration (which node has what settings)
 todo: low_priority: when fetching new broker, if configuration on some tab does need to be updated, do not refresh it
 todo: low_priority save user sorting type for topic (only during program work - dont need to be persistent)

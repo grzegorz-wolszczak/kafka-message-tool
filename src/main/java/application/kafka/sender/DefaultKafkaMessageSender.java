@@ -1,5 +1,6 @@
-package application.kafka;
+package application.kafka.sender;
 
+import application.kafka.sender.KafkaMessageSender;
 import application.logging.Logger;
 import application.model.MessageOnTopicDto;
 import application.utils.HostInfo;
@@ -62,6 +63,9 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
             Logger.error("Sending failed: " + e.getLocalizedMessage() + " (maybe invalid broker port?)");
         } else if (cause instanceof InterruptedException) {
             Logger.warn("Sending stopped by user.");
+        }else if(cause instanceof org.apache.kafka.common.errors.CorruptRecordException){
+            Logger.error("Sending failed: "+ e.getLocalizedMessage() +
+                             "\n(Probable reason: You forgot to set key for message while sending to compacted topic).");
         } else {
             Logger.error("Sending failed: " + e.getLocalizedMessage());
         }

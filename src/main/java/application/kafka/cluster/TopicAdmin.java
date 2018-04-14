@@ -1,4 +1,4 @@
-package application.kafka;
+package application.kafka.cluster;
 
 import application.constants.ApplicationConstants;
 import application.exceptions.TopicAlreadyExistsError;
@@ -135,7 +135,7 @@ public class TopicAdmin {
         }
     }
 
-    Set<ClusterTopicInfo> describeTopics() throws InterruptedException, ExecutionException, TimeoutException {
+    public Set<ClusterTopicInfo> describeTopics() throws InterruptedException, ExecutionException, TimeoutException {
 
         Set<ClusterTopicInfo> result = new HashSet<>();
         final ListTopicsResult listTopicsResult = kafkaClientsAdminClient.listTopics(new ListTopicsOptions().listInternal(false));

@@ -1,4 +1,4 @@
-import application.kafka.KafkaMessageSender
+import application.kafka.sender.KafkaMessageSender
 import application.scripting.GroovyScriptEvaluator
 import application.scripting.MessageTemplateSender
 import org.mockito.Mockito

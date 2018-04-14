@@ -2,6 +2,12 @@ package application.kafka;
 
 import application.constants.ApplicationConstants;
 import application.exceptions.ClusterConfigurationError;
+import application.kafka.cluster.ClusterNodesProperties;
+import application.kafka.cluster.ClusterStateSummary;
+import application.kafka.cluster.KafkaClusterProxy;
+import application.kafka.cluster.NodeApiVersionsInfo;
+import application.kafka.cluster.TopicAdmin;
+import application.kafka.cluster.TriStateConfigEntryValue;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
@@ -264,24 +270,14 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
 
                 final List<TopicPartition> topicPartitions = seqAsJavaList(consumerSummary.assignment());
                 if (topicPartitions.isEmpty()) {
-                    final UnassignedConsumerInfo consumerInfo = UnassignedConsumerInfo.builder()
-                        .consumerGroupId(consumerGroupId)
-                        .consumerId(consumerSummary.consumerId())
-                        .clientId(consumerSummary.clientId())
-                        .host(consumerSummary.host())
-                        .build();
+                    final UnassignedConsumerInfo consumerInfo = getUnassignedConsumerInfo(consumerGroupId, consumerSummary);
                     clusterSummary.addUnassignedConsumerInfo(consumerInfo);
                 } else {
                     topicPartitions.forEach(topicPartition -> {
-                        final AssignedConsumerInfo consumerInfo = AssignedConsumerInfo.builder()
-                            .consumerGroupId(consumerGroupId)
-                            .consumerId(consumerSummary.consumerId())
-                            .clientId(consumerSummary.clientId())
-                            .host(consumerSummary.host())
-                            .topic(topicPartition.topic())
-                            .partition(topicPartition.partition())
-                            .offset(getOffsetForPartition(offsetForPartition, topicPartition))
-                            .build();
+                        final AssignedConsumerInfo consumerInfo = getAssignedConsumerInfo(consumerGroupId,
+                                                                                          offsetForPartition,
+                                                                                          consumerSummary,
+                                                                                          topicPartition);
 
                         clusterSummary.addAssignedConsumerInfo(consumerInfo);
 
@@ -289,6 +285,31 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
                 }
             });
         });
+    }
+
+    private AssignedConsumerInfo getAssignedConsumerInfo(String consumerGroupId,
+                                                         Map<TopicPartition, Object> offsetForPartition,
+                                                         AdminClient.ConsumerSummary consumerSummary,
+                                                         TopicPartition topicPartition) {
+        return AssignedConsumerInfo.builder()
+            .consumerGroupId(consumerGroupId)
+            .consumerId(consumerSummary.consumerId())
+            .clientId(consumerSummary.clientId())
+            .host(consumerSummary.host())
+            .topic(topicPartition.topic())
+            .partition(topicPartition.partition())
+            .offset(getOffsetForPartition(offsetForPartition, topicPartition))
+            .build();
+    }
+
+    private UnassignedConsumerInfo getUnassignedConsumerInfo(String consumerGroupId,
+                                                             AdminClient.ConsumerSummary consumerSummary) {
+        return UnassignedConsumerInfo.builder()
+            .consumerGroupId(consumerGroupId)
+            .consumerId(consumerSummary.consumerId())
+            .clientId(consumerSummary.clientId())
+            .host(consumerSummary.host())
+            .build();
     }
 
     private void describeCluster() throws InterruptedException, ExecutionException, TimeoutException {
@@ -302,14 +323,14 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     private int getControllerNodeId(DescribeClusterResult describeClusterResult) throws InterruptedException,
-                                                                                        ExecutionException,
-                                                                                        TimeoutException {
+        ExecutionException,
+        TimeoutException {
         final KafkaFuture<Node> controller = describeClusterResult.controller();
         return controller.get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS).id();
     }
 
     private void describeNodes(Collection<Node> nodes, int controllerNodeId) throws InterruptedException,
-                                                                                    ExecutionException {
+        ExecutionException {
 
         for (Node node : nodes) {
             saveApiVersionsForNodes(node);

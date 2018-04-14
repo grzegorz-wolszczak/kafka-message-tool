@@ -2,11 +2,11 @@ package application.utils;
 
 public final class ValidationStatus {
 
-    private final boolean status;
+    private final boolean isSuccess;
     private final String failureMessage;
 
-    private ValidationStatus(boolean status, String failureMessage) {
-        this.status = status;
+    private ValidationStatus(boolean isSuccess, String failureMessage) {
+        this.isSuccess = isSuccess;
         this.failureMessage = failureMessage;
     }
 
@@ -15,7 +15,11 @@ public final class ValidationStatus {
     }
 
     public boolean isSuccess() {
-        return status;
+        return isSuccess;
+    }
+
+    public boolean isFailure() {
+        return !isSuccess;
     }
 
     public String validationFailureMessage() {
