@@ -39,7 +39,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Optional;
 
 import static java.lang.Thread.sleep;
@@ -49,6 +48,8 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private final DisplayBehaviour displayBehaviour;
     private final TopicConfigComboBoxConfigurator comboBoxConfigurator;
     private final MenuItem saveToFilePopupMenuItem = new MenuItem("Save to file");
+    private final AnchorPane parentPane;
+    private final ModelConfigObjectsGuiInformer guiInformer;
     @FXML
     private TextField listenerNameTextField;
     @FXML
@@ -71,16 +72,12 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private TextField receiveMsgLimitTextField;
     @FXML
     private CheckBox receiveMsgLimitCheckBox;
-
     @FXML
     private Label statusLabel;
-
     private KafkaListenerConfig config;
     private Listeners activeConsumers;
     private Runnable refreshCallback;
     private ObservableList<KafkaTopicConfig> topicConfigs;
-    private final AnchorPane parentPane;
-    private final ModelConfigObjectsGuiInformer guiInformer;
     private ToFileSaver toFileSaver;
 
 
@@ -205,19 +202,15 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         });
     }
 
-    private void partitionsAssignmentChanged(ObservableValue<? extends AssignedPartitionsInfo> observable, AssignedPartitionsInfo oldValue, AssignedPartitionsInfo newValue)
-    {
-        Platform.runLater(()->updateStatusLabelWithAssignedPartitionsInfo(newValue));
+    private void partitionsAssignmentChanged(ObservableValue<? extends AssignedPartitionsInfo> observable, AssignedPartitionsInfo oldValue, AssignedPartitionsInfo newValue) {
+        Platform.runLater(() -> updateStatusLabelWithAssignedPartitionsInfo(newValue));
     }
 
     private void updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo newValue) {
-        final String prefix="Assigned partitions : %s";
-        if(newValue == null || !newValue.isValid())
-        {
+        final String prefix = "Assigned partitions : %s";
+        if (newValue == null || !newValue.isValid()) {
             statusLabel.setText(String.format(prefix, "<DISCONNECTED FROM BROKER>"));
-        }
-        else
-        {
+        } else {
             statusLabel.setText(String.format(prefix, StringUtils.join(newValue.getPartitionsList())));
         }
     }

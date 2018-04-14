@@ -10,10 +10,21 @@ import org.apache.commons.lang3.StringUtils;
 public class Validations {
     public static ValidationStatus validateForCalculatingPartition(KafkaSenderConfig config,
                                                                    KafkaClusterProxies clusterProxies) {
+
+        final ValidationStatus forSending = validateForSendingMessage(config, clusterProxies);
+        if (forSending.isFailure()) {
+            return forSending;
+        }
+
         final ValidationStatus x = validateMessageKey(config);
         if (x.isFailure()) {
             return x;
         }
+        return ValidationStatus.success();
+    }
+
+    public static ValidationStatus validateForSendingMessage(KafkaSenderConfig config,
+                                                             KafkaClusterProxies clusterProxies) {
 
         final KafkaTopicConfig topicConfig = config.getRelatedConfig();
         if (topicConfig == null) {
@@ -37,7 +48,8 @@ public class Validations {
         return ValidationStatus.success();
     }
 
-    private static ValidationStatus validateBrokerConfigValidAndStatusIsKnown(KafkaTopicConfig topicConfig, KafkaClusterProxies clusterProxies) {
+    private static ValidationStatus validateBrokerConfigValidAndStatusIsKnown(KafkaTopicConfig topicConfig,
+                                                                              KafkaClusterProxies clusterProxies) {
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
         if (brokerConfig == null) {
             return ValidationStatus.failure("Broker config not set");
@@ -47,6 +59,7 @@ public class Validations {
         if (kafkaClusterProxy == null) {
             return ValidationStatus.failure("Broker status unknown");
         }
+
         return ValidationStatus.success();
     }
 

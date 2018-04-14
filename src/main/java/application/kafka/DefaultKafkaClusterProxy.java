@@ -45,6 +45,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
+import static application.constants.ApplicationConstants.APPLICATION_NAME;
 import static java.util.Collections.singleton;
 import static scala.collection.JavaConversions.seqAsJavaList;
 
@@ -210,7 +211,9 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
             }
             final String msg = String.format("Cluster config for 'advertised.listeners' is invalid.%n%n" +
                                                  "* None of advertised listeners '%s' are reachable from outside world.%n" +
-                                                 "* Producers/consumers would be unable to use this kafka cluster.", advertisedListeners);
+                                                 "* Producers/consumers will be unable to use this kafka cluster (e.g. will not connect properly).%n"+
+                                                 "* This application (%s) cannot fetch broker configuration", advertisedListeners,
+                                             APPLICATION_NAME);
             throw new ClusterConfigurationError(msg);
         } catch (RuntimeException e) {
             Logger.trace(e);

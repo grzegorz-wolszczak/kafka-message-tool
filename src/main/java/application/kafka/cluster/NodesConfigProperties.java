@@ -1,6 +1,5 @@
 package application.kafka.cluster;
 
-import application.kafka.ConfigEntryBooleanValue;
 import kafka.server.KafkaConfig;
 
 import java.util.Arrays;
