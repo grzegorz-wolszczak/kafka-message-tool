@@ -11,7 +11,9 @@ import application.utils.TimestampUtils;
 import application.utils.kafka.KafkaBrokerHostInfo;
 import com.google.common.collect.Lists;
 import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.ObjectProperty;
 import javafx.beans.property.SimpleBooleanProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import org.apache.kafka.clients.consumer.Consumer;
@@ -42,6 +44,8 @@ public class DefaultKafkaListener implements Listener {
     private final StringProperty loggedText = new SimpleStringProperty();
     private final KafkaListenerConfig listenerConfig;
     private final BooleanProperty isRunning = new SimpleBooleanProperty(false);
+    private final ObjectProperty<AssignedPartitionsInfo> assignedPartitions = new SimpleObjectProperty<>();
+
     private final AtomicBoolean shouldBeRunning = new AtomicBoolean(false);
     private final StringBuilder collector = new StringBuilder();
     private final SynchronizedStringBuffer buffer = new SynchronizedStringBuffer();
@@ -52,7 +56,6 @@ public class DefaultKafkaListener implements Listener {
     private Thread fetchThread;
     private int receivedMessagesCount = 0;
     private int receivedMessageLimit = 0;
-
     public DefaultKafkaListener(KafkaListenerConfig listenerConfig) {
         this.listenerConfig = listenerConfig;
     }
@@ -70,6 +73,11 @@ public class DefaultKafkaListener implements Listener {
     @Override
     public BooleanProperty isRunningProperty() {
         return isRunning;
+    }
+
+    @Override
+    public ObjectProperty<AssignedPartitionsInfo> assignedPartitionsProperty() {
+        return assignedPartitions;
     }
 
     @Override
@@ -100,7 +108,7 @@ public class DefaultKafkaListener implements Listener {
         final Consumer<String, String> consumer = createConsumer(brokerHost);
         final List<String> topics = Collections.singletonList(topicName);
         Logger.trace(String.format("Subscribing for topics '%s'", topics));
-        consumer.subscribe(topics);
+        consumer.subscribe(topics, new ConsumerPartitionsRebalanceListener(topicName, assignedPartitions));
         return consumer;
     }
 
@@ -161,6 +169,7 @@ public class DefaultKafkaListener implements Listener {
             if (consumer != null) {
                 consumer.unsubscribe();
                 consumer.close();
+                assignedPartitions.set(AssignedPartitionsInfo.invalid());
             }
         });
     }

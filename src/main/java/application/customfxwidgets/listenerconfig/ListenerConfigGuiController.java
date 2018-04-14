@@ -6,6 +6,7 @@ import application.customfxwidgets.TopicConfigComboBoxConfigurator;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
+import application.kafka.listener.AssignedPartitionsInfo;
 import application.kafka.listener.Listener;
 import application.kafka.listener.Listeners;
 import application.model.KafkaOffsetResetType;
@@ -18,6 +19,7 @@ import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
@@ -26,15 +28,18 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 import static java.lang.Thread.sleep;
@@ -66,6 +71,10 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private TextField receiveMsgLimitTextField;
     @FXML
     private CheckBox receiveMsgLimitCheckBox;
+
+    @FXML
+    private Label statusLabel;
+
     private KafkaListenerConfig config;
     private Listeners activeConsumers;
     private Runnable refreshCallback;
@@ -106,7 +115,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         configureConsumerGroupField();
         configureFetchTimeoutField();
         configureReceiveMsgLimitControls();
-        resetKafkaListenerBinding();
+        setKafkaListenerBinding();
 
         configureGuiControlDisableStateBasedOnStartButtonState();
         GuiUtils.configureComboBoxToClearSelectedValueIfItsPreviousValueWasRemoved(topicConfigComboBox);
@@ -126,6 +135,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         configureDisplayBehaviour();
         configureToFileSaver();
         addAdditionalOptionsToTextAreaPopupMenu();
+        updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo.invalid());
     }
 
     private void configureDisplayBehaviour() {
@@ -186,18 +196,37 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
                                                          ValidatorUtils::isStringIdentifierValid);
     }
 
-    private void resetKafkaListenerBinding() {
+    private void setKafkaListenerBinding() {
         getActiveListenersForConfig().ifPresent(listener -> {
             listener.loggedTextProperty().addListener((observableValue, s, t1) -> appendTextScrolledToBottom(t1));
-
+            listener.assignedPartitionsProperty().addListener(this::partitionsAssignmentChanged);
             startButton.disableProperty().bind(listener.isRunningProperty());
             stopButton.disableProperty().bind(listener.isRunningProperty().not());
         });
     }
 
+    private void partitionsAssignmentChanged(ObservableValue<? extends AssignedPartitionsInfo> observable, AssignedPartitionsInfo oldValue, AssignedPartitionsInfo newValue)
+    {
+        Platform.runLater(()->updateStatusLabelWithAssignedPartitionsInfo(newValue));
+    }
+
+    private void updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo newValue) {
+        final String prefix="Assigned partitions : %s";
+        if(newValue == null || !newValue.isValid())
+        {
+            statusLabel.setText(String.format(prefix, "<DISCONNECTED FROM BROKER>"));
+        }
+        else
+        {
+            statusLabel.setText(String.format(prefix, StringUtils.join(newValue.getPartitionsList())));
+        }
+    }
+
+
     private void appendTextScrolledToBottom(String textToAppend) {
         try {
             // Slow down calls to appendText
+            // otherwise it will freeze GUI
             sleep(1);
         } catch (InterruptedException e) {
             e.printStackTrace();
@@ -245,6 +274,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     @FXML
     private void stopButtonOnAction() {
         getActiveListenersForConfig().ifPresent(Listener::stop);
+        updateStatusLabelWithAssignedPartitionsInfo(null);
     }
 
     @FXML
