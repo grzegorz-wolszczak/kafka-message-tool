@@ -21,7 +21,8 @@
          <content>
             <GridPane hgap="5.0" vgap="5.0">
               <columnConstraints>
-                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="111.0" minWidth="-Infinity" prefWidth="111.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="30.0" />
                   <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                   <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                   <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" />
@@ -39,8 +40,8 @@
                   <RowConstraints fillHeight="false" maxHeight="35.0" minHeight="-Infinity" prefHeight="35.0" vgrow="NEVER" />
               </rowConstraints>
                <children>
-                  <Label text="Config name" />
-                  <TextField fx:id="listenerNameTextField" GridPane.columnIndex="1" GridPane.columnSpan="3" />
+                  <Label text="Config name" GridPane.columnSpan="2" GridPane.halignment="LEFT" />
+                  <TextField fx:id="listenerNameTextField" GridPane.columnIndex="2" GridPane.columnSpan="3" />
                   <TitledPane collapsible="false" maxHeight="1.7976931348623157E308" text="Output" GridPane.columnSpan="2147483647" GridPane.rowIndex="6">
                      <content>
                         <TextArea fx:id="outputTextArea" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0">
@@ -50,20 +51,20 @@
                         </TextArea>
                      </content>
                   </TitledPane>
-                  <Label text="Topic config" GridPane.rowIndex="1" />
-                  <ComboBox fx:id="topicConfigComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
-                  <Button fx:id="clearButon" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clearButtonOnAction" text="Clear" GridPane.columnIndex="4" GridPane.rowIndex="8" />
+                  <Label text="Topic config" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
+                  <ComboBox fx:id="topicConfigComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="1" />
+                  <Button fx:id="clearButon" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#clearButtonOnAction" text="Clear" GridPane.columnIndex="5" GridPane.rowIndex="8" />
                   <Button fx:id="startButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#startButtonOnAction" text="Start" GridPane.rowIndex="8" />
-                  <Button fx:id="stopButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stopButtonOnAction" text="Stop" GridPane.columnIndex="1" GridPane.rowIndex="8" />
-                  <Label text="Consumer group" GridPane.rowIndex="2" />
-                  <TextField fx:id="consumerGroupTextField" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="2" />
-                  <Label text="Fetch timeout (ms)" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
-                  <TextField fx:id="fetchTimeoutTextField" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                  <Label text="Offset reset config" GridPane.rowIndex="4" />
-                  <ComboBox fx:id="offsetResetComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#detachButtonOnAction" text="Detach" GridPane.columnIndex="4" />
-                  <CheckBox fx:id="receiveMsgLimitCheckBox" mnemonicParsing="false" text="Receive limit" GridPane.rowIndex="5" />
-                  <TextField fx:id="receiveMsgLimitTextField" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+                  <Button fx:id="stopButton" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#stopButtonOnAction" text="Stop" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+                  <Label text="Consumer group" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
+                  <TextField fx:id="consumerGroupTextField" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                  <Label text="Fetch timeout (ms)" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" />
+                  <TextField fx:id="fetchTimeoutTextField" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                  <Label text="Offset reset config" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="4" />
+                  <ComboBox fx:id="offsetResetComboBox" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#detachButtonOnAction" text="Detach" GridPane.columnIndex="5" />
+                  <CheckBox fx:id="receiveMsgLimitCheckBox" mnemonicParsing="false" text="Receive limit" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="5" />
+                  <TextField fx:id="receiveMsgLimitTextField" GridPane.columnIndex="2" GridPane.rowIndex="5" />
                   <Label fx:id="statusLabel" text="Assigned paritions: &lt;DISCONNECTED FROM BROKER&gt;" GridPane.columnSpan="2147483647" GridPane.rowIndex="7" />
                </children>
                <padding>
