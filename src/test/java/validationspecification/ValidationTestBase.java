@@ -40,6 +40,5 @@ public class ValidationTestBase {
 
         when(clusterProxies.get(brokerConfig.getHostInfo())).thenReturn(clusterProxy);
         when(clusterProxy.hasTopic(topicName)).thenReturn(true);
-        when(clusterProxy.areAdvertisedListenersValid()).thenReturn(true);
     }
 }

@@ -19,6 +19,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListView;
@@ -77,7 +78,7 @@ public class MainApplicationController extends VBox {
     private ControllerProvider controllerProvider;
     private Application fxApplication;
     private ApplicationSettings appSettings;
-    private VirtualizedScrollPane<StyleClassedTextArea> loggingPaneArea;
+    private Node loggingPaneArea;
     private ControllerRepositoryFactory controllersRepositoryFactory;
     private DefaultActionHandlerFactory actionHandlerFactory;
     private ApplicationBusySwitcher busySwitcher;
@@ -86,7 +87,7 @@ public class MainApplicationController extends VBox {
                                      DataModel model,
                                      Application fxApplication,
                                      ApplicationSettings appSettings,
-                                     VirtualizedScrollPane<StyleClassedTextArea> loggingPaneArea,
+                                     Node loggingPaneArea,
                                      ControllerRepositoryFactory controllersRepositoryFactory,
                                      DefaultActionHandlerFactory actionHandlerFactory,
                                      ApplicationBusySwitcher busySwitcher) {

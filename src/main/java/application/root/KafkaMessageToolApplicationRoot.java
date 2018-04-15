@@ -12,7 +12,9 @@ import application.globals.StageRepository;
 import application.kafka.cluster.ClusterStatusChecker;
 import application.kafka.sender.DefaultKafkaMessageSender;
 import application.kafka.listener.KafkaListeners;
+import application.logging.CyclicStringBuffer;
 import application.logging.DefaultLogger;
+import application.logging.FixedRecordsCountLogger;
 import application.logging.GuiWindowedLogger;
 import application.logging.Logger;
 import application.model.DataModel;
@@ -31,15 +33,15 @@ import application.utils.UserGuiInteractor;
 import application.utils.kafka.KafkaProducers;
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
-import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class FxApplicationLogicRoot implements FxApplicationRoot {
+public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
 
     private static final String MAIN_APPLICATION_VIEW_FXML_FILE = "MainApplicationView.fxml";
 
@@ -50,7 +52,9 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
     private ExecutorService executorService;
     private MainApplication mainApplication;
 
-    public FxApplicationLogicRoot(MainApplication mainApplication) {
+    private final Restartables restartables= new Restartables();
+
+    public KafkaMessageToolApplicationRoot(MainApplication mainApplication) {
         this.mainApplication = mainApplication;
     }
 
@@ -64,14 +68,14 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
         createObjects();
         configureScene();
         configureStage();
-
-        applicationPorts.start();
+        restartables.start();
         mainStage.show();
     }
 
     public void stopAll() {
+        restartables.stop();
         applicationSettings.save();
-        applicationPorts.stop();
+
         StageRepository.closeAllStages();
         KafkaProducers.close();
         executorService.shutdown();
@@ -112,8 +116,8 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
         final DataModel dataModel = new DataModel();
         final GuiSettings guiSettings = new GuiSettings();
         final GlobalSettings globalSettings = new GlobalSettings();
-        applicationPorts = new DefaultApplicationPorts(new DefaultKafkaMessageSender(),
-                                                       new KafkaListeners());
+        applicationPorts = restartables.register(new DefaultApplicationPorts(new DefaultKafkaMessageSender(),
+                                                       new KafkaListeners()));
 
         final ModelDataProxy modelDataProxy = new DefaultModelDataProxy(dataModel);
         final XmlFileConfig xmlFileConfig = new XmlFileConfig(modelDataProxy,
@@ -121,13 +125,15 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
                                                               guiSettings,
                                                               globalSettings);
 
-        final StyleClassedTextArea loggingPaneArea = getStyleClassedTextArea();
-        final VirtualizedScrollPane<StyleClassedTextArea> loggingPane = new VirtualizedScrollPane<>(loggingPaneArea);
 
         final UserGuiInteractor interactor = new UserGuiInteractor(mainStage);
         final ApplicationBusySwitcher busySwitcher = new DefaultApplicationBusySwitcher(mainStage);
 
-        Logger.registerLogger(new GuiWindowedLogger(loggingPaneArea));
+        final TextArea logTextArea = getTextAreaForLogging();
+        //final FixedRecordsCountLogger fixedRecordsLogger = restartables.register(new FixedRecordsCountLogger(logTextArea, new CyclicStringBuffer()));
+        final FixedRecordsCountLogger fixedRecordsLogger = new FixedRecordsCountLogger(logTextArea, new CyclicStringBuffer());
+        restartables.register(fixedRecordsLogger);
+        Logger.registerLogger(new GuiWindowedLogger(fixedRecordsLogger));
         applicationSettings = new DefaultApplicationSettings(xmlFileConfig);
         applicationSettings.load();
         Logger.setLogLevel(applicationSettings.appSettings().getLogLevel());
@@ -149,7 +155,7 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
                                                                                        dataModel,
                                                                                        getApplication(),
                                                                                        applicationSettings,
-                                                                                       loggingPane,
+                                                                                       logTextArea,
                                                                                        controllerRepositoryFactory,
                                                                                        actionHandlerFactory,
                                                                                        busySwitcher);
@@ -159,6 +165,13 @@ public class FxApplicationLogicRoot implements FxApplicationRoot {
         scene = new Scene(mainController);
 
 
+    }
+
+    private TextArea getTextAreaForLogging() {
+        final TextArea textArea = new TextArea();
+        textArea.setWrapText(true);
+        textArea.setEditable(false);
+        return textArea;
     }
 
     private StyleClassedTextArea getStyleClassedTextArea() {

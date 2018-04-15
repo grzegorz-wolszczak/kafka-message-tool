@@ -15,7 +15,11 @@ import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.persistence.ApplicationSettings;
 import application.scripting.MessageTemplateSender;
-import application.utils.*;
+import application.utils.GuiUtils;
+import application.utils.TooltipCreator;
+import application.utils.ValidationStatus;
+import application.utils.Validations;
+import application.utils.ValidatorUtils;
 import application.utils.kafka.KafkaParitionUtils;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -24,10 +28,18 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
+import org.controlsfx.control.StatusBar;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
@@ -58,6 +70,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     private final StyleClassedTextArea messageContentTextArea;
     private KafkaClusterProxies kafkaClusterProxies;
     private ApplicationSettings applicationSettings;
+    private SentMessagesProgressNotifier sentMessagesNotifier;
     @FXML
     private TextField messageNameTextField;
     @FXML
@@ -99,6 +112,8 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     @FXML
     private Button stopSendingButton;
 
+    @FXML
+    private StatusBar notificationBar;
 
     public SenderConfigGuiController(KafkaSenderConfig config,
                                      AnchorPane parentPane,
@@ -152,11 +167,16 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         configureScriptsTextAreas();
         configureMessageKeyTextField();
         configureSimulationSendingCheckBox();
+        createProgressNotifier();
         GuiUtils.configureComboBoxToClearSelectedValueIfItsPreviousValueWasRemoved(topicConfigComboBox);
         comboBoxConfigurator = new TopicConfigComboBoxConfigurator<>(topicConfigComboBox, config);
         comboBoxConfigurator.configure();
         taskExecutor = new MessageSenderTaskExecutor(sendMsgPushButton.disableProperty(),
                                                      stopSendingButton.disableProperty());
+    }
+
+    private void createProgressNotifier() {
+        sentMessagesNotifier = new SentMessagesProgressNotifier(notificationBar);
     }
 
     @Override
@@ -214,8 +234,8 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
             }
 
             beforeAllmessagesSharedScriptCodeArea.replaceText(0,
-                    beforeAllmessagesSharedScriptCodeArea.getLength(),
-                    newValue);
+                                                              beforeAllmessagesSharedScriptCodeArea.getLength(),
+                                                              newValue);
         });
 
         beforeAllMessagesScriptCodeArea.appendText(config.runBeforeAllMessagesScriptProperty().get());
@@ -339,10 +359,11 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
             return;
         }
 
-
+        sentMessagesNotifier.clearMsgSentProgress();
         taskExecutor.run(() -> msgTemplateSender.send(config,
-                applicationSettings.appSettings().getRunBeforeFirstMessageSharedScriptContent(),
-                sendingSimulationModeCheckBox.isSelected()));
+                                                      sentMessagesNotifier,
+                                                      applicationSettings.appSettings().getRunBeforeFirstMessageSharedScriptContent(),
+                                                      sendingSimulationModeCheckBox.isSelected()));
 
     }
 

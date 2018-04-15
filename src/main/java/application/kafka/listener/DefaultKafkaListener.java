@@ -258,7 +258,7 @@ public class DefaultKafkaListener implements Listener {
 
     private String prepareConsumerRecordToBeLogged(ConsumerRecord<String, String> record) {
         return String.format("[%s] ConsumerRecord: (key:%s,  partition:%d, offset:%d, timestamp:%s)%nvalue '%s'%n",
-                             TimestampUtils.nowTimestamp(),
+                             TimestampUtils.nowFullTimestamp(),
                              record.key(),
                              record.partition(),
                              record.offset(),

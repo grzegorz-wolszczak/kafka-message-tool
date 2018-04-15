@@ -15,6 +15,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import org.controlsfx.control.StatusBar?>
 
 <fx:root prefHeight="785.0" prefWidth="1109.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
@@ -35,6 +36,7 @@
                   <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
                   <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="SOMETIMES" />
                 <RowConstraints vgrow="ALWAYS" />
+                  <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="30.0" vgrow="ALWAYS" />
                   <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="35.0" vgrow="NEVER" />
               </rowConstraints>
                <children>
@@ -44,11 +46,11 @@
                   <ComboBox fx:id="topicConfigComboBox" maxWidth="1.7976931348623157E308" minWidth="-Infinity" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
                   <TextField fx:id="messageKeyTextField" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2" />
                   <CheckBox fx:id="messageKeyCheckBox" mnemonicParsing="false" text="Message key" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
-                <Button fx:id="sendMsgPushButton" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSendButtonClicked" prefHeight="25.0" text="Send" GridPane.rowIndex="5" />
+                <Button fx:id="sendMsgPushButton" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSendButtonClicked" prefHeight="25.0" text="Send" GridPane.rowIndex="6" />
                   <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Detach" GridPane.columnIndex="5" />
                   <Label text="Repeat count" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
                   <Spinner fx:id="repeatCountSpinner" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="3" />
-                  <CheckBox fx:id="sendingSimulationModeCheckBox" mnemonicParsing="false" text="Sending simulation mode" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="5" />
+                  <CheckBox fx:id="sendingSimulationModeCheckBox" mnemonicParsing="false" text="Sending simulation mode" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="6" />
                   <TitledPane fx:id="messageDefinitionTitledPane" animated="false" collapsible="false" contentDisplay="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="200.0" prefWidth="200.0" text="Message definition" GridPane.columnSpan="2147483647" GridPane.rowIndex="4">
                      <content>
                         <TabPane>
@@ -88,7 +90,8 @@
                         </TabPane>
                      </content>
                   </TitledPane>
-                  <Button fx:id="stopSendingButton" disable="true" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onStopSendingButtonClicked" prefHeight="25.0" text="Stop" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                  <Button fx:id="stopSendingButton" disable="true" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onStopSendingButtonClicked" prefHeight="25.0" text="Stop" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                  <StatusBar fx:id="notificationBar" text="" GridPane.columnSpan="2147483647" GridPane.rowIndex="5" />
                </children>
                <padding>
                   <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />

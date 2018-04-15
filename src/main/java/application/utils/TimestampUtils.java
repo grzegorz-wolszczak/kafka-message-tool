@@ -10,8 +10,11 @@ public class TimestampUtils {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS");
 
-    public static String nowTimestamp() {
+    public static String nowFullTimestamp() {
         return DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSS").format(LocalDateTime.now());
+    }
+    public static String nowTimeTimestamp() {
+        return DateTimeFormatter.ofPattern("HH:mm:ss.SSS").format(LocalDateTime.now());
     }
 
     public static String timestampFromEpochMili(long epochMili) {

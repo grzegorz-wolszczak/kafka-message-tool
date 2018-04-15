@@ -24,7 +24,7 @@ todo: syntax highlighting for message receiver ?
 todo: add isSuccess bar with popup hints (similar in Intelij IDEA) to communicate with the user, and remove 'logging window'
 todo: add config opiton - add opition: don't show warning about invalid configuraiton
 todo: on Linux (Mint with Xfce) - application fonts are ugly and too big - suggest other fonts for linux ?
-
+todo: add time duration summary how much it took to send all messages
 
 ### Refactor
 todo: replace (wherever possible)

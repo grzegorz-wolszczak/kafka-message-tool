@@ -1,6 +1,7 @@
 package application.scripting;
 
 import application.constants.GroovyStringEscaper;
+import application.customfxwidgets.senderconfig.SentMessagesProgressNotifier;
 import application.exceptions.ExecutionStopRequested;
 import application.kafka.sender.KafkaMessageSender;
 import application.logging.Logger;
@@ -21,15 +22,19 @@ public class MessageTemplateSender {
     }
 
     public void send(KafkaSenderConfig config,
+                     SentMessagesProgressNotifier sentMessagesNotifier,
                      String sharedScriptContent,
                      boolean isSimulationModeEnabled) {
         try {
-            trySend(config, sharedScriptContent, isSimulationModeEnabled);
+            trySend(config, sentMessagesNotifier, sharedScriptContent, isSimulationModeEnabled);
         } catch (ExecutionStopRequested e) {
             Logger.warn("Sending stopped by user.");
         } catch (Exception e) {
             Logger.trace(ThrowableUtils.getFullStackTrace(e));
             Logger.error(ThrowableUtils.getMessageWithRootCause(e));
+        }
+        finally {
+            sentMessagesNotifier.clearMsgSentProgress();
         }
 
     }
@@ -41,6 +46,7 @@ public class MessageTemplateSender {
     }
 
     private void trySend(KafkaSenderConfig config,
+                         SentMessagesProgressNotifier sentMessagesNotifier,
                          String sharedScriptContent,
                          boolean isSimulationModeEnabled) throws Exception {
 
@@ -62,6 +68,7 @@ public class MessageTemplateSender {
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
+            sentMessagesNotifier.setMsgSentProgress(i+1, totalMessageCount);
             runScript(config.getRunBeforeEachMessageScript());
             final String evaluatedMessage = evaluateMessageContent(config.getMsgContentTemplate());
 

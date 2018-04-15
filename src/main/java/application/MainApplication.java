@@ -1,8 +1,8 @@
 package application;
 
 import application.logging.Logger;
-import application.root.FxApplicationLogicRoot;
-import application.root.FxApplicationRoot;
+import application.root.KafkaMessageToolApplicationRoot;
+import application.root.ApplicationRoot;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
@@ -11,7 +11,7 @@ public class MainApplication extends Application {
 
     private static final int ERROR_EXIT_STATUS = 1;
 
-    private final FxApplicationRoot app = new FxApplicationLogicRoot(this);
+    private final ApplicationRoot app = new KafkaMessageToolApplicationRoot(this);
 
     public static void main(String[] args) {
         launch(args);

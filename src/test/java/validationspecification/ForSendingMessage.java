@@ -66,17 +66,4 @@ public class ForSendingMessage extends ValidationTestBase{
 
     }
 
-    @Test
-    public void shouldReturnFailureBecauseBrokerHasInvalidAdvertisedListenersConfiguration() {
-        // GIVEN
-        when(clusterProxy.areAdvertisedListenersValid()).thenReturn(false);
-
-        // WHEN
-        ValidationStatus s = Validations.validateForSendingMessage(senderConfig, clusterProxies);
-
-        // THEN
-        assertThat(s.validationFailureMessage()).isEqualTo(String.format("Broker has invalid 'advertised.listeners' configuration.", topicName));
-
-        // THEN
-    }
 }
