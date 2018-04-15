@@ -51,6 +51,7 @@ import static scala.collection.JavaConversions.seqAsJavaList;
 
 public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
 
+    public static final String OFFSET_NOT_FOUND = "NOT_FOUND";
     private final HostPortValue hostPort;
     private final ClusterStateSummary clusterSummary = new ClusterStateSummary();
     private final ClusterNodesProperties clusterNodesProperties = new ClusterNodesProperties();
@@ -247,8 +248,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     private String getOffsetForPartition(Map<TopicPartition, Object> offsets, TopicPartition topicPartition) {
         Logger.trace(String.format("Searching for offset for %s in %s", topicPartition, offsets));
         if (!offsets.containsKey(topicPartition)) {
-            Logger.trace("Not found");
-            return "NOT_FOUND";
+            Logger.trace("Offset not found");
+            return OFFSET_NOT_FOUND;
         }
         final Object offset = offsets.get(topicPartition);
         final String offsetAsString = String.valueOf(offset);
