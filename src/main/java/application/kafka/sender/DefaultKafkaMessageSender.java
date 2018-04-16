@@ -1,5 +1,6 @@
 package application.kafka.sender;
 
+import application.exceptions.KafkaToolError;
 import application.logging.Logger;
 import application.model.MessageOnTopicDto;
 import application.utils.HostInfo;
@@ -20,7 +21,6 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
     private static final int KAFKA_SENDER_SEND_TIMEOUT_MS = 3000;
     private static final int KAFKA_PRODUCER_MAX_BLOCK_MS = 1501;
     private KafkaProducer<String, String> producer;
-
 
     public DefaultKafkaMessageSender() {
     }
@@ -50,8 +50,7 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
             Logger.info("Ok. Message(s) sent.");
         } catch (Exception e) {
             printMostAppropriateDebugBasedOnExcepionType(e);
-        } catch (Throwable e) {
-            Logger.error("Sending thread exception", e);
+            throw new RuntimeException(e);
         }
 
     }
