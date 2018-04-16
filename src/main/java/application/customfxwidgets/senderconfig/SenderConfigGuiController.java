@@ -264,6 +264,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     private void configureRepeatCountSpinner() {
 
 
+        repeatCountSpinner.setTooltip(TooltipCreator.createFrom("Max value: " + MAX_REPEAT_COUNT));
         repeatCountSpinner.setValueFactory(new IntegerSpinnerValueFactory(MIN_REPEAT_COUNT,
                                                                           Integer.MAX_VALUE,
                                                                           config.repeatCountProperty().get()));
