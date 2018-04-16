@@ -19,6 +19,19 @@ public class SentMessagesProgressNotifier {
         resetStatusBarOnConstruction();
     }
 
+    // count is 1-based
+    public void setMsgSentProgress(int count, int total) {
+        displayProgressOnProgressBar((float) count / (float) total);
+        double percentage = percentage(count, total);
+        displayMessageToStatusBar(String.format(Locale.ENGLISH, "Sent messages: %d/%d (%06.3f)%%", count, total, percentage));
+    }
+
+    public void clearMsgSentProgress() {
+        displayProgressOnProgressBar(0.0);
+        //displayMessageToStatusBar("");
+
+    }
+
     private void resetStatusBarOnConstruction() {
         statusBar.getLeftItems().clear();
         final ObservableList<Node> rightItems = statusBar.getRightItems();
@@ -31,24 +44,10 @@ public class SentMessagesProgressNotifier {
     }
 
     private void displayMessageToStatusBar(String message) {
-        Platform.runLater(()->statusBar.textProperty().set(message));
+        Platform.runLater(() -> statusBar.textProperty().set(message));
     }
 
-    private void displayProgressOnProgressBar(double value)
-    {
-        Platform.runLater(()->doubleProperty.set(value));
-    }
-
-    // count is 1-based
-    public void setMsgSentProgress(int count, int total) {
-        displayProgressOnProgressBar((float)count / (float)total);
-        double percentage = percentage(count, total);
-        displayMessageToStatusBar(String.format(Locale.ENGLISH, "Sent messages: %d/%d (%06.3f)%%", count, total, percentage));
-    }
-
-    public void clearMsgSentProgress() {
-        displayProgressOnProgressBar(0.0);
-        //displayMessageToStatusBar("");
-
+    private void displayProgressOnProgressBar(double value) {
+        Platform.runLater(() -> doubleProperty.set(value));
     }
 }

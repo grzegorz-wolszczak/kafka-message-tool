@@ -7,11 +7,11 @@ import application.customfxwidgets.mainviewcontroller.ControllerRepositoryFactor
 import application.customfxwidgets.mainviewcontroller.DefaultControllerRepositoryFactory;
 import application.customfxwidgets.mainviewcontroller.MainApplicationController;
 import application.globals.AppGlobals;
-import application.kafka.cluster.KafkaClusterProxies;
 import application.globals.StageRepository;
 import application.kafka.cluster.ClusterStatusChecker;
-import application.kafka.sender.DefaultKafkaMessageSender;
+import application.kafka.cluster.KafkaClusterProxies;
 import application.kafka.listener.KafkaListeners;
+import application.kafka.sender.DefaultKafkaMessageSender;
 import application.logging.CyclicStringBuffer;
 import application.logging.DefaultLogger;
 import application.logging.FixedRecordsCountLogger;
@@ -44,15 +44,13 @@ import java.util.concurrent.Executors;
 public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
 
     private static final String MAIN_APPLICATION_VIEW_FXML_FILE = "MainApplicationView.fxml";
-
+    private final Restartables restartables = new Restartables();
     private ApplicationPorts applicationPorts;
     private Stage mainStage;
     private ApplicationSettings applicationSettings;
     private Scene scene;
     private ExecutorService executorService;
     private MainApplication mainApplication;
-
-    private final Restartables restartables= new Restartables();
 
     public KafkaMessageToolApplicationRoot(MainApplication mainApplication) {
         this.mainApplication = mainApplication;
@@ -117,7 +115,7 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
         final GuiSettings guiSettings = new GuiSettings();
         final GlobalSettings globalSettings = new GlobalSettings();
         applicationPorts = restartables.register(new DefaultApplicationPorts(new DefaultKafkaMessageSender(),
-                                                       new KafkaListeners()));
+                                                                             new KafkaListeners()));
 
         final ModelDataProxy modelDataProxy = new DefaultModelDataProxy(dataModel);
         final XmlFileConfig xmlFileConfig = new XmlFileConfig(modelDataProxy,
@@ -130,7 +128,6 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
         final ApplicationBusySwitcher busySwitcher = new DefaultApplicationBusySwitcher(mainStage);
 
         final TextArea logTextArea = getTextAreaForLogging();
-        //final FixedRecordsCountLogger fixedRecordsLogger = restartables.register(new FixedRecordsCountLogger(logTextArea, new CyclicStringBuffer()));
         final FixedRecordsCountLogger fixedRecordsLogger = new FixedRecordsCountLogger(logTextArea, new CyclicStringBuffer());
         restartables.register(fixedRecordsLogger);
         Logger.registerLogger(new GuiWindowedLogger(fixedRecordsLogger));

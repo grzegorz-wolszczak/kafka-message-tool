@@ -1,6 +1,5 @@
 package application.kafka.sender;
 
-import application.exceptions.KafkaToolError;
 import application.logging.Logger;
 import application.model.MessageOnTopicDto;
 import application.utils.HostInfo;
@@ -41,13 +40,14 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
     }
 
 
-    private void trySendMessages(MessageOnTopicDto msgOnTopicToBeSent) {
+    private void trySendMessages(MessageOnTopicDto msgToBeSent) {
 
         try {
-            refreshProducerIfNeeded(msgOnTopicToBeSent.getBrokerHostInfo(),
-                                    msgOnTopicToBeSent.shouldSimulateSending());
-            sendMessagesToTopic(msgOnTopicToBeSent);
-            Logger.info("Ok. Message(s) sent.");
+            refreshProducerIfNeeded(msgToBeSent.getBrokerHostInfo(),
+                                    msgToBeSent.shouldSimulateSending());
+            sendMessagesToTopic(msgToBeSent);
+            Logger.info(String.format("Message [%d/%d] sent.", msgToBeSent.getMsgNum(),
+                                      msgToBeSent.getTotalMsgCount()));
         } catch (Exception e) {
             printMostAppropriateDebugBasedOnExcepionType(e);
             throw new RuntimeException(e);
@@ -71,8 +71,8 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
 
     private void sendMessagesToTopic(MessageOnTopicDto messageOnTopic)
         throws InterruptedException,
-        ExecutionException,
-        TimeoutException {
+               ExecutionException,
+               TimeoutException {
 
 
         final String message = messageOnTopic.getMessage();
@@ -83,13 +83,13 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
 
 
         final ProducerRecord<String, String> record = createRecord(topicName, key, message);
-        Logger.info(String.format("%sSending record %d/%d (timeout ms: %d)%nmessage content= '%s'",
+        Logger.info(String.format("%sSending message %d/%d (timeout ms: %d)%nmessage content= '%s'",
                                   messageOnTopic.shouldSimulateSending() ? "(simulation) " : "",
                                   msgCount,
                                   totalMsgCount,
                                   KAFKA_SENDER_SEND_TIMEOUT_MS,
                                   message));
-        Logger.trace(String.format("Sending record %s", record));
+
         if (!messageOnTopic.shouldSimulateSending()) {
             final Future<RecordMetadata> futureResult = producer.send(record);
             final RecordMetadata recordMetadata = futureResult.get(KAFKA_SENDER_SEND_TIMEOUT_MS, TimeUnit.MILLISECONDS);

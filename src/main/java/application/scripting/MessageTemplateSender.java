@@ -32,8 +32,7 @@ public class MessageTemplateSender {
         } catch (Exception e) {
             Logger.trace(ThrowableUtils.getFullStackTrace(e));
             Logger.error(ThrowableUtils.getMessageWithRootCause(e));
-        }
-        finally {
+        } finally {
             sentMessagesNotifier.clearMsgSentProgress();
         }
 
@@ -63,12 +62,12 @@ public class MessageTemplateSender {
         runScript(sharedScriptContent);
         runScript(config.getRunBeforeAllMessagesScript());
         kafkaSender.initiateFreshConnection(config.getRelatedConfig().getRelatedConfig().getHostInfo(),
-                isSimulationModeEnabled);
+                                            isSimulationModeEnabled);
         for (int i = 0; i < totalMessageCount; i++) {
             if (Thread.currentThread().isInterrupted()) {
                 return;
             }
-            sentMessagesNotifier.setMsgSentProgress(i+1, totalMessageCount);
+            sentMessagesNotifier.setMsgSentProgress(i + 1, totalMessageCount);
             runScript(config.getRunBeforeEachMessageScript());
             final String evaluatedMessage = evaluateMessageContent(config.getMsgContentTemplate());
 

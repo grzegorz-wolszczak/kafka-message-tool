@@ -39,11 +39,14 @@ import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.controlsfx.control.StatusBar;
 import org.fxmisc.flowless.VirtualizedScrollPane;
 import org.fxmisc.richtext.StyleClassedTextArea;
 
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.function.Consumer;
 
 
@@ -175,13 +178,13 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
                                                      stopSendingButton.disableProperty());
     }
 
-    private void createProgressNotifier() {
-        sentMessagesNotifier = new SentMessagesProgressNotifier(notificationBar);
-    }
-
     @Override
     public void display() {
         displayBehaviour.display();
+    }
+
+    private void createProgressNotifier() {
+        sentMessagesNotifier = new SentMessagesProgressNotifier(notificationBar);
     }
 
     private void configureSimulationSendingCheckBox() {
@@ -361,10 +364,20 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         }
 
         sentMessagesNotifier.clearMsgSentProgress();
-        taskExecutor.run(() -> msgTemplateSender.send(config,
-                                                      sentMessagesNotifier,
-                                                      applicationSettings.appSettings().getRunBeforeFirstMessageSharedScriptContent(),
-                                                      sendingSimulationModeCheckBox.isSelected()));
+        taskExecutor.run(this::sendMessageTask);
+
+    }
+
+    private void sendMessageTask() {
+        final Instant now = Instant.now();
+        msgTemplateSender.send(config,
+                               sentMessagesNotifier,
+                               applicationSettings.appSettings().getRunBeforeFirstMessageSharedScriptContent(),
+                               sendingSimulationModeCheckBox.isSelected());
+        final Instant now1 = Instant.now();
+        final Duration between = Duration.between(now, now1);
+        Logger.info(String.format("Sending messages duration: %s",
+                                  DurationFormatUtils.formatDuration(between.toMillis(), "**H:mm:ss**", true)));
 
     }
 

@@ -2,7 +2,6 @@ package application.kafka.cluster;
 
 import application.exceptions.ClusterConfigurationError;
 import application.kafka.DefaultKafkaClusterProxy;
-import application.kafka.cluster.TopicAdmin;
 import application.utils.HostPortValue;
 import kafka.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;

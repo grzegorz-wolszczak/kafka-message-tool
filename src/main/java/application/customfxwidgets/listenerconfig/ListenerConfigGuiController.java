@@ -202,7 +202,9 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         });
     }
 
-    private void partitionsAssignmentChanged(ObservableValue<? extends AssignedPartitionsInfo> observable, AssignedPartitionsInfo oldValue, AssignedPartitionsInfo newValue) {
+    private void partitionsAssignmentChanged(ObservableValue<? extends AssignedPartitionsInfo> observable,
+                                             AssignedPartitionsInfo oldValue,
+                                             AssignedPartitionsInfo newValue) {
         Platform.runLater(() -> updateStatusLabelWithAssignedPartitionsInfo(newValue));
     }
 

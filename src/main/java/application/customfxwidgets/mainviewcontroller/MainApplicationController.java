@@ -1,11 +1,9 @@
 package application.customfxwidgets.mainviewcontroller;
 
-import application.customfxwidgets.aboutwindow.AboutWindow;
-import application.root.ApplicationBusySwitcher;
-import application.root.DefaultActionHandlerFactory;
 import application.constants.GuiStrings;
 import application.controllers.ControllerProvider;
 import application.controllers.helpers.ModelObjectGuiActionsHandler;
+import application.customfxwidgets.aboutwindow.AboutWindow;
 import application.logging.LogLevel;
 import application.logging.Logger;
 import application.model.DataModel;
@@ -15,6 +13,8 @@ import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.persistence.ApplicationSettings;
 import application.persistence.GuiSettings;
+import application.root.ApplicationBusySwitcher;
+import application.root.DefaultActionHandlerFactory;
 import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -30,8 +30,6 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import org.fxmisc.flowless.VirtualizedScrollPane;
-import org.fxmisc.richtext.StyleClassedTextArea;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -242,7 +240,7 @@ public class MainApplicationController extends VBox {
     }
 
     @FXML
-    private void menuItemShowAboutWindow(){
+    private void menuItemShowAboutWindow() {
         showAboutWindow();
     }
 
