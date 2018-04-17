@@ -19,7 +19,7 @@ public class ApplicationConstants {
 
 
 
-    public static final long FUTURE_GET_TIMEOUT_MS = 2000L;
+    public static final long FUTURE_GET_TIMEOUT_MS = 5000L;
     public static final long DESCRIBE_CONSUMER_METEADATA_TIMEOUT_MS = 2000L;
     public static final long CLOSE_CONNECTION_TIMEOUT_MS = 2000L;
     public static final long DELETE_TOPIC_FUTURE_GET_TIMEOUT_MS = 2000L;

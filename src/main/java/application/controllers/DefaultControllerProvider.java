@@ -4,7 +4,10 @@ import application.customfxwidgets.brokerconfig.BrokerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.kafka.cluster.KafkaClusterProxies;
+import application.logging.CyclicStringBuffer;
+import application.logging.FixedRecordsCountLogger;
 import application.persistence.ApplicationSettings;
+import application.root.Restartables;
 import application.scripting.GroovyScriptEvaluator;
 import application.scripting.MessageTemplateSender;
 import application.customfxwidgets.senderconfig.SenderConfigGuiController;
@@ -44,17 +47,20 @@ public class DefaultControllerProvider implements ControllerProvider {
     private final SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator;
     private KafkaClusterProxies kafkaClusterProxies;
     private ApplicationSettings applicationSettings;
+    private Restartables restartables;
 
     public DefaultControllerProvider(ModelConfigObjectsGuiInformer guiInformer,
                                      ClusterStatusChecker statusChecker,
                                      SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator,
                                      KafkaClusterProxies kafkaClusterProxies,
-                                     ApplicationSettings applicationSettings) {
+                                     ApplicationSettings applicationSettings,
+                                     Restartables restartables) {
         this.guiInformer = guiInformer;
         this.statusChecker = statusChecker;
         this.syntaxHighlightConfigurator = syntaxHighlightConfigurator;
         this.kafkaClusterProxies = kafkaClusterProxies;
         this.applicationSettings = applicationSettings;
+        this.restartables = restartables;
     }
 
 
@@ -92,13 +98,16 @@ public class DefaultControllerProvider implements ControllerProvider {
 
         return getControllerFor(config, listenersControllers, () -> {
             try {
+                final FixedRecordsCountLogger fixedRecordsLogger = new FixedRecordsCountLogger(new CyclicStringBuffer());
+                restartables.register(fixedRecordsLogger);
                 return new ListenerConfigGuiController(config,
                                                        parentPane,
                                                        guiInformer,
                                                        activeConsumers,
                                                        refreshCallback,
                                                        topicConfigs,
-                                                       toFileSaver);
+                                                       toFileSaver,
+                                                       fixedRecordsLogger);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;

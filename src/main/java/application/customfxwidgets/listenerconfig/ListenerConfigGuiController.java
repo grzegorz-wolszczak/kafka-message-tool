@@ -9,6 +9,7 @@ import application.displaybehaviour.ModelConfigObjectsGuiInformer;
 import application.kafka.listener.AssignedPartitionsInfo;
 import application.kafka.listener.Listener;
 import application.kafka.listener.Listeners;
+import application.logging.FixedRecordsCountLogger;
 import application.model.KafkaOffsetResetType;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
@@ -41,9 +42,11 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-import static java.lang.Thread.sleep;
-
 public class ListenerConfigGuiController extends AnchorPane implements Displayable {
+    public static final String DISCONNECTED_FROM_BROKER_STRING = "<DISCONNECTED FROM BROKER>";
+    public static final int ZERO_RECEIVED_MSGS = 0;
+    public static final String ASSIGNED_PARITION_PREFIX = "Assigned partitions : %s";
+    public static final String TOTAL_RECEIVED_PREFIX = "Total received msgs: %s";
     private static final String FXML_FILE = "ListenerConfigView.fxml";
     private final DisplayBehaviour displayBehaviour;
     private final TopicConfigComboBoxConfigurator comboBoxConfigurator;
@@ -74,11 +77,15 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private CheckBox receiveMsgLimitCheckBox;
     @FXML
     private Label statusLabel;
+    @FXML
+    private Label receivedTotalMsgLabel;
     private KafkaListenerConfig config;
     private Listeners activeConsumers;
     private Runnable refreshCallback;
     private ObservableList<KafkaTopicConfig> topicConfigs;
     private ToFileSaver toFileSaver;
+    private FixedRecordsCountLogger fixedRecordsLogger;
+    private int totalReceivedMsgCounter = ZERO_RECEIVED_MSGS;
 
 
     public ListenerConfigGuiController(KafkaListenerConfig config,
@@ -87,10 +94,12 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
                                        Listeners activeConsumers,
                                        Runnable refreshCallback,
                                        ObservableList<KafkaTopicConfig> topicConfigs,
-                                       ToFileSaver toFileSaver) throws IOException {
+                                       ToFileSaver toFileSaver,
+                                       FixedRecordsCountLogger fixedRecordsLogger) throws IOException {
         this.parentPane = parentPane;
         this.guiInformer = guiInformer;
         this.toFileSaver = toFileSaver;
+        this.fixedRecordsLogger = fixedRecordsLogger;
 
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
 
@@ -129,11 +138,19 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
 
     @FXML
     private void initialize() {
+        configureFixedRecordLogger();
         configureDisplayBehaviour();
         configureToFileSaver();
         addAdditionalOptionsToTextAreaPopupMenu();
         updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo.invalid());
+        resetTotalReceivedLabeltext();
     }
+
+    private void configureFixedRecordLogger() {
+        fixedRecordsLogger.setLogTextArea(outputTextArea);
+        fixedRecordsLogger.start();
+    }
+
 
     private void configureDisplayBehaviour() {
 
@@ -209,27 +226,34 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     }
 
     private void updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo newValue) {
-        final String prefix = "Assigned partitions : %s";
         if (newValue == null || !newValue.isValid()) {
-            statusLabel.setText(String.format(prefix, "<DISCONNECTED FROM BROKER>"));
+            statusLabel.setText(String.format(ASSIGNED_PARITION_PREFIX, DISCONNECTED_FROM_BROKER_STRING));
         } else {
-            statusLabel.setText(String.format(prefix, StringUtils.join(newValue.getPartitionsList())));
+            statusLabel.setText(String.format(ASSIGNED_PARITION_PREFIX, StringUtils.join(newValue.getPartitionsList())));
         }
     }
 
 
     private void appendTextScrolledToBottom(String textToAppend) {
-        try {
-            // Slow down calls to appendText
-            // otherwise it will freeze GUI
-            sleep(1);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        Platform.runLater(() -> {
-            outputTextArea.appendText(textToAppend);
-        });
+        appendLogToTextArea(textToAppend);
+        incrementReceivedMsgCount();
 
+    }
+
+
+    private void appendLogToTextArea(String textToAppend) {
+        fixedRecordsLogger.appendText(textToAppend);
+    }
+
+    private void incrementReceivedMsgCount() {
+        totalReceivedMsgCounter++;
+        updateReceivedMsgLabel();
+    }
+
+    private void updateReceivedMsgLabel() {
+        Platform.runLater(() -> {
+            receivedTotalMsgLabel.setText(String.format(TOTAL_RECEIVED_PREFIX, totalReceivedMsgCounter));
+        });
     }
 
     private void configureMessageNameTextField() {
@@ -262,7 +286,10 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     @FXML
     private void clearButtonOnAction() {
         getActiveListenersForConfig().ifPresent(listener -> {
-            outputTextArea.clear();
+            fixedRecordsLogger.clear();
+            if (!startButton.isDisable()) {
+                resetTotalReceivedLabeltext();
+            }
         });
     }
 
@@ -275,7 +302,12 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     @FXML
     private void startButtonOnAction() {
         getActiveListenersForConfig().ifPresent(Listener::start);
+        resetTotalReceivedLabeltext();
+    }
 
+    private void resetTotalReceivedLabeltext() {
+        totalReceivedMsgCounter = ZERO_RECEIVED_MSGS;
+        updateReceivedMsgLabel();
     }
 
     @FXML

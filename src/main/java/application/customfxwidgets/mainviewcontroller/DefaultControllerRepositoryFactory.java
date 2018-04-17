@@ -11,6 +11,7 @@ import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.persistence.ApplicationSettings;
+import application.root.Restartables;
 import application.scripting.codearea.SyntaxHighlightingCodeAreaConfigurator;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TabPane;
@@ -20,15 +21,18 @@ public class DefaultControllerRepositoryFactory implements ControllerRepositoryF
     private SyntaxHighlightingCodeAreaConfigurator syntaxHighlightingConfigurator;
     private KafkaClusterProxies kafkaClusterProxies;
     private ApplicationSettings applicationSettings;
+    private Restartables restartables;
 
     public DefaultControllerRepositoryFactory(ClusterStatusChecker statusChecker,
                                               SyntaxHighlightingCodeAreaConfigurator syntaxHighlightingConfigurator,
                                               KafkaClusterProxies kafkaClusterProxies,
-                                              ApplicationSettings applicationSettings) {
+                                              ApplicationSettings applicationSettings,
+                                              Restartables restartables) {
         this.statusChecker = statusChecker;
         this.syntaxHighlightingConfigurator = syntaxHighlightingConfigurator;
         this.kafkaClusterProxies = kafkaClusterProxies;
         this.applicationSettings = applicationSettings;
+        this.restartables = restartables;
     }
 
     @Override
@@ -47,7 +51,8 @@ public class DefaultControllerRepositoryFactory implements ControllerRepositoryF
                                              statusChecker,
                                              syntaxHighlightingConfigurator,
                                              kafkaClusterProxies,
-                                             applicationSettings);
+                                             applicationSettings,
+                                             restartables);
 
     }
 }

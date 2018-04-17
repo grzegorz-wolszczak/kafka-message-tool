@@ -9,6 +9,7 @@
 - fixed - regression: sending simulating mode working again
 - feature - added shared 'message template scripting'. Messge template content that is visible from
     all senders. This can help in setting 'global variables' across all senders
+- feature - added how many message received counter
 
 [v.1.0.2.0]
 - improvement - performance improvement (but more work needed)- log window can accept more entries before it freezes (!sic)

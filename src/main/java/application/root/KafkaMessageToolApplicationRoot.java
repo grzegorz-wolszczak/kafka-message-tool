@@ -141,7 +141,8 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
             new DefaultControllerRepositoryFactory(new ClusterStatusChecker(busySwitcher, interactor, kafkaClusterProxies),
                                                    new SyntaxHighlightingCodeAreaConfigurator(executorService),
                                                    kafkaClusterProxies,
-                                                   applicationSettings);
+                                                   applicationSettings,
+                                                   restartables);
 
         final DefaultActionHandlerFactory actionHandlerFactory = new DefaultActionHandlerFactory(interactor,
                                                                                                  modelDataProxy,

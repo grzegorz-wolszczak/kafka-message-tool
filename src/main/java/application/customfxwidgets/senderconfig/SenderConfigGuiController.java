@@ -377,7 +377,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         final Instant now1 = Instant.now();
         final Duration between = Duration.between(now, now1);
         Logger.info(String.format("Sending messages duration: %s",
-                                  DurationFormatUtils.formatDuration(between.toMillis(), "**H:mm:ss**", true)));
+                                  DurationFormatUtils.formatDuration(between.toMillis(), "HH:mm:ss", true)));
 
     }
 

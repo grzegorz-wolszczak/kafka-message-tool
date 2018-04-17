@@ -6,7 +6,6 @@ import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.utils.AppUtils;
 import application.utils.HostInfo;
-import application.utils.RepeatableTimer;
 import application.utils.TimestampUtils;
 import application.utils.kafka.KafkaBrokerHostInfo;
 import com.google.common.collect.Lists;
@@ -47,15 +46,13 @@ public class DefaultKafkaListener implements Listener {
     private final ObjectProperty<AssignedPartitionsInfo> assignedPartitions = new SimpleObjectProperty<>();
 
     private final AtomicBoolean shouldBeRunning = new AtomicBoolean(false);
-    private final StringBuilder collector = new StringBuilder();
-    private final SynchronizedStringBuffer buffer = new SynchronizedStringBuffer();
-    private final RepeatableTimer logCollectorTimer = new RepeatableTimer();
     private KafkaBrokerHostInfo brokerHost;
     private Consumer<String, String> consumer;
     private FutureTask<Void> wakeUpTask;
     private Thread fetchThread;
     private int receivedMessagesCount = 0;
     private int receivedMessageLimit = 0;
+
     public DefaultKafkaListener(KafkaListenerConfig listenerConfig) {
         this.listenerConfig = listenerConfig;
     }
@@ -98,7 +95,7 @@ public class DefaultKafkaListener implements Listener {
         }
     }
 
-    private synchronized void appendLog(String text) {
+    private void appendLog(String text) {
         loggedText.set(text);
     }
 
@@ -218,7 +215,7 @@ public class DefaultKafkaListener implements Listener {
     }
 
     private void logConsumerRecord(ConsumerRecord<String, String> record) {
-        buffer.appendContent(prepareConsumerRecordToBeLogged(record));
+        appendLog(prepareConsumerRecordToBeLogged(record));
     }
 
 
@@ -268,9 +265,6 @@ public class DefaultKafkaListener implements Listener {
 
     private void tryStart() {
         stop();
-        logCollectorTimer.startExecutingRepeatedly(() -> {
-            appendLog(buffer.getContent());
-        }, REPEAT_RATE_MS);
         fetchThread = new Thread(this::fetch, buildThreadNameForDebugging());
         fetchThread.start();
     }
@@ -280,7 +274,7 @@ public class DefaultKafkaListener implements Listener {
     }
 
     private void tryStop() {
-        logCollectorTimer.cancel();
+
         shouldBeRunning.set(false);
         cancelWakeupTask();
         wakeUpConsumer();

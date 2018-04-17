@@ -10,15 +10,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class FixedRecordsCountLogger implements Restartable {
 
     public static final int REPEAT_RATE_MS = 250;
-    private final TextArea logTextArea;
     private final ConcurrentLinkedQueue<String> stringBufferQueue = new ConcurrentLinkedQueue<>();
     private final RepeatableTimer appendTextTimer = new RepeatableTimer();
+    private TextArea logTextArea;
     private CyclicStringBuffer buffer;
+
+    public FixedRecordsCountLogger(CyclicStringBuffer buffer) {
+        this(null, buffer);
+    }
 
     public FixedRecordsCountLogger(TextArea logTextArea,
                                    CyclicStringBuffer buffer) {
         this.logTextArea = logTextArea;
         this.buffer = buffer;
+    }
+
+    public void setLogTextArea(TextArea logTextArea) {
+        this.logTextArea = logTextArea;
     }
 
     public void appendText(String text) {
