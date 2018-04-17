@@ -32,13 +32,11 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Spinner;
-import javafx.scene.control.SpinnerValueFactory.IntegerSpinnerValueFactory;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
-import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.controlsfx.control.StatusBar;
 import org.fxmisc.flowless.VirtualizedScrollPane;
@@ -47,14 +45,13 @@ import org.fxmisc.richtext.StyleClassedTextArea;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.function.Consumer;
 
 
 public class SenderConfigGuiController extends AnchorPane implements Displayable {
     public static final int MARGINS_SIZE = 5;
     private static final String FXML_FILE = "SenderConfigView.fxml";
     private static final int MIN_REPEAT_COUNT = 1;
-    private static final int MAX_REPEAT_COUNT = 100_000;
+    private static final int MAX_REPEAT_COUNT = 100_000_000;
     private final DisplayBehaviour displayBehaviour;
     private final TopicConfigComboBoxConfigurator comboBoxConfigurator;
 
@@ -265,24 +262,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
 
 
     private void configureRepeatCountSpinner() {
-
-
-        repeatCountSpinner.setTooltip(TooltipCreator.createFrom("Max value: " + MAX_REPEAT_COUNT));
-        repeatCountSpinner.setValueFactory(new IntegerSpinnerValueFactory(MIN_REPEAT_COUNT,
-                                                                          Integer.MAX_VALUE,
-                                                                          config.repeatCountProperty().get()));
-
-
-        final Consumer<String> repeatCountAsStringSetter = (value) -> config.setRepeatCount(Integer.valueOf(value));
-        GuiUtils.configureTextFieldToAcceptOnlyValidData(repeatCountSpinner.getEditor(),
-                                                         repeatCountAsStringSetter,
-                                                         this::isValidRepeatNumber);
-        ValidatorUtils.configureTextFieldToAcceptOnlyDecimalValues(repeatCountSpinner.getEditor());
-
-    }
-
-    private boolean isValidRepeatNumber(String e) {
-        return StringUtils.isNumeric(e) && Integer.parseUnsignedInt(e) <= MAX_REPEAT_COUNT;
+        ValidatorUtils.configureSpinner(repeatCountSpinner, config.repeatCountProperty(), MIN_REPEAT_COUNT, MAX_REPEAT_COUNT);
     }
 
     private void configureMessageNameTextField() {

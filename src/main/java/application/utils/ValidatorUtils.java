@@ -1,11 +1,16 @@
 package application.utils;
 
+import javafx.beans.property.IntegerProperty;
+import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextFormatter;
 import org.apache.commons.lang3.StringUtils;
 
 import java.text.DecimalFormat;
 import java.text.ParsePosition;
+import java.util.function.Consumer;
+import java.util.function.Function;
 
 public class ValidatorUtils {
 
@@ -35,7 +40,7 @@ public class ValidatorUtils {
             return false;
         }
         try {
-            return Integer.parseUnsignedInt(value) >0;
+            return Integer.parseUnsignedInt(value) > 0;
         } catch (Exception e) {
             return false;
         }
@@ -74,4 +79,27 @@ public class ValidatorUtils {
         textField.setTextFormatter(decimalTextFormatter);
     }
 
+    public static boolean isNumberLessEqualThan(String e, int upperBound) {
+        return StringUtils.isNumeric(e) && Integer.parseUnsignedInt(e) <= upperBound;
+    }
+
+    public static void configureSpinner(Spinner<Integer> spinner, IntegerProperty referenceProperty, int minValue, int maxValue) {
+        spinner.setEditable(true);
+        spinner.setTooltip(TooltipCreator.createFrom("Max value: " + maxValue));
+        spinner.setValueFactory(new SpinnerValueFactory.IntegerSpinnerValueFactory(minValue,
+                                                                                   Integer.MAX_VALUE,
+                                                                                   referenceProperty.get()));
+        GuiUtils.configureTextFieldToAcceptOnlyValidData(spinner.getEditor(),
+                                                         stringConsumer(referenceProperty),
+                                                         validationFunc(maxValue));
+        configureTextFieldToAcceptOnlyDecimalValues(spinner.getEditor());
+    }
+
+    private static Function<String, Boolean> validationFunc(int maxValue) {
+        return (v) -> isNumberLessEqualThan(v, maxValue);
+    }
+
+    private static Consumer<String> stringConsumer(IntegerProperty referenceProperty) {
+        return (v) -> referenceProperty.set(Integer.valueOf(v));
+    }
 }

@@ -1,7 +1,7 @@
 
 
 ### BUGS ###
-      bug: cannot send message without key to compacted topic - disable such possibilty or show warning ...
+      bug: when topic config names changes, related sender config combobox does not always refresh this new name with dropdown list (but it is refreshed in the 'selected' value)
 ### TODO ###
 
 todo: big feature : enable providing multiple bootstrap servers in broker config
@@ -15,16 +15,13 @@ todo: big feature : enable providing multiple bootstrap servers in broker config
 
 
 
-todo: add autocomplete (popup) in topic config for existing topics
+
 todo: add word wrap enable/disable checkbox for all CodeArea / LogArea
-todo: add 'after EACH message' to be 'symmetric' when sending message template is concerned
 todo: refactor kafka proxy class
-todo: add wordwrap checkbox for all text areas
-todo: syntax highlighting for message receiver ?
 todo: add isSuccess bar with popup hints (similar in Intelij IDEA) to communicate with the user, and remove 'logging window'
 todo: add config opiton - add opition: don't show warning about invalid configuraiton
 todo: on Linux (Mint with Xfce) - application fonts are ugly and too big - suggest other fonts for linux ?
-todo: add time duration summary how much it took to send all messages
+
 
 ### Refactor
 todo: replace (wherever possible)
@@ -40,9 +37,10 @@ todo: low_priority: when fetching new broker, if configuration on some tab does 
 todo: low_priority save user sorting type for topic (only during program work - dont need to be persistent)
 todo: add handling DEL button in LIstVIew to delete config
 todo: add handling INS button in listView to add new config
-todo: remember main window position
 todo: add gui configuration window (e.g. define all timeouts in application instead of hardcoded values)
 todo: add checkbox to NOT send empty messages (if they get evaluated to empty string)
+todo: add 'after EACH message' to be 'symmetric' when sending message template is concerned
+todo: add wordwrap checkbox for all text areas
 
 ### NOT DONE - DONT KNOW SOLUTION ###
 expand table column width to content

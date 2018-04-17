@@ -73,6 +73,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         this.kafkaAdminClient = kafkaAdminClient;
         throwIfInvalidConfigMakesClusterUnusable();
         fetchClusterStateSummary();
+
     }
 
 
