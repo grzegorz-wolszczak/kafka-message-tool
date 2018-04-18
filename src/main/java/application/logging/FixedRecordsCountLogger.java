@@ -13,7 +13,8 @@ public class FixedRecordsCountLogger implements Restartable {
     private final ConcurrentLinkedQueue<String> stringBufferQueue = new ConcurrentLinkedQueue<>();
     private final RepeatableTimer appendTextTimer = new RepeatableTimer();
     private TextArea logTextArea;
-    private CyclicStringBuffer buffer;
+    private String localBuffer = "";
+    private CyclicStringBuffer cyclicBuffer;
 
     public FixedRecordsCountLogger(CyclicStringBuffer buffer) {
         this(null, buffer);
@@ -22,7 +23,7 @@ public class FixedRecordsCountLogger implements Restartable {
     public FixedRecordsCountLogger(TextArea logTextArea,
                                    CyclicStringBuffer buffer) {
         this.logTextArea = logTextArea;
-        this.buffer = buffer;
+        this.cyclicBuffer = buffer;
     }
 
     public void setLogTextArea(TextArea logTextArea) {
@@ -30,7 +31,7 @@ public class FixedRecordsCountLogger implements Restartable {
     }
 
     public void appendText(String text) {
-        text = normalizeNewlines(text);
+        //text = normalizeNewlines(text);
         stringBufferQueue.add(text);
     }
 
@@ -45,7 +46,8 @@ public class FixedRecordsCountLogger implements Restartable {
 
     public void clear() {
         Platform.runLater(logTextArea::clear);
-        buffer.clear();
+        localBuffer = "";
+        cyclicBuffer.clear();
     }
 
     /*
@@ -54,23 +56,23 @@ public class FixedRecordsCountLogger implements Restartable {
     In order to compare text between cyclicBuffer text and TextArea text, we make sure that
     all strings in TextArea are also without '\r'
      */
-    private String normalizeNewlines(String text) {
-        return text.replace("\r\n", "\n");
-    }
+//    //private String normalizeNewlines(String text) {
+//        return text.replace("\r\n", "\n");
+//    }
 
     private void periodicallyAppendTextToTextEdit() {
         final int size = stringBufferQueue.size();
         for (int i = 0; i < size; i++) {
-            buffer.appendText(stringBufferQueue.remove());
+            cyclicBuffer.appendText(stringBufferQueue.remove());
         }
 
-        final String currentBufferContent = buffer.getContent();
-        final String textAreaText = logTextArea.getText();
-        if (!currentBufferContent.equals(textAreaText)) {
+        final String currentBufferContent = cyclicBuffer.getContent();
+        //final String textAreaText = logTextArea.getText();
+        if (!currentBufferContent.equals(localBuffer)) {
             Platform.runLater(() -> {
                 logTextArea.clear();
-                logTextArea.appendText(currentBufferContent);
-
+                localBuffer = currentBufferContent;
+                logTextArea.appendText(localBuffer);
             });
         }
     }
