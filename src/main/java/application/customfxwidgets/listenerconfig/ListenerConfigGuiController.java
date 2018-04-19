@@ -76,7 +76,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     @FXML
     private CheckBox receiveMsgLimitCheckBox;
     @FXML
-    private Label statusLabel;
+    private Label assignedPartitionsLabel;
     @FXML
     private Label receivedTotalMsgLabel;
     private KafkaListenerConfig config;
@@ -227,9 +227,9 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
 
     private void updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo newValue) {
         if (newValue == null || !newValue.isValid()) {
-            statusLabel.setText(String.format(ASSIGNED_PARITION_PREFIX, DISCONNECTED_FROM_BROKER_STRING));
+            assignedPartitionsLabel.setText( DISCONNECTED_FROM_BROKER_STRING);
         } else {
-            statusLabel.setText(String.format(ASSIGNED_PARITION_PREFIX, StringUtils.join(newValue.getPartitionsList())));
+            assignedPartitionsLabel.setText(StringUtils.join(newValue.getPartitionsList()));
         }
     }
 
