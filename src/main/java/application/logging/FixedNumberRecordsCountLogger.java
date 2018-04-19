@@ -7,7 +7,7 @@ import javafx.scene.control.TextArea;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-public class FixedRecordsCountLogger implements Restartable {
+public class FixedNumberRecordsCountLogger implements Restartable {
 
     public static final int REPEAT_RATE_MS = 250;
     private final ConcurrentLinkedQueue<String> stringBufferQueue = new ConcurrentLinkedQueue<>();
@@ -16,12 +16,12 @@ public class FixedRecordsCountLogger implements Restartable {
     private String localBuffer = "";
     private CyclicStringBuffer cyclicBuffer;
 
-    public FixedRecordsCountLogger(CyclicStringBuffer buffer) {
+    public FixedNumberRecordsCountLogger(CyclicStringBuffer buffer) {
         this(null, buffer);
     }
 
-    public FixedRecordsCountLogger(TextArea logTextArea,
-                                   CyclicStringBuffer buffer) {
+    public FixedNumberRecordsCountLogger(TextArea logTextArea,
+                                         CyclicStringBuffer buffer) {
         this.logTextArea = logTextArea;
         this.cyclicBuffer = buffer;
     }

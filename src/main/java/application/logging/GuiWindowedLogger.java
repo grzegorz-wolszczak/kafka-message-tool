@@ -6,10 +6,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class GuiWindowedLogger implements ToolLogger {
 
-    private FixedRecordsCountLogger fixedRecordsLogger;
+    private FixedNumberRecordsCountLogger fixedRecordsLogger;
 
 
-    public GuiWindowedLogger(FixedRecordsCountLogger fixedRecordsLogger) {
+    public GuiWindowedLogger(FixedNumberRecordsCountLogger fixedRecordsLogger) {
         this.fixedRecordsLogger = fixedRecordsLogger;
     }
 

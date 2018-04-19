@@ -5,7 +5,7 @@ import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
 import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.kafka.cluster.KafkaClusterProxies;
 import application.logging.CyclicStringBuffer;
-import application.logging.FixedRecordsCountLogger;
+import application.logging.FixedNumberRecordsCountLogger;
 import application.persistence.ApplicationSettings;
 import application.root.Restartables;
 import application.scripting.GroovyScriptEvaluator;
@@ -98,7 +98,7 @@ public class DefaultControllerProvider implements ControllerProvider {
 
         return getControllerFor(config, listenersControllers, () -> {
             try {
-                final FixedRecordsCountLogger fixedRecordsLogger = new FixedRecordsCountLogger(new CyclicStringBuffer());
+                final FixedNumberRecordsCountLogger fixedRecordsLogger = new FixedNumberRecordsCountLogger(new CyclicStringBuffer());
                 restartables.register(fixedRecordsLogger);
                 return new ListenerConfigGuiController(config,
                                                        parentPane,
