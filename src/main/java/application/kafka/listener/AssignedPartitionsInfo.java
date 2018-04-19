@@ -4,36 +4,44 @@ import java.util.ArrayList;
 import java.util.List;
 
 final public class AssignedPartitionsInfo {
-    public boolean isValid() {
-        return isValid;
-    }
 
+    private AssignmentChangeReason changeReason;
     private boolean isValid;
     private List<Integer> partitionsList;
 
-    private AssignedPartitionsInfo(boolean isValid, List<Integer> partitionsList) {
-        this.isValid = isValid;
-        this.partitionsList = partitionsList;
+    private AssignedPartitionsInfo() {
+        this.isValid = false;
+        this.partitionsList = null;
     }
 
-    private AssignedPartitionsInfo(List<Integer> list) {
+    private AssignedPartitionsInfo(List<Integer> list, AssignmentChangeReason reason) {
+        changeReason = reason;
         isValid = true;
         partitionsList = new ArrayList<>(list);
     }
 
     public static AssignedPartitionsInfo invalid() {
-        return new AssignedPartitionsInfo(false, null);
+        return new AssignedPartitionsInfo();
 
     }
 
-    public static AssignedPartitionsInfo fromPartitionList(List<Integer> list) {
+    public static AssignedPartitionsInfo fromPartitionList(List<Integer> list,
+                                                           AssignmentChangeReason reason) {
         if (list == null) {
             return AssignedPartitionsInfo.invalid();
         }
-        return new AssignedPartitionsInfo(list);
+        return new AssignedPartitionsInfo(list, reason);
+    }
+
+    public boolean isValid() {
+        return isValid;
     }
 
     public List<Integer> getPartitionsList() {
         return new ArrayList<>(partitionsList);
+    }
+
+    public AssignmentChangeReason getChangeReason() {
+        return changeReason;
     }
 }

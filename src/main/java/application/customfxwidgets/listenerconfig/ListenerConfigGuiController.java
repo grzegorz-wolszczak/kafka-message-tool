@@ -10,6 +10,7 @@ import application.kafka.listener.AssignedPartitionsInfo;
 import application.kafka.listener.Listener;
 import application.kafka.listener.Listeners;
 import application.logging.FixedNumberRecordsCountLogger;
+import application.logging.Logger;
 import application.model.KafkaOffsetResetType;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
@@ -238,6 +239,8 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         String valueToSet = DISCONNECTED_FROM_BROKER_STRING;
         if (newValue != null && newValue.isValid()) {
             valueToSet = StringUtils.join(newValue.getPartitionsList());
+            Logger.debug(String.format("Partitions assignments for config '%s' changed to %s, reason '%s'",
+                    config.getName(), valueToSet, newValue.getChangeReason()));
         }
         assignedPartitionsLabel.setText(valueToSet);
         assignedPartitionsBlinker.blink();

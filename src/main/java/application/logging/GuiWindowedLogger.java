@@ -57,7 +57,7 @@ public class GuiWindowedLogger implements ToolLogger {
 
 
     private String formattedText(LogLevel logLevel, String msg) {
-        return String.format("<%s>[%-5s] %s\n", TimestampUtils.nowTimeTimestamp(), logLevel.prefix, msg);
+        return String.format("%s [%-5s] %s\n", TimestampUtils.nowTimeTimestamp(), logLevel.prefix, msg);
     }
 
     private void logMessage(String formattedText) {
