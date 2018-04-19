@@ -1,7 +1,6 @@
 package application.customfxwidgets.aboutwindow;
 
 import application.constants.ApplicationConstants;
-import application.globals.StageRepository;
 import application.utils.ApplicationVersionProvider;
 import javafx.application.Application;
 import javafx.fxml.FXML;
@@ -27,7 +26,7 @@ public class AboutWindow extends AnchorPane {
     public static final int BIG_FONT_SIZE = 20;
     public static final int MEDIUM_FONT_SIZE = 15;
     private final Hyperlink sourceCodePage = new Hyperlink(ApplicationConstants.GITHUB_WEBSITE);
-    private final Stage stage = StageRepository.get();
+    private final Stage stage = new Stage();
     private final Application fxApplication;
 
     @FXML

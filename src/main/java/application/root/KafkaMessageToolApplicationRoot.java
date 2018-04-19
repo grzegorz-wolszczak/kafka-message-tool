@@ -7,7 +7,6 @@ import application.customfxwidgets.mainviewcontroller.ControllerRepositoryFactor
 import application.customfxwidgets.mainviewcontroller.DefaultControllerRepositoryFactory;
 import application.customfxwidgets.mainviewcontroller.MainApplicationController;
 import application.globals.AppGlobals;
-import application.globals.StageRepository;
 import application.kafka.cluster.ClusterStatusChecker;
 import application.kafka.cluster.KafkaClusterProxies;
 import application.kafka.listener.KafkaListeners;
@@ -32,10 +31,10 @@ import application.utils.GuiUtils;
 import application.utils.UserGuiInteractor;
 import application.utils.kafka.KafkaProducers;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
-import org.fxmisc.richtext.StyleClassedTextArea;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -73,8 +72,6 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
     public void stopAll() {
         restartables.stop();
         applicationSettings.save();
-
-        StageRepository.closeAllStages();
         KafkaProducers.close();
         executorService.shutdown();
     }
@@ -99,10 +96,15 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
         GuiUtils.loadCssIfPossible(scene, ApplicationConstants.GLOBAL_CSS_FILE_NAME);
         GuiUtils.loadCssIfPossible(scene, ApplicationConstants.GROOVY_KEYWORDS_STYLES_CSS);
         GuiUtils.loadCssIfPossible(scene, ApplicationConstants.JSON_STYLES_CSS);
-        mainStage.setOnCloseRequest(event -> stopAll());
+
     }
 
     private void configureStage() {
+        mainStage.setOnCloseRequest(event -> {
+            event.consume();
+            stopAll();
+            Platform.exit();
+        });
         mainStage.setScene(scene);
         mainStage.setTitle(String.format(ApplicationConstants.APPLICATION_NAME + " (%s)", ApplicationVersionProvider.get()));
         GuiUtils.addApplicationIcon(mainStage);
@@ -161,8 +163,6 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
         mainController.setupControls();
 
         scene = new Scene(mainController);
-
-
     }
 
     private TextArea getTextAreaForLogging() {
@@ -172,10 +172,4 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
         return textArea;
     }
 
-    private StyleClassedTextArea getStyleClassedTextArea() {
-        final StyleClassedTextArea loggingPaneArea = new StyleClassedTextArea();
-        loggingPaneArea.setWrapText(true);
-        loggingPaneArea.setEditable(false);
-        return loggingPaneArea;
-    }
 }

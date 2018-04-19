@@ -1,7 +1,6 @@
 package application.customfxwidgets;
 
 import application.constants.ApplicationConstants;
-import application.globals.StageRepository;
 import application.kafka.cluster.TopicCleanupPolicy;
 import application.kafka.dto.TopicToAdd;
 import application.utils.GuiUtils;
@@ -31,7 +30,7 @@ public class AddTopicDialog extends AnchorPane {
     private static final int MIN_REPLICATION_FACTOR = 1;
     private static final int MAX_REPLICATION_FACTOR = 100;
     private static final String FXML_FILE = "AddTopicDialogView.fxml";
-    private final Stage stage = StageRepository.get();
+    private final Stage stage = new Stage();
     @FXML
     private TextField topicNameField;
     @FXML

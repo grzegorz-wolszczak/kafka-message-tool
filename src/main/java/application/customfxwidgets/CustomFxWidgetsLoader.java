@@ -10,7 +10,6 @@ import java.io.IOException;
 public class CustomFxWidgetsLoader {
     public static void loadAnchorPane(AnchorPane node, String fxmlFile ) throws IOException {
         load(node, fxmlFile);
-        GuiUtils.expandNodeToAnchorPaneBorders(node);
     }
 
     public static void load(Node node, String fxmlFile ) throws IOException {
