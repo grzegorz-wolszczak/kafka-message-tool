@@ -6,10 +6,10 @@ import org.apache.commons.lang3.exception.ExceptionUtils;
 
 public class GuiWindowedLogger implements ToolLogger {
 
-    private FixedRecordsCountLogger fixedRecordsLogger;
+    private FixedNumberRecordsCountLogger fixedRecordsLogger;
 
 
-    public GuiWindowedLogger(FixedRecordsCountLogger fixedRecordsLogger) {
+    public GuiWindowedLogger(FixedNumberRecordsCountLogger fixedRecordsLogger) {
         this.fixedRecordsLogger = fixedRecordsLogger;
     }
 
@@ -57,7 +57,7 @@ public class GuiWindowedLogger implements ToolLogger {
 
 
     private String formattedText(LogLevel logLevel, String msg) {
-        return String.format("<%s>[%-5s] %s\n", TimestampUtils.nowTimeTimestamp(), logLevel.prefix, msg);
+        return String.format("%s [%-5s] %s\n", TimestampUtils.nowTimeTimestamp(), logLevel.prefix, msg);
     }
 
     private void logMessage(String formattedText) {

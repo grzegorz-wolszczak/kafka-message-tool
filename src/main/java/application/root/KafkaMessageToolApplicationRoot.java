@@ -14,7 +14,7 @@ import application.kafka.listener.KafkaListeners;
 import application.kafka.sender.DefaultKafkaMessageSender;
 import application.logging.CyclicStringBuffer;
 import application.logging.DefaultLogger;
-import application.logging.FixedRecordsCountLogger;
+import application.logging.FixedNumberRecordsCountLogger;
 import application.logging.GuiWindowedLogger;
 import application.logging.Logger;
 import application.model.DataModel;
@@ -128,7 +128,7 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
         final ApplicationBusySwitcher busySwitcher = new DefaultApplicationBusySwitcher(mainStage);
 
         final TextArea logTextArea = getTextAreaForLogging();
-        final FixedRecordsCountLogger fixedRecordsLogger = new FixedRecordsCountLogger(logTextArea, new CyclicStringBuffer());
+        final FixedNumberRecordsCountLogger fixedRecordsLogger = new FixedNumberRecordsCountLogger(logTextArea, new CyclicStringBuffer());
         restartables.register(fixedRecordsLogger);
         Logger.registerLogger(new GuiWindowedLogger(fixedRecordsLogger));
         applicationSettings = new DefaultApplicationSettings(xmlFileConfig);

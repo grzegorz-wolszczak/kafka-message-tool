@@ -22,11 +22,11 @@ public class ConsumerPartitionsRebalanceListener implements ConsumerRebalanceLis
     }
 
     public void onPartitionsRevoked(Collection<TopicPartition> partitions) {
-        updatePartitionList(partitions);
-
+        updatePartitionList(partitions, AssignmentChangeReason.REVOKE);
     }
 
-    private void updatePartitionList(Collection<TopicPartition> partitions) {
+    private void updatePartitionList(Collection<TopicPartition> partitions,
+                                     AssignmentChangeReason reason) {
         List<Integer> partitionForTopic = new ArrayList<>();
         for (TopicPartition partition : partitions) {
 
@@ -34,10 +34,10 @@ public class ConsumerPartitionsRebalanceListener implements ConsumerRebalanceLis
                 partitionForTopic.add(partition.partition());
             }
         }
-        partitionsProperty.set(AssignedPartitionsInfo.fromPartitionList(partitionForTopic));
+        partitionsProperty.set(AssignedPartitionsInfo.fromPartitionList(partitionForTopic, reason));
     }
 
     public void onPartitionsAssigned(Collection<TopicPartition> partitions) {
-        updatePartitionList(partitions);
+        updatePartitionList(partitions, AssignmentChangeReason.ASSIGN);
     }
 }

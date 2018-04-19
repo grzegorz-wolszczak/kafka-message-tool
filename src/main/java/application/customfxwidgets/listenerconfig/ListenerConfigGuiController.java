@@ -9,12 +9,15 @@ import application.displaybehaviour.ModelConfigObjectsGuiInformer;
 import application.kafka.listener.AssignedPartitionsInfo;
 import application.kafka.listener.Listener;
 import application.kafka.listener.Listeners;
-import application.logging.FixedRecordsCountLogger;
+import application.logging.FixedNumberRecordsCountLogger;
+import application.logging.Logger;
 import application.model.KafkaOffsetResetType;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.utils.GuiUtils;
 import application.utils.ValidatorUtils;
+import application.utils.gui.FXNodeBlinker;
+import application.utils.gui.ColorChangableLabelWrapper;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -36,6 +39,7 @@ import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.paint.Color;
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
@@ -76,7 +80,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     @FXML
     private CheckBox receiveMsgLimitCheckBox;
     @FXML
-    private Label statusLabel;
+    private Label assignedPartitionsLabel;
     @FXML
     private Label receivedTotalMsgLabel;
     private KafkaListenerConfig config;
@@ -84,7 +88,8 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private Runnable refreshCallback;
     private ObservableList<KafkaTopicConfig> topicConfigs;
     private ToFileSaver toFileSaver;
-    private FixedRecordsCountLogger fixedRecordsLogger;
+    private FixedNumberRecordsCountLogger fixedRecordsLogger;
+    private final FXNodeBlinker assignedPartitionsBlinker = new FXNodeBlinker(Color.BLACK);
     private int totalReceivedMsgCounter = ZERO_RECEIVED_MSGS;
 
 
@@ -95,7 +100,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
                                        Runnable refreshCallback,
                                        ObservableList<KafkaTopicConfig> topicConfigs,
                                        ToFileSaver toFileSaver,
-                                       FixedRecordsCountLogger fixedRecordsLogger) throws IOException {
+                                       FixedNumberRecordsCountLogger fixedRecordsLogger) throws IOException {
         this.parentPane = parentPane;
         this.guiInformer = guiInformer;
         this.toFileSaver = toFileSaver;
@@ -144,6 +149,11 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         addAdditionalOptionsToTextAreaPopupMenu();
         updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo.invalid());
         resetTotalReceivedLabeltext();
+        configurePartitionsAssignmentsChangedLabel();
+    }
+
+    private void configurePartitionsAssignmentsChangedLabel() {
+        assignedPartitionsBlinker.setNodeToBlink(new ColorChangableLabelWrapper(assignedPartitionsLabel));
     }
 
     private void configureFixedRecordLogger() {
@@ -226,11 +236,14 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     }
 
     private void updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo newValue) {
-        if (newValue == null || !newValue.isValid()) {
-            statusLabel.setText(String.format(ASSIGNED_PARITION_PREFIX, DISCONNECTED_FROM_BROKER_STRING));
-        } else {
-            statusLabel.setText(String.format(ASSIGNED_PARITION_PREFIX, StringUtils.join(newValue.getPartitionsList())));
+        String valueToSet = DISCONNECTED_FROM_BROKER_STRING;
+        if (newValue != null && newValue.isValid()) {
+            valueToSet = StringUtils.join(newValue.getPartitionsList());
+            Logger.debug(String.format("Partitions assignments for config '%s' changed to %s, reason '%s'",
+                    config.getName(), valueToSet, newValue.getChangeReason()));
         }
+        assignedPartitionsLabel.setText(valueToSet);
+        assignedPartitionsBlinker.blink();
     }
 
 

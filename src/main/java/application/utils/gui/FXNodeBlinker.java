@@ -8,19 +8,21 @@ import javafx.util.Duration;
 public class FXNodeBlinker {
 
     public static final int COLOR_MAX = 255;
-    private BlinkableNode nodeToBlink;
+    private ColorChangable nodeToBlink;
     private Color blinkColor;
     private Timeline timeline;
     private String originalStyle;
 
-    public FXNodeBlinker(BlinkableNode nodeToBlink, Color blinkColor) {
-        this.nodeToBlink = nodeToBlink;
-        this.blinkColor = blinkColor;
-
-        createKeyFrames();
+    public FXNodeBlinker(Color blinkColor) {
+        setBlinkColor(blinkColor);
     }
 
-    public void setNodeToBlink(BlinkableNode nodeToBlink) {
+    public FXNodeBlinker(ColorChangable nodeToBlink, Color blinkColor) {
+        setBlinkColor(blinkColor);
+        setNodeToBlink(nodeToBlink);
+    }
+
+    public void setNodeToBlink(ColorChangable nodeToBlink) {
         this.nodeToBlink = nodeToBlink;
         createKeyFrames();
     }
@@ -31,29 +33,27 @@ public class FXNodeBlinker {
     }
 
     public void blink() {
-        timeline.play();
+        if (timeline != null) {
+            timeline.play();
+        }
     }
 
     private void createKeyFrames() {
-        originalStyle = nodeToBlink.getStyle();
-
-
-        String blinkStyle = String.format("-fx-base: rgb(%s, %s, %s);",
-                                          COLOR_MAX *blinkColor.getRed(),
-                                          COLOR_MAX*blinkColor.getGreen(),
-                                          COLOR_MAX*blinkColor.getBlue());
+        if (nodeToBlink == null) {
+            return;
+        }
 
 
 
         final KeyFrame firstKeyFrame = new KeyFrame(Duration.seconds(0.01), evt -> {
-            nodeToBlink.setStyle(blinkStyle);
+            nodeToBlink.changeColor(blinkColor);
         });
-        final KeyFrame secondKeyFrame = new KeyFrame(Duration.seconds(0.25), e -> {
-            nodeToBlink.setStyle(originalStyle);
+        final KeyFrame secondKeyFrame = new KeyFrame(Duration.seconds(0.55), e -> {
+            nodeToBlink.restoreOriginalColor();
 
         });
         timeline = new Timeline(firstKeyFrame,
-                                secondKeyFrame);
+                secondKeyFrame);
 
     }
 }
