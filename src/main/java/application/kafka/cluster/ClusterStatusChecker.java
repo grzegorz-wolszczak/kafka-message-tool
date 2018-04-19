@@ -48,7 +48,7 @@ public class ClusterStatusChecker {
                                                    boolean shouldShowWarningOnInvalidConfig) {
         if (shouldShowWarningOnInvalidConfig) {
             proxy.reportInvalidClusterConfigurationTo((msg) -> {
-                userInteractor.showWarning("Invalid cluster configuration", msg);
+                //userInteractor.showWarning("Invalid cluster configuration", msg);
                 Logger.warn("Invalid cluster config\n" + msg);
             });
         }

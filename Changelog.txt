@@ -11,6 +11,7 @@
     all senders. This can help in setting 'global variables' across all senders
 - feature - added how many message received counter
 - feature - show partitions assignments changes for kafka listener
+- change: don't show blocking popup window when cluster inconsistent configuration detected, just log warning
 
 [v.1.0.2.0]
 - improvement - performance improvement (but more work needed)- log window can accept more entries before it freezes (!sic)

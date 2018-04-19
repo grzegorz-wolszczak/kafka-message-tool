@@ -74,7 +74,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     @Override
     public void close() {
         Logger.trace("Closing kafka admin proxy");
-        kafkaClientsAdminClient.close(ApplicationConstants.CLOSE_CONNECTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
+        kafkaClientsAdminClient.close(ApplicationConstants.CLOSE_CONNECTION_TIMEOUT_MS,
+                TimeUnit.MILLISECONDS);
         kafkaAdminClient.close();
         Logger.trace("Closing done");
     }
@@ -146,7 +147,9 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         return info != null && info.doesApiSupportDescribeConfig();
     }
 
-    private void fetchClusterStateSummary() throws InterruptedException, ExecutionException, TimeoutException {
+    private void fetchClusterStateSummary() throws InterruptedException,
+            ExecutionException,
+            TimeoutException {
         clearClusterSummary();
         describeCluster();
         describeTopics();
@@ -154,7 +157,9 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         fillNodesConfigProperties();
     }
 
-    private void describeTopics() throws InterruptedException, ExecutionException, TimeoutException {
+    private void describeTopics() throws InterruptedException,
+            ExecutionException,
+            TimeoutException {
         topicAdmin.describeTopics().forEach(clusterSummary::addTopicInfo);
     }
 
