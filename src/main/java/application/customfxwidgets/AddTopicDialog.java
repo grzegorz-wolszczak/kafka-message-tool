@@ -10,7 +10,6 @@ import application.utils.ValidatorUtils;
 import javafx.beans.property.IntegerProperty;
 import javafx.collections.FXCollections;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ComboBox;
@@ -45,10 +44,7 @@ public class AddTopicDialog extends AnchorPane {
     private TopicToAdd topicToAdd;
 
     public AddTopicDialog(Window owner) throws IOException {
-        FXMLLoader loader = new FXMLLoader(AddTopicDialog.class.getResource(FXML_FILE));
-        loader.setRoot(this);
-        loader.setController(this);
-        loader.load();
+        CustomFxWidgetsLoader.load(this, FXML_FILE);
         stage.initOwner(owner);
     }
 
@@ -60,7 +56,7 @@ public class AddTopicDialog extends AnchorPane {
 
         topicNameField.textProperty().bindBidirectional(topicToAdd.topicNameProperty());
         GuiUtils.configureTextFieldChangeStyleOnInvalidValue(topicNameField,
-                                                             ValidatorUtils::isStringIdentifierValid);
+                ValidatorUtils::isStringIdentifierValid);
 
 
         cleanupPolicyComboBox.setItems(FXCollections.observableArrayList(TopicCleanupPolicy.values()));

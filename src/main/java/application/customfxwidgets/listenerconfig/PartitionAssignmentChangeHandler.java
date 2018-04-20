@@ -37,8 +37,7 @@ public class PartitionAssignmentChangeHandler {
                     config.getName(), newValueToSet, newPartitionsAssignment.getChangeReason()));
         }
 
-        if(oldPartitionAssignmentsValue.equals(newValueToSet))
-        {
+        if (oldPartitionAssignmentsValue.equals(newValueToSet)) {
             return;
         }
 

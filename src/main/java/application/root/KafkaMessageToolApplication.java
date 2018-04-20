@@ -1,6 +1,6 @@
 package application.root;
 
-import application.MainApplication;
+import application.Main;
 import application.constants.ApplicationConstants;
 import application.customfxwidgets.CustomFxWidgetsLoader;
 import application.customfxwidgets.mainviewcontroller.ControllerRepositoryFactory;
@@ -40,7 +40,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
-public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
+public class KafkaMessageToolApplication implements ApplicationRoot {
 
     private static final String MAIN_APPLICATION_VIEW_FXML_FILE = "MainApplicationView.fxml";
     private final Restartables restartables = new Restartables();
@@ -49,9 +49,9 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
     private ApplicationSettings applicationSettings;
     private Scene scene;
     private ExecutorService executorService;
-    private MainApplication mainApplication;
+    private Main mainApplication;
 
-    public KafkaMessageToolApplicationRoot(MainApplication mainApplication) {
+    public KafkaMessageToolApplication(Main mainApplication) {
         this.mainApplication = mainApplication;
     }
 
@@ -159,7 +159,11 @@ public class KafkaMessageToolApplicationRoot implements ApplicationRoot {
                                                                                        controllerRepositoryFactory,
                                                                                        actionHandlerFactory,
                                                                                        busySwitcher);
-        CustomFxWidgetsLoader.load(mainController, MAIN_APPLICATION_VIEW_FXML_FILE);
+
+        CustomFxWidgetsLoader.loadOnAnchorPane(mainController, MAIN_APPLICATION_VIEW_FXML_FILE);
+
+
+
         mainController.setupControls();
 
         scene = new Scene(mainController);

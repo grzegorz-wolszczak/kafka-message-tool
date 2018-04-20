@@ -86,11 +86,11 @@ public class XmlFileConfig implements LoadableSavable {
             if (cause instanceof FileNotFoundException) {
                 Logger.warn("Config file not found.");
             } else {
-                Logger.error("Could not load config file", e);
+                Logger.error("Could not loadOnAnchorPane config file", e);
             }
         } catch (JAXBException e) {
             e.printStackTrace();
-            Logger.error("Could not load configuration. Exception happened: \n", e);
+            Logger.error("Could not loadOnAnchorPane configuration. Exception happened: \n", e);
         }
     }
 

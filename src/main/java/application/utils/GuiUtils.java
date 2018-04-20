@@ -99,7 +99,7 @@ public class GuiUtils {
     public static void loadCssIfPossible(Scene scene, String fileName) {
         final URL cssFileUrl = GuiUtils.class.getClass().getResource(fileName);
         if (cssFileUrl == null) {
-            Logger.error(String.format("Could not find and load CSS file %s ", fileName));
+            Logger.error(String.format("Could not find and loadOnAnchorPane CSS file %s ", fileName));
         } else {
             scene.getStylesheets().add(cssFileUrl.toExternalForm());
         }

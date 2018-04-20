@@ -1,12 +1,10 @@
 package application.customfxwidgets;
 
-import application.utils.GuiUtils;
 import application.utils.TableUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.TitledPane;
@@ -14,6 +12,7 @@ import org.apache.kafka.clients.admin.ConfigEntry;
 
 import java.io.IOException;
 import java.util.Set;
+
 
 public class ConfigEntriesView extends TitledPane {
 
@@ -41,12 +40,7 @@ public class ConfigEntriesView extends TitledPane {
         this.title = title;
         observableEntries.setAll(entries);
         this.columnWidths = columnWidths;
-
-        FXMLLoader loader = new FXMLLoader(AddTopicDialog.class.getResource(FXML_FILE));
-        loader.setRoot(this);
-        loader.setController(this);
-        loader.load();
-        GuiUtils.expandNodeToAnchorPaneBorders(this);
+        CustomFxWidgetsLoader.loadOnAnchorPane(this, FXML_FILE);
     }
 
     @FXML

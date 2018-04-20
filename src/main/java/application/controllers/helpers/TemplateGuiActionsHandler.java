@@ -64,7 +64,7 @@ abstract public class TemplateGuiActionsHandler<ModelObject extends ModelConfigO
             loadController(config);
         } catch (IOException e) {
             e.printStackTrace();
-            Logger.error("Could not load config pane", e);
+            Logger.error("Could not loadOnAnchorPane config pane", e);
 
         }
     }

@@ -1,9 +1,10 @@
 package application.utils;
 
-import application.root.Executable;
 import application.logging.Logger;
+import application.root.Executable;
 import org.apache.kafka.clients.admin.ConfigEntry;
 
+import java.net.URL;
 import java.util.Collection;
 
 public class AppUtils {
@@ -25,5 +26,10 @@ public class AppUtils {
         } catch (Exception e) {
             Logger.warn("Exception happened " + ThrowableUtils.getMessage(e));
         }
+    }
+
+    public static URL getFxmlResourceFile(String fileName) {
+        ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
+        return classLoader.getResource("fxml/" + fileName);
     }
 }

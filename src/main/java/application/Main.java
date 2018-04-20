@@ -1,17 +1,17 @@
 package application;
 
 import application.logging.Logger;
-import application.root.KafkaMessageToolApplicationRoot;
+import application.root.KafkaMessageToolApplication;
 import application.root.ApplicationRoot;
 import javafx.application.Application;
 import javafx.stage.Stage;
 
 
-public class MainApplication extends Application {
+public class Main extends Application {
 
     private static final int ERROR_EXIT_STATUS = 1;
 
-    private final ApplicationRoot app = new KafkaMessageToolApplicationRoot(this);
+    private final ApplicationRoot app = new KafkaMessageToolApplication(this);
 
     public static void main(String[] args) {
         launch(args);

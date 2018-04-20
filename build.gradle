@@ -45,7 +45,7 @@ static String getShortenedTimestamp() {
 
 
 // <app>-<major-patch>-<minor-patch>-<fix>
-version = "1.0.3.0-rc.10"
+version = "1.0.3.0-rc.12"
 //version = "1.0.x.dev-snapshot-${getShortenedTimestamp()}"
 
 println "Gradle project dir: ${projectDir}"
@@ -63,7 +63,7 @@ if (version == "unspecified") {
 }
 
 jar.archiveName = "${rootProject.name}-${version}.jar"
-jar.manifest.attributes 'Main-Class': 'application.MainApplication'
+jar.manifest.attributes 'Main-Class': 'application.Main'
 
 
 static String getIsoTime() {
