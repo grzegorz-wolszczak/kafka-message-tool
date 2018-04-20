@@ -237,7 +237,7 @@ public class DefaultKafkaListener implements Listener {
             sleep(wakeUpDurationMs);
             Logger.warn(String.format("Waking up consumer (after %d ms), " +
                             "because consumer::poll() did not respond win its %d ms timeout. " +
-                            "(+%d additiont timeout)"
+                            "(+%d additional ms timeout)"
                 , wakeUpDurationMs, pollTimeoutMs,
                     ADDITIONAL_WAIT_DURATION_BEFORE_WAKEUP_MS));
             wakeUpConsumer();
