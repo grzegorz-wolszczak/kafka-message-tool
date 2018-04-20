@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import org.controlsfx.control.StatusBar?>
 
-<fx:root prefHeight="785.0" prefWidth="1109.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="785.0" prefWidth="1109.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <TitledPane collapsible="false" prefWidth="1070.0" text="Message sender configuration" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
@@ -27,6 +27,7 @@
                   <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="25.0" />
                   <ColumnConstraints halignment="CENTER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                   <ColumnConstraints halignment="LEFT" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="ALWAYS" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
                 <ColumnConstraints hgrow="ALWAYS" maxWidth="1.7976931348623157E308" minWidth="185.0" prefWidth="324.0" />
                   <ColumnConstraints hgrow="NEVER" maxWidth="-Infinity" minWidth="-Infinity" prefWidth="100.0" />
               </columnConstraints>
@@ -41,13 +42,13 @@
               </rowConstraints>
                <children>
                   <Label text="Config name" GridPane.columnSpan="2" GridPane.halignment="LEFT" />
-                  <Label text="Topic config" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
-                  <TextField fx:id="messageNameTextField" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER" />
-                  <ComboBox fx:id="topicConfigComboBox" maxWidth="1.7976931348623157E308" minWidth="-Infinity" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
-                  <TextField fx:id="messageKeyTextField" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="2" />
+                  <Label text="Topic config" GridPane.halignment="LEFT" GridPane.rowIndex="1" />
+                  <TextField fx:id="messageNameTextField" GridPane.columnIndex="2" GridPane.columnSpan="4" GridPane.hgrow="NEVER" GridPane.vgrow="NEVER" />
+                  <ComboBox fx:id="topicConfigComboBox" maxWidth="1.7976931348623157E308" minWidth="-Infinity" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" />
+                  <TextField fx:id="messageKeyTextField" GridPane.columnIndex="2" GridPane.columnSpan="3" GridPane.rowIndex="2" />
                   <CheckBox fx:id="messageKeyCheckBox" mnemonicParsing="false" text="Message key" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="2" />
                 <Button fx:id="sendMsgPushButton" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" onAction="#onSendButtonClicked" prefHeight="25.0" text="Send" GridPane.rowIndex="6" />
-                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Detach" GridPane.columnIndex="5" />
+                  <ToggleButton fx:id="detachPaneButton" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Detach" GridPane.columnIndex="6" />
                   <Label text="Repeat count" GridPane.columnSpan="2" GridPane.halignment="LEFT" GridPane.rowIndex="3" />
                   <Spinner fx:id="repeatCountSpinner" editable="true" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.columnSpan="2" GridPane.rowIndex="3" />
                   <CheckBox fx:id="sendingSimulationModeCheckBox" mnemonicParsing="false" text="Sending simulation mode" GridPane.columnIndex="3" GridPane.columnSpan="2" GridPane.rowIndex="6" />
