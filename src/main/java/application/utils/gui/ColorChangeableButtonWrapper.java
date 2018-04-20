@@ -3,12 +3,12 @@ package application.utils.gui;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.paint.Color;
 
-public class ColorChangableButtonWrapper implements ColorChangable {
+public class ColorChangeableButtonWrapper implements ColorChangeable {
     private static final int COLOR_MAX = 255;
     private final String originalStyle;
     private ToggleButton button;
 
-    public ColorChangableButtonWrapper(ToggleButton button) {
+    public ColorChangeableButtonWrapper(ToggleButton button) {
         this.button = button;
         originalStyle = button.getStyle();
     }

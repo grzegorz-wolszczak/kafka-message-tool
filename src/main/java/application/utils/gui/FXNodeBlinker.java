@@ -7,29 +7,24 @@ import javafx.util.Duration;
 
 public class FXNodeBlinker {
 
-    public static final int COLOR_MAX = 255;
-    private ColorChangable nodeToBlink;
+    private ColorChangeable nodeToBlink;
     private Color blinkColor;
     private Timeline timeline;
-    private String originalStyle;
 
     public FXNodeBlinker(Color blinkColor) {
         setBlinkColor(blinkColor);
     }
 
-    public FXNodeBlinker(ColorChangable nodeToBlink, Color blinkColor) {
-        setBlinkColor(blinkColor);
-        setNodeToBlink(nodeToBlink);
+    public FXNodeBlinker(ColorChangeable nodeToBlink, Color blinkColor) {
+        setBlinkColorWithNode(nodeToBlink, blinkColor);
     }
 
-    public void setNodeToBlink(ColorChangable nodeToBlink) {
-        this.nodeToBlink = nodeToBlink;
-        createKeyFrames();
+    public void setNodeToBlink(ColorChangeable newNodeToBlink) {
+        setBlinkColorWithNode(newNodeToBlink, blinkColor);
     }
 
-    public void setBlinkColor(Color blinkColor) {
-        this.blinkColor = blinkColor;
-        createKeyFrames();
+    public void setBlinkColor(Color newBlinkColor) {
+        setBlinkColorWithNode(nodeToBlink, newBlinkColor);
     }
 
     public void blink() {
@@ -38,11 +33,16 @@ public class FXNodeBlinker {
         }
     }
 
+    private void setBlinkColorWithNode(ColorChangeable nodeToBlink, Color blinkColor) {
+        this.nodeToBlink = nodeToBlink;
+        this.blinkColor = blinkColor;
+        createKeyFrames();
+    }
+
     private void createKeyFrames() {
         if (nodeToBlink == null) {
             return;
         }
-
 
 
         final KeyFrame firstKeyFrame = new KeyFrame(Duration.seconds(0.01), evt -> {
@@ -53,7 +53,7 @@ public class FXNodeBlinker {
 
         });
         timeline = new Timeline(firstKeyFrame,
-                secondKeyFrame);
+                                secondKeyFrame);
 
     }
 }

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Menu?>
+<?import javafx.scene.control.MenuBar?>
+<?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.MasterDetailPane?>
+
+<fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="602.0" prefWidth="793.0" type="VBox" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <MenuBar prefHeight="21.0" prefWidth="600.0">
+        <menus>
+          <Menu mnemonicParsing="false" text="Application">
+            <items>
+              <MenuItem mnemonicParsing="false" onAction="#menuItemSaveConfigOnAction" text="Save config" />
+            </items>
+          </Menu>
+            <Menu mnemonicParsing="false" text="Help">
+              <items>
+                <MenuItem mnemonicParsing="false" onAction="#menuItemShowAboutWindow" text="About" />
+              </items>
+            </Menu>
+        </menus>
+      </MenuBar>
+      <MasterDetailPane fx:id="masterPane" detailSide="BOTTOM" VBox.vgrow="ALWAYS" />
+      <HBox fx:id="bottomBarBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="31.0" prefWidth="793.0" />
+   </children>
+</fx:root>

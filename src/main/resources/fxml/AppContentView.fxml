@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+
+
+<fx:root prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <SplitPane fx:id="upperSplitPane" dividerPositions="0.45754119138149557" layoutX="192.0" layoutY="34.0" prefHeight="160.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <items>
+            <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" SplitPane.resizableWithParent="false">
+               <children>
+                  <VBox layoutX="180.0" layoutY="66.0" prefHeight="200.0" prefWidth="100.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                     <children>
+                        <TabPane fx:id="leftViewTabPane" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" onMouseClicked="#leftViewTabPaneOnMouseClicked" prefHeight="200.0" prefWidth="200.0" tabClosingPolicy="UNAVAILABLE" VBox.vgrow="ALWAYS">
+                           <tabs>
+                              <Tab fx:id="brokersTab" text="Brokers">
+                                 <content>
+                                    <ListView fx:id="brokersListView" onMouseClicked="#onAnyListViewClicked" prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                              <Tab fx:id="topicsTab" closable="false" text="Topic configs">
+                                 <content>
+                                    <ListView fx:id="topicsListView" onMouseClicked="#onAnyListViewClicked" prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                              <Tab fx:id="sendMsgTab" closable="false" text="Send msg">
+                                 <content>
+                                    <ListView id="messagesListView" fx:id="sendersListView" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#onAnyListViewClicked" prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                              <Tab fx:id="receiveMsgTab" closable="false" text="Receive msg">
+                                 <content>
+                                    <ListView fx:id="listenersListView" onMouseClicked="#onAnyListViewClicked" prefHeight="200.0" prefWidth="200.0" />
+                                 </content>
+                              </Tab>
+                           </tabs>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </TabPane>
+                        <ButtonBar minHeight="-Infinity" minWidth="-Infinity" prefHeight="40.0" prefWidth="200.0" VBox.vgrow="NEVER">
+                           <buttons>
+                              <Button fx:id="addButton" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#addButtonOnAction" text="Add" />
+                              <Button fx:id="deleteButton" alignment="CENTER" minWidth="-Infinity" mnemonicParsing="false" onAction="#deleteButtonOnAction" text="Delete" />
+                           </buttons>
+                           <opaqueInsets>
+                              <Insets bottom="3.0" left="3.0" right="3.0" top="3.0" />
+                           </opaqueInsets>
+                           <padding>
+                              <Insets right="10.0" />
+                           </padding>
+                        </ButtonBar>
+                     </children>
+                     <padding>
+                        <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
+                     </padding>
+                  </VBox>
+               </children>
+            </AnchorPane>
+            <AnchorPane fx:id="rightContentPane" minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0" SplitPane.resizableWithParent="false" />
+         </items>
+      </SplitPane>
+   </children>
+</fx:root>

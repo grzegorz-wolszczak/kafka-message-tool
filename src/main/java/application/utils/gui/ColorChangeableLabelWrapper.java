@@ -8,13 +8,13 @@ import javafx.scene.layout.CornerRadii;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 
-public class ColorChangableLabelWrapper implements ColorChangable {
+public class ColorChangeableLabelWrapper implements ColorChangeable {
 
     private Label label;
     private final Paint originalFill;
     private final Background originalBackground;
 
-    public ColorChangableLabelWrapper(Label label) {
+    public ColorChangeableLabelWrapper(Label label) {
         this.label = label;
         originalFill = label.getTextFill();
         originalBackground = label.getBackground();
