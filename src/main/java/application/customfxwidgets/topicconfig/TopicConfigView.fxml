@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<fx:root minHeight="-Infinity" minWidth="-Infinity" prefHeight="552.0" prefWidth="768.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root minHeight="-Infinity" minWidth="-Infinity" prefHeight="552.0" prefWidth="768.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <TitledPane collapsible="false" text="Topic configuration" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
          <content>
@@ -35,7 +35,7 @@
                   <Label text="Topic name" GridPane.rowIndex="1" />
                   <Label text="Kafka broker" GridPane.rowIndex="2" />
                   <TextField fx:id="topicConfigNameField" GridPane.columnIndex="1" GridPane.columnSpan="3" />
-                  <TextField fx:id="topicNameField" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                  <TextField fx:id="topicNameField" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="1" />
                   <Button fx:id="connectionCheckButton" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#checkButtonOnAction" text="Status" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
                   <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="378.0" prefWidth="595.0" GridPane.columnSpan="2147483647" GridPane.hgrow="NEVER" GridPane.rowIndex="3" GridPane.vgrow="NEVER" />
                   <ComboBox fx:id="kafkaBrokerComboBox" maxWidth="1.7976931348623157E308" prefWidth="150.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
