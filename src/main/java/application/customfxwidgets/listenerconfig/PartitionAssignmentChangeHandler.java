@@ -33,7 +33,7 @@ public class PartitionAssignmentChangeHandler {
 
         if (newPartitionsAssignment != null && newPartitionsAssignment.isValid()) {
             newValueToSet = StringUtils.join(newPartitionsAssignment.getPartitionsList());
-            Logger.debug(String.format("Partitions assignments for config '%s' changed to %s, reason '%s'",
+            Logger.info(String.format("Partitions assignments for config '%s' changed to %s, reason '%s'",
                     config.getName(), newValueToSet, newPartitionsAssignment.getChangeReason()));
         }
 
