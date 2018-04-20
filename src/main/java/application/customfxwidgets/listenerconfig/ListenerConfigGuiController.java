@@ -10,14 +10,12 @@ import application.kafka.listener.AssignedPartitionsInfo;
 import application.kafka.listener.Listener;
 import application.kafka.listener.Listeners;
 import application.logging.FixedNumberRecordsCountLogger;
-import application.logging.Logger;
 import application.model.KafkaOffsetResetType;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.utils.GuiUtils;
 import application.utils.ValidatorUtils;
 import application.utils.gui.FXNodeBlinker;
-import application.utils.gui.ColorChangableLabelWrapper;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -28,28 +26,17 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TextArea;
-import javafx.scene.control.TextField;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
-import org.apache.commons.lang3.StringUtils;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
 public class ListenerConfigGuiController extends AnchorPane implements Displayable {
-    public static final String DISCONNECTED_FROM_BROKER_STRING = "<DISCONNECTED FROM BROKER>";
+
     public static final int ZERO_RECEIVED_MSGS = 0;
-    public static final String ASSIGNED_PARITION_PREFIX = "Assigned partitions : %s";
     public static final String TOTAL_RECEIVED_PREFIX = "Total received msgs: %s";
     private static final String FXML_FILE = "ListenerConfigView.fxml";
     private final DisplayBehaviour displayBehaviour;
@@ -57,6 +44,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private final MenuItem saveToFilePopupMenuItem = new MenuItem("Save to file");
     private final AnchorPane parentPane;
     private final ModelConfigObjectsGuiInformer guiInformer;
+    private final PartitionAssignmentChangeHandler partitionAssignmentHandler;
     @FXML
     private TextField listenerNameTextField;
     @FXML
@@ -89,7 +77,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private ObservableList<KafkaTopicConfig> topicConfigs;
     private ToFileSaver toFileSaver;
     private FixedNumberRecordsCountLogger fixedRecordsLogger;
-    private final FXNodeBlinker assignedPartitionsBlinker = new FXNodeBlinker(Color.BLACK);
+    //private final FXNodeBlinker assignedPartitionsBlinker = new FXNodeBlinker(Color.BLACK);
     private int totalReceivedMsgCounter = ZERO_RECEIVED_MSGS;
 
 
@@ -105,6 +93,8 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         this.guiInformer = guiInformer;
         this.toFileSaver = toFileSaver;
         this.fixedRecordsLogger = fixedRecordsLogger;
+        partitionAssignmentHandler = new PartitionAssignmentChangeHandler(
+                new FXNodeBlinker(Color.BLACK), config);
 
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
 
@@ -115,11 +105,11 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
 
         final StringExpression windowTitle = new ReadOnlyStringWrapper("Kafka listener configuration");
         displayBehaviour = new DetachableDisplayBehaviour(parentPane,
-                                                          windowTitle,
-                                                          this,
-                                                          detachPaneButton.selectedProperty(),
-                                                          config,
-                                                          guiInformer);
+                windowTitle,
+                this,
+                detachPaneButton.selectedProperty(),
+                config,
+                guiInformer);
         configureTopicConfigComboBox();
         configureOffsetResetComboBox();
         configureMessageNameTextField();
@@ -132,8 +122,9 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         GuiUtils.configureComboBoxToClearSelectedValueIfItsPreviousValueWasRemoved(topicConfigComboBox);
 
         comboBoxConfigurator = new TopicConfigComboBoxConfigurator<>(topicConfigComboBox,
-                                                                     config);
+                config);
         comboBoxConfigurator.configure();
+
     }
 
     @Override
@@ -147,20 +138,20 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         configureDisplayBehaviour();
         configureToFileSaver();
         addAdditionalOptionsToTextAreaPopupMenu();
-        updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo.invalid());
         resetTotalReceivedLabeltext();
         configurePartitionsAssignmentsChangedLabel();
+
     }
 
     private void configurePartitionsAssignmentsChangedLabel() {
-        assignedPartitionsBlinker.setNodeToBlink(new ColorChangableLabelWrapper(assignedPartitionsLabel));
+        partitionAssignmentHandler.setLabelToChange(assignedPartitionsLabel);
+        partitionAssignmentHandler.updatePartitionsAssignmentLabelFor(AssignedPartitionsInfo.invalid());
     }
 
     private void configureFixedRecordLogger() {
         fixedRecordsLogger.setLogTextArea(outputTextArea);
         fixedRecordsLogger.start();
     }
-
 
     private void configureDisplayBehaviour() {
 
@@ -209,15 +200,15 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private void configureFetchTimeoutField() {
         fetchTimeoutTextField.textProperty().set(config.getPollTimeout());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(fetchTimeoutTextField,
-                                                         config::setPollTimeout,
-                                                         ValidatorUtils::isTimeoutInMsValid);
+                config::setPollTimeout,
+                ValidatorUtils::isTimeoutInMsValid);
     }
 
     private void configureConsumerGroupField() {
         consumerGroupTextField.setText(config.getConsumerGroup());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(consumerGroupTextField,
-                                                         config::setConsumerGroup,
-                                                         ValidatorUtils::isStringIdentifierValid);
+                config::setConsumerGroup,
+                ValidatorUtils::isStringIdentifierValid);
     }
 
     private void setKafkaListenerBinding() {
@@ -232,18 +223,8 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private void partitionsAssignmentChanged(ObservableValue<? extends AssignedPartitionsInfo> observable,
                                              AssignedPartitionsInfo oldValue,
                                              AssignedPartitionsInfo newValue) {
-        Platform.runLater(() -> updateStatusLabelWithAssignedPartitionsInfo(newValue));
-    }
-
-    private void updateStatusLabelWithAssignedPartitionsInfo(AssignedPartitionsInfo newValue) {
-        String valueToSet = DISCONNECTED_FROM_BROKER_STRING;
-        if (newValue != null && newValue.isValid()) {
-            valueToSet = StringUtils.join(newValue.getPartitionsList());
-            Logger.debug(String.format("Partitions assignments for config '%s' changed to %s, reason '%s'",
-                    config.getName(), valueToSet, newValue.getChangeReason()));
-        }
-        assignedPartitionsLabel.setText(valueToSet);
-        assignedPartitionsBlinker.blink();
+        Platform.runLater(() -> partitionAssignmentHandler
+                .updatePartitionsAssignmentLabelFor(newValue));
     }
 
 
@@ -309,7 +290,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     @FXML
     private void stopButtonOnAction() {
         getActiveListenersForConfig().ifPresent(Listener::stop);
-        updateStatusLabelWithAssignedPartitionsInfo(null);
+        partitionAssignmentHandler.updatePartitionsAssignmentLabelFor(null);
     }
 
     @FXML
@@ -325,7 +306,6 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
 
     @FXML
     private void detachButtonOnAction() {
-
     }
 
 

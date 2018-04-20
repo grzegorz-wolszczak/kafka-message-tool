@@ -235,8 +235,11 @@ public class DefaultKafkaListener implements Listener {
         FutureTask<Void> task = new FutureTask<>(() -> {
             final long wakeUpDurationMs = pollTimeoutMs + ADDITIONAL_WAIT_DURATION_BEFORE_WAKEUP_MS;
             sleep(wakeUpDurationMs);
-            Logger.warn(String.format("Waking up consumer (after %d ms), because consumer::poll() did not respond within its %d ms timeout."
-                , wakeUpDurationMs, pollTimeoutMs));
+            Logger.warn(String.format("Waking up consumer (after %d ms), " +
+                            "because consumer::poll() did not respond win its %d ms timeout. " +
+                            "(+%d additiont timeout)"
+                , wakeUpDurationMs, pollTimeoutMs,
+                    ADDITIONAL_WAIT_DURATION_BEFORE_WAKEUP_MS));
             wakeUpConsumer();
             return null;
         });
@@ -254,8 +257,8 @@ public class DefaultKafkaListener implements Listener {
     }
 
     private String prepareConsumerRecordToBeLogged(ConsumerRecord<String, String> record) {
-        return String.format("[%s] ConsumerRecord: (key:%s,  partition:%d, offset:%d, timestamp:%s)%nvalue '%s'%n",
-                             TimestampUtils.nowFullTimestamp(),
+        return String.format("[%s] ConsumerRecord: (key:%s, partition:%d, offset:%d, timestamp:%s)%nvalue '%s'%n",
+                             TimestampUtils.nowTimeTimestamp(),
                              record.key(),
                              record.partition(),
                              record.offset(),
