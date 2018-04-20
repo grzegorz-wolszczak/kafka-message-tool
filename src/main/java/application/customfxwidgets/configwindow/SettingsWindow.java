@@ -1,7 +1,6 @@
 package application.customfxwidgets.configwindow;
 
 import application.constants.ApplicationConstants;
-import application.globals.StageRepository;
 import javafx.application.Application;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
@@ -15,7 +14,7 @@ import static application.customfxwidgets.CustomFxWidgetsLoader.loadAnchorPane;
 
 public class SettingsWindow extends AnchorPane {
     private static final String FXML_FILE = "SettingsWindow.fxml";
-    private final Stage stage = StageRepository.get();
+    private final Stage stage = new Stage();
     private final Application fxApplication;
 
     public SettingsWindow(Window owner, Application fxApplication) throws IOException {

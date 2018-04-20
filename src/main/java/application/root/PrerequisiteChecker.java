@@ -14,7 +14,7 @@ public class PrerequisiteChecker {
     private static void assertGroovyEngineIsAvailable() throws KafkaToolError {
         final ScriptEngine groovyEngine = new ScriptEngineManager().getEngineByName("groovy");
         if (groovyEngine == null) {
-            throw new PrerequisiteNotSatisfiedError("Could not getAsProperty groovy scripting engine.");
+            throw new PrerequisiteNotSatisfiedError("Could not get groovy scripting engine.");
         }
     }
 }

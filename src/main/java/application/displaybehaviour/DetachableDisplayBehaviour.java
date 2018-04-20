@@ -1,7 +1,6 @@
 package application.displaybehaviour;
 
 import application.constants.ApplicationConstants;
-import application.globals.StageRepository;
 import application.model.ModelConfigObject;
 import application.utils.GuiUtils;
 import javafx.beans.binding.StringExpression;
@@ -25,7 +24,7 @@ public class DetachableDisplayBehaviour implements DisplayBehaviour {
     private final DetachedPaneContent detachedPaneContent;
     private StringExpression windowTitleProperty;
     private ModelConfigObjectsGuiInformer guiInformer;
-    private Stage stage = StageRepository.get();
+    private final Stage stage = new Stage();
     private double sceneWidth = DEFAULT_WIDHT;
     private double sceneHeight = DEFAULT_HEIGHT;
     private double positionX = POSITION_NOT_SET;
