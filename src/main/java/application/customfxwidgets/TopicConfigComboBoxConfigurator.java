@@ -7,6 +7,8 @@ import application.utils.GuiUtils;
 import application.utils.TooltipCreator;
 import javafx.beans.property.ObjectProperty;
 import javafx.beans.value.ObservableValue;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.control.ComboBox;
 
 public class TopicConfigComboBoxConfigurator<RelatedConfig extends ModelConfigObject & ToolTipInfoProvider> {
@@ -15,6 +17,7 @@ public class TopicConfigComboBoxConfigurator<RelatedConfig extends ModelConfigOb
     private ComboBox<RelatedConfig> comboBox;
     private ObjectProperty<RelatedConfig> relatedConfigProperty;
     private ComboBoxUpdateMode comboBoxUpdateMode = ComboBoxUpdateMode.Normal;
+
     public TopicConfigComboBoxConfigurator(ComboBox<RelatedConfig> comboBox,
                                            RelatedConfigHolder<RelatedConfig> config) {
         this.comboBox = comboBox;
@@ -46,12 +49,12 @@ public class TopicConfigComboBoxConfigurator<RelatedConfig extends ModelConfigOb
                                                             RelatedConfig newValue) {
         if (oldValue != null) {
             oldValue.toolTipInfoProperty().removeListener(this::updateComboBoxToolTipCallback);
-            oldValue.nameProperty().removeListener(this::updateComboBoxValueCallback);
+            oldValue.nameProperty().removeListener(this::updateComboBoxValueWithItemsCallback);
 
         }
         if (newValue != null) {
             newValue.toolTipInfoProperty().addListener(this::updateComboBoxToolTipCallback);
-            newValue.nameProperty().addListener(this::updateComboBoxValueCallback);
+            newValue.nameProperty().addListener(this::updateComboBoxValueWithItemsCallback);
         }
     }
 
@@ -76,16 +79,20 @@ public class TopicConfigComboBoxConfigurator<RelatedConfig extends ModelConfigOb
         updateComboBoxTooltip();
     }
 
-    private void updateComboBoxValueCallback(ObservableValue<? extends String> ignored1,
-                                             String oldValue,
-                                             String newValue) {
+    private void updateComboBoxValueWithItemsCallback(ObservableValue<? extends String> ignored1,
+                                                      String oldValue,
+                                                      String newValue) {
         final RelatedConfig value = config.getRelatedConfig();
+        final ObservableList<RelatedConfig> originalItems = comboBox.getItems();
         try {
             comboBoxUpdateMode = ComboBoxUpdateMode.ValueReset;
+            comboBox.setItems(FXCollections.observableArrayList());
             GuiUtils.resetComboboxValue(comboBox, value);
+            comboBox.setItems(originalItems);
         } finally {
             comboBoxUpdateMode = ComboBoxUpdateMode.Normal;
         }
+
     }
 
     private void resetTopicConfigToFireUpAllCallbacksForTheFirstTimeToSetupControls() {
