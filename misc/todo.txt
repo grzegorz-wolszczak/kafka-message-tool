@@ -47,5 +47,8 @@ expand table column width to content
 print replication factor for topic in summary
 
 
+### Add to future config window
+ - should resize column width to content
+
 
 
