@@ -1,6 +1,7 @@
 package application.newview;
 
 import application.constants.ApplicationConstants;
+import application.customfxwidgets.CustomFxWidgetsLoader;
 import application.globals.AppGlobals;
 import application.logging.DefaultLogger;
 import application.logging.Logger;
@@ -21,7 +22,7 @@ import javafx.stage.Stage;
 
 public class KafkaMessageToolApplication2 implements ApplicationRoot {
 
-    private static final String MAIN_APPLICATION_VIEW_FXML_FILE = "MainApplicationPane.fxml";
+    private static final String MAIN_APPLICATION_VIEW_FXML_FILE = "new/MainApplicationPane.fxml";
     //    private final Restartables restartables = new Restartables();
 //    private ApplicationPorts applicationPorts;
     private Stage mainStage;
@@ -81,16 +82,9 @@ public class KafkaMessageToolApplication2 implements ApplicationRoot {
 
     private void configureStage() {
         configureStageBehaviourAndLook();
-        bindStageGuiPropertiesWithApplicationConfiguration();
     }
 
-    private void bindStageGuiPropertiesWithApplicationConfiguration() {
-        mainStage.setWidth(ApplicationConfig.mainWindowWidthProperty().getValue());
-        ApplicationConfig.mainWindowWidthProperty().bind(mainStage.widthProperty());
 
-        mainStage.setHeight(ApplicationConfig.mainWindowHeightProperty().getValue());
-        ApplicationConfig.mainWindowHeightProperty().bind(mainStage.heightProperty());
-    }
 
     private void configureStageBehaviourAndLook() {
         mainStage.setOnCloseRequest(event -> {
@@ -106,10 +100,11 @@ public class KafkaMessageToolApplication2 implements ApplicationRoot {
     private void createObjects() throws Exception {
 
         final DataModel dataModel = new DataModel();
+        final ModelDataProxy modelDataProxy = new DefaultModelDataProxy(dataModel);
+        ApplicationConfig.load(modelDataProxy);
 //        applicationPorts = restartables.register(new DefaultApplicationPorts(new DefaultKafkaMessageSender(),
 //                                                                             new KafkaListeners()));
 //
-        final ModelDataProxy modelDataProxy = new DefaultModelDataProxy(dataModel);
 
 //
 //
@@ -120,7 +115,7 @@ public class KafkaMessageToolApplication2 implements ApplicationRoot {
 //        final FixedNumberRecordsCountLogger fixedRecordsLogger = new FixedNumberRecordsCountLogger(logTextArea, new CyclicStringBuffer());
 //        restartables.register(fixedRecordsLogger);
 //        Logger.registerLogger(new GuiWindowedLogger(fixedRecordsLogger));
-        ApplicationConfig.load(modelDataProxy);
+
 
         Logger.setLogLevel(ApplicationConfig.getLogLevel());
 //
@@ -141,11 +136,19 @@ public class KafkaMessageToolApplication2 implements ApplicationRoot {
         final FXNodeBlinker onErrorButtonBlinker = new FXNodeBlinker(Color.RED);
         final FXNodeBlinker onWarningButtonBlinker = new FXNodeBlinker(Color.BLUE);
         final AppContentView contentView = new AppContentView();
-        final ApplicationNotificationView appNotificationView = new ApplicationNotificationView();
-        final MainApplicationController2 mainController = new MainApplicationController2(contentView,
-                                                                                         appNotificationView,
-                                                                                         onErrorButtonBlinker,
-                                                                                         onWarningButtonBlinker);
+
+        final NotificationViewController notificationViewController = new NotificationViewController();
+
+
+        final MessagesPane appMessagesPane = new MessagesPane();
+        final ProblemsPane appProblemsPane = new ProblemsPane();
+        final MainApplicationView mainController = new MainApplicationView(mainStage,
+                                                                           contentView,
+                                                                           notificationViewController,
+                                                                           appMessagesPane,
+                                                                           appProblemsPane,
+                                                                           onErrorButtonBlinker,
+                                                                           onWarningButtonBlinker);
 
 //        final MainApplicationController mainController = new MainApplicationController(mainStage,
 //                                                                                       dataModel,
@@ -156,11 +159,11 @@ public class KafkaMessageToolApplication2 implements ApplicationRoot {
 //                                                                                       actionHandlerFactory,
 //                                                                                       busySwitcher);
 //
-//        CustomFxWidgetsLoader.loadOnAnchorPane(mainController, MAIN_APPLICATION_VIEW_FXML_FILE);
+        CustomFxWidgetsLoader.loadOnAnchorPane(mainController, MAIN_APPLICATION_VIEW_FXML_FILE);
 //
 //
 //
-//        mainController.setupControls();
+        mainController.setupControls();
 //
         scene = new Scene(mainController);
     }

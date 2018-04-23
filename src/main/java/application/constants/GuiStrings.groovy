@@ -35,7 +35,7 @@ Example:
     cat_age = 10;
 3. In '${BEFORE_EACH_MSGS_SCRIPT_TAB}' tab write
     cat_age++
-4. Click '${SEND_BUTTON_TEXT}' button
+4. Click '${SEND_BUTTON_TEXT}' backingObject
 5. Notice that each message has value for '${varName}' incremented.""";
     public static final String BEFORE_FIRST_MSG_TAB_TOOLTIP = """This script (in groovy) will be executed only once just before sending first message.
 You can setup/define variable/classes that will be used later during sending message

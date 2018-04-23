@@ -9,7 +9,7 @@
 
 <fx:root maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="602.0" prefWidth="793.0" type="VBox" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
-      <MenuBar prefHeight="21.0" prefWidth="600.0">
+      <MenuBar prefHeight="21.0" prefWidth="600.0" VBox.vgrow="NEVER">
         <menus>
           <Menu mnemonicParsing="false" text="Application">
             <items>
@@ -23,7 +23,7 @@
             </Menu>
         </menus>
       </MenuBar>
-      <MasterDetailPane fx:id="masterPane" detailSide="BOTTOM" VBox.vgrow="ALWAYS" />
-      <HBox fx:id="bottomBarBox" maxHeight="-Infinity" minHeight="-Infinity" prefHeight="31.0" prefWidth="793.0" />
+      <MasterDetailPane fx:id="masterPane" detailSide="BOTTOM" dividerPosition="0.5" pickOnBounds="false" prefHeight="200.0" prefWidth="160.0" showDetailNode="false" VBox.vgrow="ALWAYS" />
+      <HBox fx:id="bottomBarBox" fillHeight="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" prefHeight="31.0" prefWidth="793.0" VBox.vgrow="NEVER" />
    </children>
 </fx:root>

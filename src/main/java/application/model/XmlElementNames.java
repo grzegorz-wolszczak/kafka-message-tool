@@ -48,4 +48,6 @@ public class XmlElementNames {
 
     public static final String RECEIVED_MSG_LIMIT_ENABLED = "ReceivedMsgLimitEnabled";
     public static final String RECEIVED_MSG_LIMIT_COUNT = "ReceivedMsgLimitCount";
+    public static final String MESSAGES_VIEW_BUTTON_SELECTED = "MessagesViewButtonSelected";
+    public static final String PROBLEMS_VIEW_BUTTON_SELECTED = "ProblemsViewButtonSelected";
 }

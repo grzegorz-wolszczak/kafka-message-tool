@@ -31,12 +31,12 @@ to: configureTextFieldToAcceptOnlyDecimalValues
         ValidatorUtils.configureTextFieldToAcceptOnlyDecimalValues(receiveMsgLimitTextField);
 
 ### TODO_LOW_PRIORITY ###
-todo: feature: replace 'isSuccess' button with 'connect/disconnect' . Connect will result in fetching info every e.g. 1 second
+todo: feature: replace 'isSuccess' backingObject with 'connect/disconnect' . Connect will result in fetching info every e.g. 1 second
 todo: low_priority: report in details inconsistent configuration (which node has what settings)
 todo: low_priority: when fetching new broker, if configuration on some tab does need to be updated, do not refresh it
 todo: low_priority save user sorting type for topic (only during program work - dont need to be persistent)
-todo: add handling DEL button in LIstVIew to delete config
-todo: add handling INS button in listView to add new config
+todo: add handling DEL backingObject in LIstVIew to delete config
+todo: add handling INS backingObject in listView to add new config
 todo: add gui configuration window (e.g. define all timeouts in application instead of hardcoded values)
 todo: add checkbox to NOT send empty messages (if they get evaluated to empty string)
 todo: add 'after EACH message' to be 'symmetric' when sending message template is concerned

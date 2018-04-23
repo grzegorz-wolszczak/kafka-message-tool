@@ -6,6 +6,7 @@ import application.model.ModelDataProxy;
 import application.persistence.GlobalSettings;
 import application.persistence.GuiSettings;
 import application.persistence.XmlFileConfig;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.DoubleProperty;
 
 public class ApplicationConfig {
@@ -33,6 +34,18 @@ public class ApplicationConfig {
 
     public static DoubleProperty mainWindowHeightProperty() {
         return guiSettings.mainWindowHeightProperty();
+    }
+
+    public static DoubleProperty masterDetailDividerPositionProperty(){
+        return guiSettings.mainWindowSplitPaneDividerPositionProperty();
+    }
+
+    public static BooleanProperty messagesViewButtonSelectedProperty(){
+        return guiSettings.messagesViewButtonSelectedProperty();
+    }
+
+    public static BooleanProperty problemsViewButtonSelectedProperty(){
+        return guiSettings.problemsViewButtonSelectedProperty();
     }
 
     public static void save() {
