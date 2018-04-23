@@ -15,9 +15,11 @@ import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.utils.GuiUtils;
+import application.utils.ConfigNameGenerator;
 import application.utils.TooltipCreator;
 import application.utils.ValidatorUtils;
 import application.utils.kafka.KafkaBrokerHostInfo;
+import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
@@ -29,6 +31,9 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
@@ -64,7 +69,8 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private Button connectionCheckButton;
     @FXML
     private ToggleButton detachPaneButton;
-    private Runnable rerfeshCallback;
+    private Runnable refreshCallback;
+    private final MenuItem generateNameMenuItem = new MenuItem("Generate name");
 
     public TopicConfigGuiController(KafkaTopicConfig config,
                                     AnchorPane parentPane,
@@ -78,7 +84,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
 
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
 
-        this.rerfeshCallback = refreshCallback;
+        this.refreshCallback = refreshCallback;
         this.config = config;
 
         StringExpression windowTitle = composeBrokerConfigWindowTitle();
@@ -111,6 +117,29 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     @FXML
     private void initialize() {
         setupSuggestionProviderForTextField();
+        configureNameGenerator();
+        addAdditionalEntryToConfigNameContextMenu();
+    }
+
+    private void configureNameGenerator() {
+        //saveToFilePopupMenuItem.setOnAction(event -> toFileSaver.saveContentToFile());
+        generateNameMenuItem.setOnAction(event->{
+            final String newName = ConfigNameGenerator.generateNewTopicConfigName(config);
+            topicConfigNameField.setText(newName);
+        });
+    }
+
+    private void addAdditionalEntryToConfigNameContextMenu() {
+        TextFieldSkin customContextSkin = new TextFieldSkin(topicConfigNameField) {
+            @Override
+            public void populateContextMenu(ContextMenu contextMenu) {
+                super.populateContextMenu(contextMenu);
+                contextMenu.getItems().add(0, new SeparatorMenuItem());
+                contextMenu.getItems().add(0, generateNameMenuItem);
+            }
+        };
+        topicConfigNameField.setSkin(customContextSkin);
+
     }
 
     private void setupSuggestionProviderForTextField() {
@@ -147,7 +176,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
         GuiUtils.configureTextFieldToAcceptOnlyValidData(topicNameField,
                 config::setTopicName,
                 ValidatorUtils::isStringIdentifierValid,
-                rerfeshCallback);
+                                                         refreshCallback);
     }
 
     private void resetBrokerConfigToFireUpAllCallbacksForTheFirstTimeToSetupControls() {
@@ -235,7 +264,7 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
         GuiUtils.configureTextFieldToAcceptOnlyValidData(topicConfigNameField,
                 config::setName,
                 ValidatorUtils::isStringIdentifierValid,
-                rerfeshCallback);
+                                                         refreshCallback);
     }
 
     @FXML

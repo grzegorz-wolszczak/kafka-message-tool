@@ -15,12 +15,14 @@ import application.model.modelobjects.KafkaSenderConfig;
 import application.model.modelobjects.KafkaTopicConfig;
 import application.persistence.ApplicationSettings;
 import application.scripting.MessageTemplateSender;
+import application.utils.ConfigNameGenerator;
 import application.utils.GuiUtils;
 import application.utils.TooltipCreator;
 import application.utils.ValidationStatus;
 import application.utils.Validations;
 import application.utils.ValidatorUtils;
 import application.utils.kafka.KafkaParitionUtils;
+import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.StringProperty;
@@ -31,6 +33,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
@@ -114,6 +119,8 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
 
     @FXML
     private StatusBar notificationBar;
+
+    private final MenuItem generateNameMenuItem = new MenuItem("Generate name");
 
     public SenderConfigGuiController(KafkaSenderConfig config,
                                      AnchorPane parentPane,
@@ -207,6 +214,29 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         beforeEachMsgScriptTab.setTooltip(TooltipCreator.createFrom(GuiStrings.BEFORE_EACH_MSG_TAB_TOOLTIP));
 
         sendMsgPushButton.setText(GuiStrings.SEND_BUTTON_TEXT);
+
+        configureNameGenerator();
+        addAdditionalEntryToConfigNameContextMenu();
+    }
+
+    private void configureNameGenerator() {
+        generateNameMenuItem.setOnAction(event->{
+            final String newName = ConfigNameGenerator.generateNewSenderConfigName(config);
+            messageNameTextField.setText(newName);
+        });
+    }
+
+    private void addAdditionalEntryToConfigNameContextMenu() {
+        TextFieldSkin customContextSkin = new TextFieldSkin(messageNameTextField) {
+            @Override
+            public void populateContextMenu(ContextMenu contextMenu) {
+                super.populateContextMenu(contextMenu);
+                contextMenu.getItems().add(0, new SeparatorMenuItem());
+                contextMenu.getItems().add(0, generateNameMenuItem);
+            }
+        };
+        messageNameTextField.setSkin(customContextSkin);
+
     }
 
     private void configureScriptsTextAreas() {

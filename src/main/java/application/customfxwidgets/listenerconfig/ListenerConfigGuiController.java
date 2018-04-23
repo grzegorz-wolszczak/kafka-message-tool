@@ -13,10 +13,12 @@ import application.logging.FixedNumberRecordsCountLogger;
 import application.model.KafkaOffsetResetType;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
+import application.utils.ConfigNameGenerator;
 import application.utils.GuiUtils;
 import application.utils.ValidatorUtils;
 import application.utils.gui.FXNodeBlinker;
 import com.sun.javafx.scene.control.skin.TextAreaSkin;
+import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringExpression;
@@ -77,7 +79,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private ObservableList<KafkaTopicConfig> topicConfigs;
     private ToFileSaver toFileSaver;
     private FixedNumberRecordsCountLogger fixedRecordsLogger;
-    //private final FXNodeBlinker assignedPartitionsBlinker = new FXNodeBlinker(Color.BLACK);
+    private final MenuItem generateNameMenuItem = new MenuItem("Generate name");
     private int totalReceivedMsgCounter = ZERO_RECEIVED_MSGS;
 
 
@@ -140,9 +142,29 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         addAdditionalOptionsToTextAreaPopupMenu();
         resetTotalReceivedLabeltext();
         configurePartitionsAssignmentsChangedLabel();
-
+        configureNameGenerator();
+        addAdditionalEntryToConfigNameContextMenu();
     }
 
+    private void configureNameGenerator() {
+        generateNameMenuItem.setOnAction(event->{
+            final String newName = ConfigNameGenerator.generateNewListenerConfigName(config);
+            listenerNameTextField.setText(newName);
+        });
+    }
+
+    private void addAdditionalEntryToConfigNameContextMenu() {
+        TextFieldSkin customContextSkin = new TextFieldSkin(listenerNameTextField) {
+            @Override
+            public void populateContextMenu(ContextMenu contextMenu) {
+                super.populateContextMenu(contextMenu);
+                contextMenu.getItems().add(0, new SeparatorMenuItem());
+                contextMenu.getItems().add(0, generateNameMenuItem);
+            }
+        };
+        listenerNameTextField.setSkin(customContextSkin);
+
+    }
     private void configurePartitionsAssignmentsChangedLabel() {
         partitionAssignmentHandler.setLabelToChange(assignedPartitionsLabel);
         partitionAssignmentHandler.updatePartitionsAssignmentLabelFor(AssignedPartitionsInfo.invalid());
