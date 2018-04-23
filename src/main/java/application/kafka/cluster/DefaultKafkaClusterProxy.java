@@ -211,7 +211,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
             }
             final String msg = String.format("Cluster config for 'advertised.listeners' is invalid.%n%n" +
                                                  "* None of advertised listeners '%s' are reachable from outside world.%n" +
-                                                 "* Producers/consumers will be unable to use this kafka cluster (e.g. will not connect properly).%n" +
+                                                 "* Producers/consumers will be unable to use this kafka cluster " +
+                                                 "(e.g. will not connect properly).%n" +
                                                  "* This application (%s) cannot fetch broker configuration", advertisedListeners,
                                              APPLICATION_NAME);
             throw new ClusterConfigurationError(msg);
@@ -306,8 +307,10 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
             final Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
 
             if (!beggingOffsets.keySet().equals(endOffsets.keySet())) {
-                Logger.error(String.format("Inconsistent response from broker. While fetching beginOffset and endOffset for topicPartitions:%s " +
-                                               "endOffsets topic-partitions (%s) are different than beggingOffsets topic-partitions (%s)", topicPartitions,
+                Logger.error(String.format("Inconsistent response from broker. While fetching beginOffset and " +
+                                               "endOffset for topicPartitions:%s " +
+                                               "endOffsets topic-partitions (%s) are different than " +
+                                               "beggingOffsets topic-partitions (%s)", topicPartitions,
                                            endOffsets.keySet(),
                                            beggingOffsets.keySet()));
             }

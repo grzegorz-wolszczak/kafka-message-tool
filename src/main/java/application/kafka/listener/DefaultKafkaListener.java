@@ -191,19 +191,18 @@ public class DefaultKafkaListener implements Listener {
         final String topicName = listenerConfig.getRelatedConfig().getTopicName();
 
         for (ConsumerRecord<String, String> record : consumerRecords) {
+            if (wasReceivedMsgLimitReached(receivedMessagesCount)) {
+                shouldBeRunning.set(false);
+                return;
+            }
+
             receivedMessagesCount++;
             logConsumerRecord(record);
             final TopicPartition topicPartition = new TopicPartition(topicName,
                                                                      record.partition());
             final OffsetAndMetadata offsetAndMetadata = new OffsetAndMetadata(record.offset() + 1);
             consumer.commitSync(Collections.singletonMap(topicPartition, offsetAndMetadata));
-
-            if (wasReceivedMsgLimitReached(receivedMessagesCount)) {
-                shouldBeRunning.set(false);
-                return;
-            }
         }
-
     }
 
     private boolean wasReceivedMsgLimitReached(int receivedMessagesCount) {
