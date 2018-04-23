@@ -7,7 +7,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<fx:root pickOnBounds="false" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root pickOnBounds="false" type="AnchorPane" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane layoutX="223.0" layoutY="136.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -17,7 +17,7 @@
         </columnConstraints>
         <rowConstraints>
             <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="NEVER" />
-          <RowConstraints prefHeight="30.0" vgrow="ALWAYS" />
+          <RowConstraints prefHeight="30.0" vgrow="SOMETIMES" />
           <RowConstraints maxHeight="-Infinity" minHeight="-Infinity" prefHeight="25.0" vgrow="NEVER" />
         </rowConstraints>
          <children>

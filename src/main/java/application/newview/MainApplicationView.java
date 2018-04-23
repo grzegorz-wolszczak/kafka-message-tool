@@ -6,6 +6,7 @@ import application.newview.guiwrappers.ToggleButtonWrapper;
 import application.newview.guiwrappers.ToggleGroupWrapper;
 import application.utils.gui.ColorChangeableButtonWrapper;
 import application.utils.gui.FXNodeBlinker;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
@@ -68,7 +69,7 @@ public class MainApplicationView extends VBox {
     public void setupControls() {
         connectStageGuiPropertiesFromSettings();
         setupMasterPane();
-        setupDetailPane();
+
         setupBottomBarBox();
         setupButtonBlinkers();
         setupNotificationViewController();
@@ -98,13 +99,13 @@ public class MainApplicationView extends VBox {
         messagesButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                notificationViewController.messagesButtonStateChanged();
+                //notificationViewController.messagesButtonStateChanged();
             }
         });
         problemsButton.selectedProperty().addListener(new ChangeListener<Boolean>() {
             @Override
             public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                notificationViewController.problemsButtonStateChanged();
+                //notificationViewController.problemsButtonStateChanged();
             }
         });
 
@@ -119,8 +120,20 @@ public class MainApplicationView extends VBox {
             @Override
             public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
                 System.out.println("new value: " + newValue);
+                //Exceptionutils.getFullStackTrace(e);
+
+
+//                for (StackTraceElement ste : Thread.currentThread().getStackTrace()) {
+//                    System.out.println(ste);
+//                }
+
+
             }
         });
+
+
+
+
     }
 
     private void setupButtonToggleGroup() {
@@ -145,15 +158,21 @@ public class MainApplicationView extends VBox {
 
     }
 
-    private void setupDetailPane() {
-        //masterPane.setDetailNode(appMessagesPane);
-    }
 
     private void setupMasterPane() {
 
-        masterPane.dividerPositionProperty().set(ApplicationConfig.masterDetailDividerPositionProperty().get());
-        masterPane.dividerPositionProperty().bindBidirectional(ApplicationConfig.masterDetailDividerPositionProperty());
+
+        //masterPane.setDividerPosition();
         //masterPane.setMasterNode(contentView);
+
+        //TextArea node = new TextArea();
+        //masterPane.setDetailNode(node);
+
+        Platform.runLater(()->{
+            masterPane.dividerPositionProperty().bindBidirectional(ApplicationConfig.masterDetailDividerPositionProperty());
+            masterPane.setDividerPosition(ApplicationConfig.masterDetailDividerPositionProperty().get());
+            masterPane.setShowDetailNode(true);
+        });
     }
 
     @FXML

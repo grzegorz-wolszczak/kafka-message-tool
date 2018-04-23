@@ -164,8 +164,8 @@ public class KafkaMessageToolApplication2 implements ApplicationRoot {
 //
 //
         mainController.setupControls();
-//
         scene = new Scene(mainController);
+//
     }
 //
 //    private TextArea getTextAreaForLogging() {
