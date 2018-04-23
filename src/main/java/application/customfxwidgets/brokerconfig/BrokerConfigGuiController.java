@@ -4,6 +4,7 @@ import application.customfxwidgets.AddTopicDialog;
 import application.customfxwidgets.ConfigEntriesViewPreferences;
 import application.customfxwidgets.CustomFxWidgetsLoader;
 import application.customfxwidgets.Displayable;
+import application.customfxwidgets.topicpropertieswindow.TopicPropertiesWindow;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
@@ -452,9 +453,11 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         final Set<ConfigEntry> topicProperties = kafkaClusterProxy.getTopicProperties(topicName);
         try {
             ConfigEntriesView entriesView = new ConfigEntriesView("Topic properties", topicProperties, topicPropertiesViewPreferences);
-            userInteractor.showConfigEntriesInfoDialog("Topic properties",
-                                                       String.format("Properties for topic '%s': ", topicName),
-                                                       entriesView);
+            final TopicPropertiesWindow topicPropertiesWindow = TopicPropertiesWindow.get(topicName,
+                                                                                          entriesView);
+            topicPropertiesWindow.show();
+
+
         } catch (IOException e) {
             e.printStackTrace();
         }
