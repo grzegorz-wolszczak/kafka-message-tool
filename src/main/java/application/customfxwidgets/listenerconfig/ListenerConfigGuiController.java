@@ -28,7 +28,16 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.Label;
+import javafx.scene.control.MenuItem;
+import javafx.scene.control.SeparatorMenuItem;
+import javafx.scene.control.TextArea;
+import javafx.scene.control.TextField;
+import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
@@ -96,7 +105,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         this.toFileSaver = toFileSaver;
         this.fixedRecordsLogger = fixedRecordsLogger;
         partitionAssignmentHandler = new PartitionAssignmentChangeHandler(
-                new FXNodeBlinker(Color.BLACK), config);
+            new FXNodeBlinker(Color.BLACK), config);
 
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
 
@@ -107,11 +116,11 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
 
         final StringExpression windowTitle = new ReadOnlyStringWrapper("Kafka listener configuration");
         displayBehaviour = new DetachableDisplayBehaviour(parentPane,
-                windowTitle,
-                this,
-                detachPaneButton.selectedProperty(),
-                config,
-                guiInformer);
+                                                          windowTitle,
+                                                          this,
+                                                          detachPaneButton.selectedProperty(),
+                                                          config,
+                                                          guiInformer);
         configureTopicConfigComboBox();
         configureOffsetResetComboBox();
         configureMessageNameTextField();
@@ -123,8 +132,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         configureGuiControlDisableStateBasedOnStartButtonState();
         GuiUtils.configureComboBoxToClearSelectedValueIfItsPreviousValueWasRemoved(topicConfigComboBox);
 
-        comboBoxConfigurator = new TopicConfigComboBoxConfigurator<>(topicConfigComboBox,
-                config);
+        comboBoxConfigurator = new TopicConfigComboBoxConfigurator<>(topicConfigComboBox, config);
         comboBoxConfigurator.configure();
 
     }
@@ -147,7 +155,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     }
 
     private void configureNameGenerator() {
-        generateNameMenuItem.setOnAction(event->{
+        generateNameMenuItem.setOnAction(event -> {
             final String newName = ConfigNameGenerator.generateNewListenerConfigName(config);
             listenerNameTextField.setText(newName);
         });
@@ -165,6 +173,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         listenerNameTextField.setSkin(customContextSkin);
 
     }
+
     private void configurePartitionsAssignmentsChangedLabel() {
         partitionAssignmentHandler.setLabelToChange(assignedPartitionsLabel);
         partitionAssignmentHandler.updatePartitionsAssignmentLabelFor(AssignedPartitionsInfo.invalid());
@@ -222,15 +231,15 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private void configureFetchTimeoutField() {
         fetchTimeoutTextField.textProperty().set(config.getPollTimeout());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(fetchTimeoutTextField,
-                config::setPollTimeout,
-                ValidatorUtils::isTimeoutInMsValid);
+                                                         config::setPollTimeout,
+                                                         ValidatorUtils::isTimeoutInMsValid);
     }
 
     private void configureConsumerGroupField() {
         consumerGroupTextField.setText(config.getConsumerGroup());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(consumerGroupTextField,
-                config::setConsumerGroup,
-                ValidatorUtils::isStringIdentifierValid);
+                                                         config::setConsumerGroup,
+                                                         ValidatorUtils::isStringIdentifierValid);
     }
 
     private void setKafkaListenerBinding() {
@@ -246,7 +255,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
                                              AssignedPartitionsInfo oldValue,
                                              AssignedPartitionsInfo newValue) {
         Platform.runLater(() -> partitionAssignmentHandler
-                .updatePartitionsAssignmentLabelFor(newValue));
+            .updatePartitionsAssignmentLabelFor(newValue));
     }
 
 

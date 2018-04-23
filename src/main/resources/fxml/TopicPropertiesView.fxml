@@ -5,6 +5,8 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TableColumn?>
+<?import javafx.scene.control.TableView?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -32,7 +34,17 @@
                 </Tab>
                 <Tab text="Consumer groups">
                   <content>
-                    <AnchorPane fx:id="consumerGroupsAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
+                    <AnchorPane fx:id="consumerGroupsAnchorPane" minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
+                           <children>
+                              <TableView fx:id="topicOffsetsTableView" layoutX="166.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+                                <columns>
+                                  <TableColumn fx:id="consumerGroupColumn" prefWidth="120.0" text="Consumer group" />
+                                  <TableColumn fx:id="partitionColumn" prefWidth="79.0" text="Parition" />
+                                    <TableColumn fx:id="beginOffsetColumn" prefWidth="75.0" text="Begin offset" />
+                                    <TableColumn fx:id="endOffsetColumn" prefWidth="75.0" text="End offset" />
+                                </columns>
+                              </TableView>
+                           </children></AnchorPane>
                   </content>
                 </Tab>
               </tabs>

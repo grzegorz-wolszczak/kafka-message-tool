@@ -7,8 +7,10 @@ import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.UnassignedConsumerInfo;
 import org.apache.kafka.clients.admin.ConfigEntry;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,6 +20,16 @@ public final class ClusterStateSummary {
     private final Set<ClusterTopicInfo> topicsInfo = new HashSet<>();
     private final Set<AssignedConsumerInfo> assignedConsumersInfo = new HashSet<>();
     private final Set<UnassignedConsumerInfo> unassignedConsumersInfo = new HashSet<>();
+
+    public List<TopicsOffsetInfo> getTopicOffsetInfo() {
+        return topicOffsetInfo;
+    }
+
+    public void setTopicOffsetInfo(List<TopicsOffsetInfo> topicOffsetInfo) {
+        this.topicOffsetInfo = topicOffsetInfo;
+    }
+
+    private List<TopicsOffsetInfo> topicOffsetInfo = new ArrayList<>();
     private static final int INVALID_PARITION_NUMBER_FOR_TOPIC = -1;
     private String clusterId;
 

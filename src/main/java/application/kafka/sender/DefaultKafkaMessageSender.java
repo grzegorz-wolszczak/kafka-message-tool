@@ -44,10 +44,10 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
 
         try {
             refreshProducerIfNeeded(msgToBeSent.getBrokerHostInfo(),
-                                    msgToBeSent.shouldSimulateSending());
+                    msgToBeSent.shouldSimulateSending());
             sendMessagesToTopic(msgToBeSent);
             Logger.info(String.format("Message [%d/%d] sent.", msgToBeSent.getMsgNum(),
-                                      msgToBeSent.getTotalMsgCount()));
+                    msgToBeSent.getTotalMsgCount()));
         } catch (Exception e) {
             printMostAppropriateDebugBasedOnExcepionType(e);
             throw new RuntimeException(e);
@@ -63,16 +63,16 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
             Logger.warn("Sending stopped by user.");
         } else if (cause instanceof org.apache.kafka.common.errors.CorruptRecordException) {
             Logger.error("Sending failed: " + e.getLocalizedMessage() +
-                             "\n(Probable reason: You forgot to set key for message while sending to compacted topic).");
+                    "\n(Probable reason: You forgot to set key for message while sending to compacted topic).");
         } else {
             Logger.error("Sending failed: " + e.getLocalizedMessage());
         }
     }
 
     private void sendMessagesToTopic(MessageOnTopicDto messageOnTopic)
-        throws InterruptedException,
-               ExecutionException,
-               TimeoutException {
+            throws InterruptedException,
+            ExecutionException,
+            TimeoutException {
 
 
         final String message = messageOnTopic.getMessage();
@@ -84,17 +84,28 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
 
         final ProducerRecord<String, String> record = createRecord(topicName, key, message);
         Logger.info(String.format("%sSending message %d/%d (timeout ms: %d)%nmessage content= '%s'",
-                                  messageOnTopic.shouldSimulateSending() ? "(simulation) " : "",
-                                  msgCount,
-                                  totalMsgCount,
-                                  KAFKA_SENDER_SEND_TIMEOUT_MS,
-                                  message));
+                messageOnTopic.shouldSimulateSending() ? "(simulation) " : "",
+                msgCount,
+                totalMsgCount,
+                KAFKA_SENDER_SEND_TIMEOUT_MS,
+                message));
 
         if (!messageOnTopic.shouldSimulateSending()) {
             final Future<RecordMetadata> futureResult = producer.send(record);
             final RecordMetadata recordMetadata = futureResult.get(KAFKA_SENDER_SEND_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-            Logger.trace(String.format("Record sent, metadata %s", recordMetadata));
+            logSentOffset(recordMetadata);
         }
+    }
+
+    private void logSentOffset(RecordMetadata recordMetadata) {
+        String offset = "absent in record metadata";
+        if (recordMetadata.hasOffset()) {
+            offset = String.valueOf(recordMetadata.offset());
+        }
+        Logger.info(String.format("Record sent: topic='%s', partition=%s, offset=%s",
+                recordMetadata.topic(),
+                recordMetadata.partition(),
+                offset));
     }
 
     private void refreshProducerIfNeeded(HostInfo brokerHostInfo,
@@ -108,8 +119,8 @@ public final class DefaultKafkaMessageSender implements KafkaMessageSender {
                                                         String key,
                                                         String content) {
         return new ProducerRecord<>(topicName,
-                                    key,
-                                    content);
+                key,
+                content);
     }
 
     private Properties getKafkaProducerConfig(HostInfo hostInfo) {

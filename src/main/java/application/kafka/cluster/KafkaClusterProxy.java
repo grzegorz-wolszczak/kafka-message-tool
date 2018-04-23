@@ -7,6 +7,7 @@ import application.kafka.dto.TopicToAdd;
 import application.kafka.dto.UnassignedConsumerInfo;
 import org.apache.kafka.clients.admin.ConfigEntry;
 
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.function.Consumer;
 
@@ -33,6 +34,8 @@ public interface KafkaClusterProxy {
     Set<UnassignedConsumerInfo> getUnassignedConsumersInfo();
 
     Set<ClusterNodeInfo> getNodesInfo();
+
+    ArrayList<TopicsOffsetInfo> getTopicOffsetsInfo();
 
     Set<TopicAggregatedSummary> getAggregatedTopicSummary();
 

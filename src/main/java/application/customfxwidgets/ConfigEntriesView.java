@@ -67,7 +67,7 @@ public class ConfigEntriesView extends TitledPane {
         valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().value()));
         valueColumn.setResizable(true);
 
-        if (columnWidths.valueColumnWidth != ConfigEntriesViewPreferences.INVALID_COLUMN_WIDHT) {
+        if (columnWidths.valueColumnWidth != ConfigEntriesViewPreferences.INVALID_COLUMN_WIDTH) {
             valueColumn.setPrefWidth(columnWidths.nameColumnWidth);
         }
         valueColumn.widthProperty().addListener((observable, oldValue, newValue) -> columnWidths.valueColumnWidth = newValue.doubleValue());
@@ -77,7 +77,7 @@ public class ConfigEntriesView extends TitledPane {
         nameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().name()));
         nameColumn.setResizable(true);
 
-        if (columnWidths.nameColumnWidth != ConfigEntriesViewPreferences.INVALID_COLUMN_WIDHT) {
+        if (columnWidths.nameColumnWidth != ConfigEntriesViewPreferences.INVALID_COLUMN_WIDTH) {
             nameColumn.setPrefWidth(columnWidths.nameColumnWidth);
         }
         nameColumn.widthProperty().addListener((observable, oldValue, newValue) -> columnWidths.nameColumnWidth = newValue.doubleValue());

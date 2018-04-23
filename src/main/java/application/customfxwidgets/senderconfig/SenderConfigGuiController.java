@@ -57,6 +57,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     private static final String FXML_FILE = "SenderConfigView.fxml";
     private static final int MIN_REPEAT_COUNT = 1;
     private static final int MAX_REPEAT_COUNT = 100_000_000;
+    public static final int MESSAGE_FADE_MS = 5000;
     private final DisplayBehaviour displayBehaviour;
     private final TopicConfigComboBoxConfigurator comboBoxConfigurator;
 
@@ -75,7 +76,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     private final StyleClassedTextArea messageContentTextArea;
     private KafkaClusterProxies kafkaClusterProxies;
     private ApplicationSettings applicationSettings;
-    private SentMessagesProgressNotifier sentMessagesNotifier;
+    private StatusBarNotifier statusBarNotifier;
     @FXML
     private TextField messageNameTextField;
     @FXML
@@ -188,7 +189,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     }
 
     private void createProgressNotifier() {
-        sentMessagesNotifier = new SentMessagesProgressNotifier(notificationBar);
+        statusBarNotifier = new StatusBarNotifier(notificationBar);
     }
 
     private void configureSimulationSendingCheckBox() {
@@ -343,12 +344,15 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         final KafkaClusterProxy kafkaClusterProxy = kafkaClusterProxies.get(brokerConfig.getHostInfo());
         final int partitions = kafkaClusterProxy.partitionsForTopic(topicConfig.getTopicName());
         final int expectedAssignedPartitions = KafkaParitionUtils.partition(messageKey, partitions);
-        Logger.info(String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions));
+        final String msg = String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions);
+        statusBarNotifier.displayMessageWithFadeTimeout(msg, MESSAGE_FADE_MS);
+
     }
 
     private void showInfoWhyTargetPartitionCouldNotBeCalculated(String reason) {
-        final String msgPrefix = "Could not calculate target partition for message: ";
-        Logger.info(String.format("%s%s", msgPrefix, reason));
+        final String msg = String.format("%s%s", "Could not calculate target partition for message: ", reason);
+
+        statusBarNotifier.displayMessageWithFadeTimeout(msg, MESSAGE_FADE_MS);
     }
 
     private void configureMessageKeyCheckbox() {
@@ -373,7 +377,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
             return;
         }
 
-        sentMessagesNotifier.clearMsgSentProgress();
+        statusBarNotifier.clearMsgSentProgress();
         taskExecutor.run(this::sendMessageTask);
 
     }
@@ -381,7 +385,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
     private void sendMessageTask() {
         final Instant now = Instant.now();
         msgTemplateSender.send(config,
-                               sentMessagesNotifier,
+                statusBarNotifier,
                                applicationSettings.appSettings().getRunBeforeFirstMessageSharedScriptContent(),
                                sendingSimulationModeCheckBox.isSelected());
         final Instant now1 = Instant.now();

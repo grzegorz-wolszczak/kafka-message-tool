@@ -9,18 +9,8 @@ import application.utils.HostInfo;
 import application.utils.TimestampUtils;
 import application.utils.kafka.KafkaBrokerHostInfo;
 import com.google.common.collect.Lists;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
-import org.apache.kafka.clients.consumer.Consumer;
-import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
-import org.apache.kafka.clients.consumer.ConsumerRecords;
-import org.apache.kafka.clients.consumer.KafkaConsumer;
-import org.apache.kafka.clients.consumer.OffsetAndMetadata;
+import javafx.beans.property.*;
+import org.apache.kafka.clients.consumer.*;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.errors.WakeupException;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -130,7 +120,7 @@ public class DefaultKafkaListener implements Listener {
         } finally {
             if (isRunning.get()) {
                 Logger.info(String.format("Consumer stopped (topic:%s, consumer group:%s)", topicConfig.getTopicName(),
-                                          listenerConfig.getConsumerGroup()));
+                        listenerConfig.getConsumerGroup()));
             }
             shouldBeRunning.set(false);
             isRunning.set(false);
@@ -141,8 +131,8 @@ public class DefaultKafkaListener implements Listener {
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
 
         Logger.info(String.format("Starting consumer '%s',  consumer group '%s'",
-                                  listenerConfig.getName(),
-                                  listenerConfig.getConsumerGroup()));
+                listenerConfig.getName(),
+                listenerConfig.getConsumerGroup()));
 
         this.brokerHost = brokerConfig.getHostInfo();
         consumer = setUpConsumer();
@@ -151,7 +141,7 @@ public class DefaultKafkaListener implements Listener {
         isRunning.set(true);
 
         Logger.info(String.format("Consumer started (topic:%s, consumer group:%s)", topicConfig.getTopicName(),
-                                  listenerConfig.getConsumerGroup()));
+                listenerConfig.getConsumerGroup()));
         final long pollTimeout = Long.parseLong(listenerConfig.getPollTimeout());
 
         while (shouldBeRunning.get()) {
@@ -199,7 +189,7 @@ public class DefaultKafkaListener implements Listener {
             receivedMessagesCount++;
             logConsumerRecord(record);
             final TopicPartition topicPartition = new TopicPartition(topicName,
-                                                                     record.partition());
+                    record.partition());
             final OffsetAndMetadata offsetAndMetadata = new OffsetAndMetadata(record.offset() + 1);
             consumer.commitSync(Collections.singletonMap(topicPartition, offsetAndMetadata));
         }
@@ -207,7 +197,7 @@ public class DefaultKafkaListener implements Listener {
 
     private boolean wasReceivedMsgLimitReached(int receivedMessagesCount) {
         if (listenerConfig.getReceivedMsgLimitEnabled() &&
-            receivedMessagesCount >= receivedMessageLimit) {
+                receivedMessagesCount >= receivedMessageLimit) {
             return true;
         }
         return false;
@@ -237,7 +227,7 @@ public class DefaultKafkaListener implements Listener {
             Logger.warn(String.format("Waking up consumer (after %d ms), " +
                             "because consumer::poll() did not respond win its %d ms timeout. " +
                             "(+%d additional ms timeout)"
-                , wakeUpDurationMs, pollTimeoutMs,
+                    , wakeUpDurationMs, pollTimeoutMs,
                     ADDITIONAL_WAIT_DURATION_BEFORE_WAKEUP_MS));
             wakeUpConsumer();
             return null;
@@ -256,13 +246,13 @@ public class DefaultKafkaListener implements Listener {
     }
 
     private String prepareConsumerRecordToBeLogged(ConsumerRecord<String, String> record) {
-        return String.format("[%s] ConsumerRecord: (key:%s, partition:%d, offset:%d, timestamp:%s)%nvalue '%s'%n",
-                             TimestampUtils.nowTimeTimestamp(),
-                             record.key(),
-                             record.partition(),
-                             record.offset(),
-                             timestampFromEpochMili(record.timestamp()),
-                             record.value());
+        return String.format("[%s] ConsumerRecord: (%s, key=%s, partition=%d, offset=%d)%nvalue '%s'%n",
+                TimestampUtils.nowTimeTimestamp(),
+                timestampFromEpochMili(record.timestamp()),
+                record.key(),
+                record.partition(),
+                record.offset(),
+                record.value());
     }
 
     private void tryStart() {

@@ -9,7 +9,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class FixedNumberRecordsCountLogger implements Restartable {
 
-    public static final int REPEAT_RATE_MS = 250;
+    public static final int REPEAT_RATE_MS = 500;
     private final ConcurrentLinkedQueue<String> stringBufferQueue = new ConcurrentLinkedQueue<>();
     private final RepeatableTimer appendTextTimer = new RepeatableTimer();
     private TextArea logTextArea;
@@ -31,7 +31,6 @@ public class FixedNumberRecordsCountLogger implements Restartable {
     }
 
     public void appendText(String text) {
-        //text = normalizeNewlines(text);
         stringBufferQueue.add(text);
     }
 
@@ -50,16 +49,6 @@ public class FixedNumberRecordsCountLogger implements Restartable {
         cyclicBuffer.clear();
     }
 
-    /*
-    For unknown reason, when text with sequence '\r\n' is appended to  TextArea it will be replaced with '\n'
-    so when we call TextArea.getText() it return different! text that was put in !
-    In order to compare text between cyclicBuffer text and TextArea text, we make sure that
-    all strings in TextArea are also without '\r'
-     */
-//    //private String normalizeNewlines(String text) {
-//        return text.replace("\r\n", "\n");
-//    }
-
     private void periodicallyAppendTextToTextEdit() {
         final int size = stringBufferQueue.size();
         for (int i = 0; i < size; i++) {
@@ -67,13 +56,14 @@ public class FixedNumberRecordsCountLogger implements Restartable {
         }
 
         final String currentBufferContent = cyclicBuffer.getContent();
-        //final String textAreaText = logTextArea.getText();
         if (!currentBufferContent.equals(localBuffer)) {
+            localBuffer = currentBufferContent;
             Platform.runLater(() -> {
-                logTextArea.clear();
-                localBuffer = currentBufferContent;
-                logTextArea.appendText(localBuffer);
+                //logTextArea.setScrollTop(Double.MAX_VALUE);
+                logTextArea.setText(localBuffer);
+                logTextArea.appendText("");
             });
+
         }
     }
 }

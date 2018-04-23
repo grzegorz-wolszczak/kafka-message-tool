@@ -454,7 +454,8 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         try {
             ConfigEntriesView entriesView = new ConfigEntriesView("Topic properties", topicProperties, topicPropertiesViewPreferences);
             final TopicPropertiesWindow topicPropertiesWindow = TopicPropertiesWindow.get(topicName,
-                                                                                          entriesView);
+                                                                                          entriesView,
+                                                                                          kafkaClusterProxy.getTopicOffsetsInfo());
             topicPropertiesWindow.show();
 
 

@@ -7,14 +7,17 @@ import javafx.scene.Node;
 import org.controlsfx.control.StatusBar;
 
 import java.util.Locale;
+import java.util.Timer;
+import java.util.TimerTask;
 
-public class SentMessagesProgressNotifier {
+public class StatusBarNotifier {
     public static final double PERCENTAGE_MAX = 100.0;
     private DoubleProperty doubleProperty;
     private StatusBar statusBar;
+    private Timer timer = new Timer();
 
 
-    public SentMessagesProgressNotifier(StatusBar statusBar) {
+    public StatusBarNotifier(StatusBar statusBar) {
         this.statusBar = statusBar;
         resetStatusBarOnConstruction();
     }
@@ -28,7 +31,6 @@ public class SentMessagesProgressNotifier {
 
     public void clearMsgSentProgress() {
         displayProgressOnProgressBar(0.0);
-        //displayMessageToStatusBar("");
 
     }
 
@@ -46,6 +48,25 @@ public class SentMessagesProgressNotifier {
     private void displayMessageToStatusBar(String message) {
         Platform.runLater(() -> statusBar.textProperty().set(message));
     }
+
+    public void displayMessageWithFadeTimeout(String message, long delayMs) {
+        displayMessageToStatusBar(message);
+
+        scheduleFadingOut(delayMs);
+    }
+
+    private void scheduleFadingOut(long delayMs) {
+        timer.cancel();
+        timer = new Timer();
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                Platform.runLater(() -> statusBar.setText(""));
+            }
+        }, delayMs);
+    }
+
 
     private void displayProgressOnProgressBar(double value) {
         Platform.runLater(() -> doubleProperty.set(value));

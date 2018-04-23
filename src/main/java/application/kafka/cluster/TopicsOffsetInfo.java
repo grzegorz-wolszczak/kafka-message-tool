@@ -1,19 +1,21 @@
 package application.kafka.cluster;
 
 
+import lombok.ToString;
 
+@ToString
 public class TopicsOffsetInfo {
+    private String consumerGroup;
     private String topicName;
+    private String partition;
     private String beginOffset;
     private String endOffset;
-    private String consumerGroup;
-    private int partition;
 
     public TopicsOffsetInfo(String topicName,
                             String beginOffset,
                             String endOffset,
                             String consumerGroup,
-                            int partition) {
+                            String partition) {
         this.topicName = topicName;
         this.beginOffset = beginOffset;
         this.endOffset = endOffset;
@@ -39,7 +41,7 @@ public class TopicsOffsetInfo {
         return consumerGroup;
     }
 
-    public int getPartition() {
+    public String getPartition() {
         return this.partition;
     }
 }

@@ -18,7 +18,7 @@ public class ConfigNameGenerator {
 
     public static String generateNewSenderConfigName(KafkaSenderConfig config) {
         final String configName = getTopicConfig(config.getRelatedConfig());
-        return String.format("send-to:%s", configName);
+        return String.format("sender-%s", configName);
     }
 
     private static String getTopicConfig(KafkaTopicConfig relatedConfig) {
@@ -31,6 +31,6 @@ public class ConfigNameGenerator {
 
     public static String generateNewListenerConfigName(KafkaListenerConfig config) {
         final String configName = getTopicConfig(config.getRelatedConfig());
-        return String.format("listen-from:%s", configName);
+        return String.format("listener-%s", configName);
     }
 }

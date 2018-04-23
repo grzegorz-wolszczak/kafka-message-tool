@@ -1,7 +1,7 @@
 package application.scripting;
 
 import application.constants.GroovyStringEscaper;
-import application.customfxwidgets.senderconfig.SentMessagesProgressNotifier;
+import application.customfxwidgets.senderconfig.StatusBarNotifier;
 import application.exceptions.ExecutionStopRequested;
 import application.kafka.sender.KafkaMessageSender;
 import application.logging.Logger;
@@ -22,7 +22,7 @@ public class MessageTemplateSender {
     }
 
     public void send(KafkaSenderConfig config,
-                     SentMessagesProgressNotifier sentMessagesNotifier,
+                     StatusBarNotifier sentMessagesNotifier,
                      String sharedScriptContent,
                      boolean isSimulationModeEnabled) {
         try {
@@ -45,7 +45,7 @@ public class MessageTemplateSender {
     }
 
     private void trySend(KafkaSenderConfig config,
-                         SentMessagesProgressNotifier sentMessagesNotifier,
+                         StatusBarNotifier sentMessagesNotifier,
                          String sharedScriptContent,
                          boolean isSimulationModeEnabled) throws Exception {
 
