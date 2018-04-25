@@ -2,11 +2,16 @@ package application.kafka.cluster;
 
 import application.constants.ApplicationConstants;
 import application.exceptions.ClusterConfigurationError;
-import application.kafka.dto.*;
+import application.kafka.dto.AssignedConsumerInfo;
+import application.kafka.dto.ClusterNodeInfo;
+import application.kafka.dto.TopicAggregatedSummary;
+import application.kafka.dto.TopicToAdd;
+import application.kafka.dto.UnassignedConsumerInfo;
 import application.logging.Logger;
 import application.utils.AppUtils;
 import application.utils.HostPortValue;
 import application.utils.HostnameUtils;
+import javafx.collections.ObservableList;
 import kafka.admin.AdminClient;
 import kafka.coordinator.group.GroupOverview;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +30,15 @@ import org.apache.kafka.common.requests.ApiVersionsResponse;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import scala.collection.JavaConversions;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Properties;
+import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -36,32 +49,33 @@ import static java.util.Collections.singleton;
 import static scala.collection.JavaConversions.seqAsJavaList;
 
 public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
-
     public static final String OFFSET_NOT_FOUND = "NOT_FOUND";
+
     private final HostPortValue hostPort;
     private final ClusterStateSummary clusterSummary = new ClusterStateSummary();
     private final ClusterNodesProperties clusterNodesProperties = new ClusterNodesProperties();
     private final Map<Node, NodeApiVersionsInfo> brokerApiVersions = new HashMap<>();
-    private final org.apache.kafka.clients.admin.AdminClient kafkaClientsAdminClient;
-    private final kafka.admin.AdminClient kafkaAdminClient;
+    private org.apache.kafka.clients.admin.AdminClient kafkaClientsAdminClient;
+    private kafka.admin.AdminClient kafkaAdminClient;
     private TopicAdmin topicAdmin;
 
-
-    public DefaultKafkaClusterProxy(HostPortValue hostPort,
-                                    TopicAdmin topicAdmin,
-                                    org.apache.kafka.clients.admin.AdminClient kafkaClientsAdminClient,
-                                    kafka.admin.AdminClient kafkaAdminClient
-    ) throws ClusterConfigurationError, InterruptedException, ExecutionException, TimeoutException {
-        Logger.trace("New DefaultKafkaClusterProxy: real Hash : " + AppUtils.realHash(this));
-        this.hostPort = hostPort;
+    @Override
+    public void refresh(TopicAdmin topicAdmin,
+                        org.apache.kafka.clients.admin.AdminClient adminClient2,
+                        AdminClient kafkaAdminClient)
+        throws ClusterConfigurationError, InterruptedException, ExecutionException, TimeoutException {
         this.topicAdmin = topicAdmin;
-        this.kafkaClientsAdminClient = kafkaClientsAdminClient;
+        this.kafkaClientsAdminClient = adminClient2;
         this.kafkaAdminClient = kafkaAdminClient;
         throwIfInvalidConfigMakesClusterUnusable();
         fetchClusterStateSummary();
-
     }
 
+    public DefaultKafkaClusterProxy(HostPortValue hostPort    ) {
+        Logger.trace("New DefaultKafkaClusterProxy: real Hash : " + AppUtils.realHash(this));
+        this.hostPort = hostPort;
+
+    }
 
     @Override
     public void reportInvalidClusterConfigurationTo(Consumer<String> problemReporter) {
@@ -97,8 +111,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     @Override
-    public ArrayList<TopicsOffsetInfo> getTopicOffsetsInfo() {
-        return new ArrayList<TopicsOffsetInfo>(clusterSummary.getTopicOffsetInfo());
+    public ObservableList<TopicsOffsetInfo> getTopicOffsetsInfo() {
+        return clusterSummary.getTopicOffsetInfo();
     }
 
     @Override
@@ -110,6 +124,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     public int partitionsForTopic(String topicName) {
         return clusterSummary.partitionsForTopic(topicName);
     }
+
+
 
     @Override
     public TriStateConfigEntryValue isTopicAutoCreationEnabled() {
@@ -137,7 +153,6 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         return clusterSummary.getTopicProperties(topicName);
     }
 
-
     @Override
     public void createTopic(TopicToAdd topicToAdd) throws Exception {
         topicAdmin.createNewTopic(topicToAdd);
@@ -146,6 +161,37 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     @Override
     public void deleteTopic(String topicName) throws Exception {
         topicAdmin.deleteTopic(topicName);
+    }
+
+    private static Optional<Long> getOptionalOffsetForPartition(Map<TopicPartition, Object> offsets, TopicPartition topicPartition) {
+        Logger.trace(String.format("Searching for offset for %s in %s", topicPartition, offsets));
+        if (!offsets.containsKey(topicPartition)) {
+            Logger.trace("Offset not found");
+            return Optional.empty();
+        }
+
+        final Object obj = offsets.get(topicPartition);
+        try {
+            // depending on the kafka protocol
+            // the 'object' in map might be "Long' or other integer type
+            // try to stringify and then parse back to Long
+            final String s = String.valueOf(obj);
+            final Long value = Long.valueOf(s);
+            Logger.trace(String.format("Found : %s", value));
+            return Optional.of(value);
+        } catch (Exception e) {
+            Logger.trace(String.format("Offset could not be interpreted as Long ('%s')", obj));
+            return Optional.empty();
+        }
+
+    }
+
+    private static String getOffsetForPartition(Map<TopicPartition, Object> offsets, TopicPartition topicPartition) {
+        final Optional<Long> optLong = getOptionalOffsetForPartition(offsets, topicPartition);
+        if (!optLong.isPresent()) {
+            return OFFSET_NOT_FOUND;
+        }
+        return String.valueOf(optLong.get());
     }
 
     private boolean doesNodeSupportDescribeConfigApi(Node node) {
@@ -173,11 +219,11 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         final Set<String> misconfiguredProperties = clusterNodesProperties.getAllPropertiesThatDiffersBetweenNodes();
         if (misconfiguredProperties.size() > 0) {
             final String msg = String.format("Cluster configuration is inconsistent!%n" +
-                    "Below properties are different between nodes but should be the same:%n%n" +
-                    "[%s] ", String.join(", ",
-                    misconfiguredProperties.stream()
-                            .map(e -> String.format("%s", e))
-                            .toArray(String[]::new)));
+                                                 "Below properties are different between nodes but should be the same:%n%n" +
+                                                 "[%s] ", String.join(", ",
+                                                                      misconfiguredProperties.stream()
+                                                                          .map(e -> String.format("%s", e))
+                                                                          .toArray(String[]::new)));
             return Optional.of(msg);
         }
         return Optional.empty();
@@ -203,15 +249,17 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
                 Logger.trace("No");
             }
             final String msg = String.format("Cluster config for 'advertised.listeners' is invalid.%n%n" +
-                            "* None of advertised listeners '%s' are reachable from outside world.%n" +
-                            "* Producers/consumers will be unable to use this kafka cluster " +
-                            "(e.g. will not connect properly).%n" +
-                            "* This application (%s) cannot fetch broker configuration", advertisedListeners,
-                    APPLICATION_NAME);
+                                                 "* None of advertised listeners '%s' are reachable from outside world.%n" +
+                                                 "* Producers/consumers will be unable to use this kafka cluster " +
+                                                 "(e.g. will not connect properly).%n" +
+                                                 "* This application (%s) cannot fetch broker configuration", advertisedListeners,
+                                             APPLICATION_NAME);
             throw new ClusterConfigurationError(msg);
         } catch (RuntimeException e) {
             Logger.trace(e);
             e.printStackTrace();
+            throw e;
+
         }
     }
 
@@ -238,35 +286,18 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         return partitionsForConsumerGroup;
     }
 
-    private String getOffsetForPartition(Map<TopicPartition, Object> offsets, TopicPartition topicPartition) {
-        Logger.trace(String.format("Searching for offset for %s in %s", topicPartition, offsets));
-        if (!offsets.containsKey(topicPartition)) {
-            Logger.trace("Offset not found");
-            return OFFSET_NOT_FOUND;
-        }
-        final Object offset = offsets.get(topicPartition);
-        final String offsetAsString = String.valueOf(offset);
-        Logger.trace(String.format("Found : %s", offsetAsString));
-        return offsetAsString;
-    }
-
     private void describeConsumers() {
-
         final List<String> consumerGroupIds = getConsumerGroupIds();
-
         final List<TopicsOffsetInfo> topicOffsetsInfo = new ArrayList<>();
-
 
         consumerGroupIds.forEach(consumerGroupId -> {
             final Map<TopicPartition, Object> offsetForPartition = getPartitionsForConsumerGroup(consumerGroupId);
-
-            final List<TopicsOffsetInfo> topicOffsetsFor = getTopicOffsetsFor(consumerGroupId, offsetForPartition.keySet());
-
+            final List<TopicsOffsetInfo> topicOffsetsFor = getTopicOffsetsFor(consumerGroupId, offsetForPartition);
             topicOffsetsInfo.addAll(topicOffsetsFor);
 
             final AdminClient.ConsumerGroupSummary consumerGroupSummary = kafkaAdminClient
-                    .describeConsumerGroup(consumerGroupId,
-                            ApplicationConstants.DESCRIBE_CONSUMER_METEADATA_TIMEOUT_MS);
+                .describeConsumerGroup(consumerGroupId,
+                                       ApplicationConstants.DESCRIBE_CONSUMER_METEADATA_TIMEOUT_MS);
 
             final List<AdminClient.ConsumerSummary> summaries = seqAsJavaList(consumerGroupSummary.consumers().get());
 
@@ -280,9 +311,9 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
                 } else {
                     topicPartitions.forEach(topicPartition -> {
                         final AssignedConsumerInfo consumerInfo = getAssignedConsumerInfo(consumerGroupId,
-                                offsetForPartition,
-                                consumerSummary,
-                                topicPartition);
+                                                                                          offsetForPartition,
+                                                                                          consumerSummary,
+                                                                                          topicPartition);
 
                         clusterSummary.addAssignedConsumerInfo(consumerInfo);
 
@@ -294,36 +325,55 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     private List<TopicsOffsetInfo> getTopicOffsetsFor(String consumerGroupId,
-                                                      Set<TopicPartition> topicPartitions) {
+                                                      Map<TopicPartition, Object> topicPartitionsCurrentOffset) {
+        final Set<TopicPartition> topicPartitions = topicPartitionsCurrentOffset.keySet();
         List<TopicsOffsetInfo> result = new ArrayList<>();
 
         final KafkaConsumer<String, String> consumer = createOffsetInfoConsumerFor(consumerGroupId);
         final Map<TopicPartition, Long> beggingOffsets = consumer.beginningOffsets(topicPartitions);
         final Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
 
-        if (!beggingOffsets.keySet().equals(endOffsets.keySet())) {
-            Logger.error(String.format("Inconsistent response from broker. While fetching beginOffset and " +
-                            "endOffset for topicPartitions:%s " +
-                            "endOffsets topic-partitions (%s) are different than " +
-                            "beggingOffsets topic-partitions (%s)", topicPartitions,
-                    endOffsets.keySet(),
-                    beggingOffsets.keySet()));
-        }
 
         for (Map.Entry<TopicPartition, Long> entry : beggingOffsets.entrySet()) {
-            if (!endOffsets.containsKey(entry.getKey())) {
+
+            final TopicPartition topicPartition = entry.getKey();
+
+            if (!endOffsets.containsKey(topicPartition)) {
                 continue;
             }
-            final String topicName = entry.getKey().topic();
-            final String partition = String.valueOf(entry.getKey().partition());
-            final String beggingOffset = String.valueOf(entry.getValue());
-            final String endOffset = String.valueOf(endOffsets.get(entry.getKey()));
+
+            String currentOffset = "NOT_FOUND";
+            String lag = "NOT_FOUND";
+
+            final Optional<Long> optionalOffsetForPartition = getOptionalOffsetForPartition(topicPartitionsCurrentOffset,
+                                                                                            topicPartition);
+
+            final String topicName = topicPartition.topic();
+            final String partition = String.valueOf(topicPartition.partition());
+            final Long startOffsetLong = entry.getValue();
+            final String beggingOffset = String.valueOf(startOffsetLong);
+            final Long endOffsetLong = endOffsets.get(topicPartition);
+            final String endOffset = String.valueOf(endOffsetLong);
+            final String msgCount = String.valueOf(endOffsetLong - startOffsetLong);
+
+            optionalOffsetForPartition.ifPresent(v -> {
+
+            });
+
+            if (optionalOffsetForPartition.isPresent()) {
+                final Long currentOffsetLong = optionalOffsetForPartition.get();
+                currentOffset = String.valueOf(currentOffsetLong);
+                lag = String.valueOf(endOffsetLong - currentOffsetLong);
+            }
 
             final TopicsOffsetInfo topicsOffsetInfo = new TopicsOffsetInfo(topicName,
-                    beggingOffset,
-                    endOffset,
-                    consumerGroupId,
-                    partition);
+                                                                           beggingOffset,
+                                                                           endOffset,
+                                                                           consumerGroupId,
+                                                                           partition,
+                                                                           msgCount,
+                                                                           currentOffset,
+                                                                           lag);
             result.add(topicsOffsetInfo);
         }
 
@@ -349,24 +399,24 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
                                                          AdminClient.ConsumerSummary consumerSummary,
                                                          TopicPartition topicPartition) {
         return AssignedConsumerInfo.builder()
-                .consumerGroupId(consumerGroupId)
-                .consumerId(consumerSummary.consumerId())
-                .clientId(consumerSummary.clientId())
-                .host(consumerSummary.host())
-                .topic(topicPartition.topic())
-                .partition(topicPartition.partition())
-                .offset(getOffsetForPartition(offsetForPartition, topicPartition))
-                .build();
+            .consumerGroupId(consumerGroupId)
+            .consumerId(consumerSummary.consumerId())
+            .clientId(consumerSummary.clientId())
+            .host(consumerSummary.host())
+            .topic(topicPartition.topic())
+            .partition(topicPartition.partition())
+            .offset(getOffsetForPartition(offsetForPartition, topicPartition))
+            .build();
     }
 
     private UnassignedConsumerInfo getUnassignedConsumerInfo(String consumerGroupId,
                                                              AdminClient.ConsumerSummary consumerSummary) {
         return UnassignedConsumerInfo.builder()
-                .consumerGroupId(consumerGroupId)
-                .consumerId(consumerSummary.consumerId())
-                .clientId(consumerSummary.clientId())
-                .host(consumerSummary.host())
-                .build();
+            .consumerGroupId(consumerGroupId)
+            .consumerId(consumerSummary.consumerId())
+            .clientId(consumerSummary.clientId())
+            .host(consumerSummary.host())
+            .build();
     }
 
     private void describeCluster() throws InterruptedException, ExecutionException, TimeoutException {
@@ -380,14 +430,14 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     private int getControllerNodeId(DescribeClusterResult describeClusterResult) throws InterruptedException,
-            ExecutionException,
-            TimeoutException {
+                                                                                        ExecutionException,
+                                                                                        TimeoutException {
         final KafkaFuture<Node> controller = describeClusterResult.controller();
         return controller.get(ApplicationConstants.FUTURE_GET_TIMEOUT_MS, TimeUnit.MILLISECONDS).id();
     }
 
     private void describeNodes(Collection<Node> nodes, int controllerNodeId) throws InterruptedException,
-            ExecutionException {
+                                                                                    ExecutionException {
 
         for (Node node : nodes) {
             saveApiVersionsForNodes(node);
@@ -404,12 +454,12 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         }
 
         DescribeConfigsResult configs = kafkaClientsAdminClient.describeConfigs(
-                singleton(new ConfigResource(ConfigResource.Type.BROKER, String.valueOf(node.id()))));
+            singleton(new ConfigResource(ConfigResource.Type.BROKER, String.valueOf(node.id()))));
         final Map<ConfigResource, Config> configResourceConfigMap = configs.all().get();
         configResourceConfigMap.forEach((configResource, config) ->
-                clusterSummary.addNodeInfo(new ClusterNodeInfo(node.id() == controllerNodeId,
-                        node.idString(),
-                        new HashSet<>(config.entries()))));
+                                            clusterSummary.addNodeInfo(new ClusterNodeInfo(node.id() == controllerNodeId,
+                                                                                           node.idString(),
+                                                                                           new HashSet<>(config.entries()))));
     }
 
     private void saveApiVersionsForNodes(Node node) {
@@ -423,8 +473,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         builder.append(String.format("%n### Api version for node %s ###%n", node));
         apiVersions.forEach(version -> {
             builder.append(String.format("ApiKey '%s', min:%d .. max:%d%n", ApiKeys.forId(version.apiKey),
-                    version.minVersion,
-                    version.maxVersion));
+                                         version.minVersion,
+                                         version.maxVersion));
         });
         Logger.debug(builder.toString());
     }

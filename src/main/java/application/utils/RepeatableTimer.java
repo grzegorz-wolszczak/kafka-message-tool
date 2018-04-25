@@ -1,5 +1,6 @@
 package application.utils;
 
+import application.globals.Timers;
 import application.root.Executable;
 
 import java.util.Timer;
@@ -7,7 +8,7 @@ import java.util.TimerTask;
 
 public final class RepeatableTimer {
     private static final int EXECUTION_DELAY_MS = 0;
-    private Timer timer = new Timer(this.getClass().getName());
+    private Timer timer = Timers.newTimer(this.getClass().getName());
 
     public void startExecutingRepeatedly(Executable executableTask, long repeatRateMs) {
         TimerTask timerTask = getTimerTask(executableTask);

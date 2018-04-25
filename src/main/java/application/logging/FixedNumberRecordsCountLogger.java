@@ -1,9 +1,10 @@
 package application.logging;
 
+import application.root.Executable;
 import application.root.Restartable;
+import application.root.TextAreaWrapper;
 import application.utils.RepeatableTimer;
 import javafx.application.Platform;
-import javafx.scene.control.TextArea;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
@@ -12,7 +13,7 @@ public class FixedNumberRecordsCountLogger implements Restartable {
     public static final int REPEAT_RATE_MS = 500;
     private final ConcurrentLinkedQueue<String> stringBufferQueue = new ConcurrentLinkedQueue<>();
     private final RepeatableTimer appendTextTimer = new RepeatableTimer();
-    private TextArea logTextArea;
+    private TextAreaWrapper logTextArea;
     private String localBuffer = "";
     private CyclicStringBuffer cyclicBuffer;
 
@@ -20,18 +21,22 @@ public class FixedNumberRecordsCountLogger implements Restartable {
         this(null, buffer);
     }
 
-    public FixedNumberRecordsCountLogger(TextArea logTextArea,
+    public FixedNumberRecordsCountLogger(TextAreaWrapper logTextArea,
                                          CyclicStringBuffer buffer) {
         this.logTextArea = logTextArea;
         this.cyclicBuffer = buffer;
     }
 
-    public void setLogTextArea(TextArea logTextArea) {
+    public void setLogTextArea(TextAreaWrapper logTextArea) {
         this.logTextArea = logTextArea;
     }
 
     public void appendText(String text) {
         stringBufferQueue.add(text);
+    }
+
+    public String getText() {
+        return localBuffer;
     }
 
     public void start() {
@@ -49,6 +54,10 @@ public class FixedNumberRecordsCountLogger implements Restartable {
         cyclicBuffer.clear();
     }
 
+    public void setSaveToFilePopupAction(Executable saveContentToFile) {
+        logTextArea.setPopupSaveToAction(saveContentToFile);
+    }
+
     private void periodicallyAppendTextToTextEdit() {
         final int size = stringBufferQueue.size();
         for (int i = 0; i < size; i++) {
@@ -59,9 +68,8 @@ public class FixedNumberRecordsCountLogger implements Restartable {
         if (!currentBufferContent.equals(localBuffer)) {
             localBuffer = currentBufferContent;
             Platform.runLater(() -> {
-                //logTextArea.setScrollTop(Double.MAX_VALUE);
                 logTextArea.setText(localBuffer);
-                logTextArea.appendText("");
+                //logTextArea.appendText("");
             });
 
         }

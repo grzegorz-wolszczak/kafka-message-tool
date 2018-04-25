@@ -3,11 +3,14 @@ package application.customfxwidgets.topicpropertieswindow;
 import application.constants.ApplicationConstants;
 import application.customfxwidgets.ConfigEntriesView;
 import application.kafka.cluster.TopicsOffsetInfo;
+import application.utils.GuiUtils;
 import application.utils.TableUtils;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
@@ -15,7 +18,6 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.AnchorPane;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -50,58 +52,93 @@ public final class TopicPropertiesWindow extends AnchorPane {
     private TableColumn<TopicsOffsetInfo, String> endOffsetColumn;
 
     @FXML
+    private TableColumn<TopicsOffsetInfo, String> totalColumn;
+
+    @FXML
     private TableView<TopicsOffsetInfo> topicOffsetsTableView;
+
+    @FXML
+    private TableColumn<TopicsOffsetInfo, String> currentOffsetColumn;
+
+    @FXML
+    private TableColumn<TopicsOffsetInfo, String> lagColumn;
+
+    ObservableList<TopicsOffsetInfo> privateInfos = FXCollections.observableArrayList();
 
     private double stageWidth = -1d;
     private double stageHeight = -1d;
+    private ObservableList<TopicsOffsetInfo> parentInfos;
+    private final ConfigEntriesView entriesView;
+    private final String topicName;
+    private ObservableList<TopicsOffsetInfo> observablesOffsetsFromCaller;
 
-    private TopicPropertiesWindow() throws IOException {
+    private TopicPropertiesWindow(ConfigEntriesView entriesView,
+                                  String topicName,
+                                  ObservableList<TopicsOffsetInfo> topicOffsetsInfo) throws IOException {
+
+        this.entriesView = entriesView;
+        this.topicName = topicName;
+        observablesOffsetsFromCaller = topicOffsetsInfo;
 
         loadAnchorPane(this, FXML_FILE);
+        configureTable();
+
+        setupTopicPropertiesAnchorPane(entriesView);
+
+        setupTitleLabel(topicName);
+
+        topicOffsetsInfo.addListener(new ListChangeListener<TopicsOffsetInfo>() {
+            @Override
+            public void onChanged(Change<? extends TopicsOffsetInfo> c) {
+                resetTableContent(observablesOffsetsFromCaller);
+            }
+        });
+
+    }
+
+    private void resetTableContent(ObservableList<TopicsOffsetInfo> topicOffsetsInfo) {
+        final List<TopicsOffsetInfo> filtered = topicOffsetsInfo
+            .stream()
+            .filter(e -> e.getTopicName().equals(topicName))
+            .collect(Collectors.toList());
+        privateInfos.setAll(filtered);
     }
 
     public static TopicPropertiesWindow get(String topicName,
                                             ConfigEntriesView entriesView,
-                                            List<TopicsOffsetInfo> topicOffsetsInfo) throws IOException {
+                                            ObservableList<TopicsOffsetInfo> topicOffsetsInfo) throws IOException {
         if (instance == null) {
-            instance = new TopicPropertiesWindow();
+            instance = new TopicPropertiesWindow(entriesView, topicName, topicOffsetsInfo);
         }
-        instance.setup(topicName, entriesView, topicOffsetsInfo);
+        instance.resetTableContent(topicOffsetsInfo);
         return instance;
     }
 
-    private void setup(String topicName,
-                       ConfigEntriesView entriesView,
-                       List<TopicsOffsetInfo> topicOffsetsInfo) {
-
-        final List<TopicsOffsetInfo> filtered = topicOffsetsInfo
-                .stream()
-                .filter(e -> e.getTopicName().equals(topicName))
-                .collect(Collectors.toList());
-
-
-        setupTitleLabel(topicName);
-        setupTopicPropertiesAnchorPane(entriesView);
-        setupTopicOffsetsInfo(filtered);
+    public void show() {
         restoreWidthAndHeight();
+        stage.show();
     }
 
-    private void setupTopicOffsetsInfo(List<TopicsOffsetInfo> topicOffsetsInfo) {
-        setTableContent(topicOffsetsInfo);
-        configureColumns(topicOffsetsInfo);
-    }
 
-    private void configureColumns(List<TopicsOffsetInfo> topicOffsetsInfo) {
+
+    private void configureTable() {
         consumerGroupColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getConsumerGroup()));
         partitionColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getPartition()));
         beginOffsetColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getBeginOffset()));
         endOffsetColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getEndOffset()));
+        totalColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getTopicPartitionMsgCount()));
+
+        currentOffsetColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getCurrentOffset()));
+        lagColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getLag()));
+
+        topicOffsetsTableView.setItems(privateInfos);
+        topicOffsetsTableView.getSortOrder().add(consumerGroupColumn);
+        TableUtils.installCopyPasteHandlerForSingleCell(topicOffsetsTableView);
+        TableUtils.autoResizeColumns(topicOffsetsTableView);
     }
 
     private void setTableContent(List<TopicsOffsetInfo> topicOffsetsInfo) {
-        topicOffsetsTableView.setItems(FXCollections.observableArrayList(topicOffsetsInfo));
-        topicOffsetsTableView.getSortOrder().add(consumerGroupColumn);
-        TableUtils.installCopyPasteHandlerForSingleCell(topicOffsetsTableView);
+        privateInfos.setAll(topicOffsetsInfo);
     }
 
     private void restoreWidthAndHeight() {
@@ -114,13 +151,9 @@ public final class TopicPropertiesWindow extends AnchorPane {
         }
     }
 
-    public void show() {
-        stage.showAndWait();
-    }
-
-
     @FXML
     private void initialize() {
+        GuiUtils.addApplicationIcon(stage);
         initializeStage();
     }
 
@@ -130,7 +163,7 @@ public final class TopicPropertiesWindow extends AnchorPane {
     }
 
     private void setupTitleLabel(String topicName) {
-        titleLabel.setText("Information for topic: " + topicName);
+        titleLabel.setText(String.format("Information for topic '%s'" , topicName));
         stage.setTitle(titleLabel.getText());
     }
 
@@ -146,7 +179,7 @@ public final class TopicPropertiesWindow extends AnchorPane {
         scene.setRoot(this);
         stage.setScene(scene);
         stage.centerOnScreen();
-        stage.initModality(Modality.APPLICATION_MODAL);
+
 
         stage.widthProperty().addListener(new ChangeListener<Number>() {
             @Override
@@ -163,33 +196,4 @@ public final class TopicPropertiesWindow extends AnchorPane {
         });
     }
 
-
-    /*
-
-
-    private void configureColumns() {
-        configureNameColumn();
-        configureValueColumn();
-    }
-
-    private void configureValueColumn() {
-        valueColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().value()));
-        valueColumn.setResizable(true);
-
-        if (columnWidths.valueColumnWidth != ConfigEntriesViewPreferences.INVALID_COLUMN_WIDHT) {
-            valueColumn.setPrefWidth(columnWidths.nameColumnWidth);
-        }
-        valueColumn.widthProperty().addListener((observable, oldValue, newValue) -> columnWidths.valueColumnWidth = newValue.doubleValue());
-    }
-
-    private void configureNameColumn() {
-        nameColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().name()));
-        nameColumn.setResizable(true);
-
-        if (columnWidths.nameColumnWidth != ConfigEntriesViewPreferences.INVALID_COLUMN_WIDHT) {
-            nameColumn.setPrefWidth(columnWidths.nameColumnWidth);
-        }
-        nameColumn.widthProperty().addListener((observable, oldValue, newValue) -> columnWidths.nameColumnWidth = newValue.doubleValue());
-    }
-     */
 }

@@ -28,7 +28,7 @@
         </rowConstraints>
          <children>
             <Label text="Topic name" />
-            <Label text="Paritions" GridPane.rowIndex="1" />
+            <Label text="Partitions" GridPane.rowIndex="1" />
             <Label text="Replication factor" GridPane.rowIndex="2" />
             <TextField fx:id="topicNameField" GridPane.columnIndex="1" />
             <Spinner fx:id="partitionSpinner" accessibleHelp="Partition number for topic" GridPane.columnIndex="1" GridPane.rowIndex="1" />

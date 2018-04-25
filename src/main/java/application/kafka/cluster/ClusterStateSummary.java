@@ -5,9 +5,11 @@ import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.ClusterTopicInfo;
 import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.UnassignedConsumerInfo;
+import application.utils.AppUtils;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import org.apache.kafka.clients.admin.ConfigEntry;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -16,22 +18,21 @@ import java.util.stream.Collectors;
 
 public final class ClusterStateSummary {
 
+    private static final int INVALID_PARTITION_NUMBER_FOR_TOPIC = -1;
     private final Set<ClusterNodeInfo> nodesInfo = new HashSet<>();
     private final Set<ClusterTopicInfo> topicsInfo = new HashSet<>();
     private final Set<AssignedConsumerInfo> assignedConsumersInfo = new HashSet<>();
     private final Set<UnassignedConsumerInfo> unassignedConsumersInfo = new HashSet<>();
+    private final ObservableList<TopicsOffsetInfo> topicOffsetInfo = FXCollections.observableArrayList();
+    private String clusterId;
 
-    public List<TopicsOffsetInfo> getTopicOffsetInfo() {
+    public ObservableList<TopicsOffsetInfo> getTopicOffsetInfo() {
         return topicOffsetInfo;
     }
 
     public void setTopicOffsetInfo(List<TopicsOffsetInfo> topicOffsetInfo) {
-        this.topicOffsetInfo = topicOffsetInfo;
+        this.topicOffsetInfo.setAll(topicOffsetInfo);
     }
-
-    private List<TopicsOffsetInfo> topicOffsetInfo = new ArrayList<>();
-    private static final int INVALID_PARITION_NUMBER_FOR_TOPIC = -1;
-    private String clusterId;
 
     public Set<UnassignedConsumerInfo> getUnassignedConsumersInfo() {
         return new HashSet<>(unassignedConsumersInfo);
@@ -49,17 +50,17 @@ public final class ClusterStateSummary {
         return clusterId;
     }
 
-    public int partitionsForTopic(String topicName){
+    public void setClusterId(String clusterId) {
+        this.clusterId = clusterId;
+    }
+
+    public int partitionsForTopic(String topicName) {
         for (ClusterTopicInfo topicInfo : topicsInfo) {
             if (topicInfo.getTopicName().equalsIgnoreCase(topicName)) {
                 return topicInfo.getPartitions().size();
             }
         }
-        return INVALID_PARITION_NUMBER_FOR_TOPIC;
-    }
-
-    public void setClusterId(String clusterId) {
-        this.clusterId = clusterId;
+        return INVALID_PARTITION_NUMBER_FOR_TOPIC;
     }
 
     public Set<ClusterNodeInfo> getNodesInfo() {

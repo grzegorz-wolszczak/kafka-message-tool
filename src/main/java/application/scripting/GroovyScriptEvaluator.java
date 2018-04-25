@@ -35,7 +35,7 @@ public class GroovyScriptEvaluator {
         Logger.trace(String.format("evaluation script: %s", script));
         final FutureTask<Object> evaluateScriptTask = new FutureTask<>(() -> engine.eval(script, ctx));
         // todo : consider thread pool, but remember that thead pool must be shutdown before application exit
-        new Thread(evaluateScriptTask, "EvaluateGroovyScriptTask").start();
+        new Thread(evaluateScriptTask, "EvaluateGroovyScriptTask-Thread").start();
 
         try {
             final Object result = evaluateScriptTask.get(EVALUATE_GROOVY_SCRIPT_TIMEOUT_SEC, TimeUnit.SECONDS);

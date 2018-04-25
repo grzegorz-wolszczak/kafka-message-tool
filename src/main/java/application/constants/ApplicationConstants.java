@@ -13,8 +13,8 @@ public class ApplicationConstants {
     public static final String GLOBAL_CSS_FILE_NAME = "/fx_global.css";
     public static final String VERSION_PROPERTIES_FILE_NAME = "/version.properties";
     public static final String DEFAULT_FETCH_TIMEOUT = "5000";
-    public static final String DEFAULT_CONSUMER_GROUP_ID = "DefaultConsumerGroup";
-    public static final String DEFAULT_MESSAGE_KEY = "DefaultMessageKey";
+    public static final String DEFAULT_CONSUMER_GROUP_ID = "kmt-cg";
+    public static final String DEFAULT_MESSAGE_KEY = "kmt-msg-key";
     public static final int HOSTNAME_REACHABLE_TIMEOUT_MS = 2000; // warning, less than 2000 seconds causes timeouts
 
 

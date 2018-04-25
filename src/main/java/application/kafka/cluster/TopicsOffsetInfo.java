@@ -5,22 +5,43 @@ import lombok.ToString;
 
 @ToString
 public class TopicsOffsetInfo {
-    private String consumerGroup;
-    private String topicName;
-    private String partition;
-    private String beginOffset;
-    private String endOffset;
+    private final String consumerGroup;
+    private final String topicName;
+    private final String partition;
+    private final String beginOffset;
+    private final String endOffset;
+    private final String topicPartitionMsgCount;
+    private final String currentOffset;
+    private final String lag;
 
     public TopicsOffsetInfo(String topicName,
                             String beginOffset,
                             String endOffset,
                             String consumerGroup,
-                            String partition) {
+                            String partition,
+                            String topicPartitionMsgCount,
+                            String currentOffset,
+                            String lag) {
         this.topicName = topicName;
         this.beginOffset = beginOffset;
         this.endOffset = endOffset;
         this.consumerGroup = consumerGroup;
         this.partition = partition;
+        this.topicPartitionMsgCount = topicPartitionMsgCount;
+        this.currentOffset = currentOffset;
+        this.lag = lag;
+    }
+
+    public String getCurrentOffset() {
+        return currentOffset;
+    }
+
+    public String getLag() {
+        return lag;
+    }
+
+    public String getTopicPartitionMsgCount() {
+        return topicPartitionMsgCount;
     }
 
     public String getTopicName() {
@@ -36,7 +57,6 @@ public class TopicsOffsetInfo {
         return endOffset;
     }
 
-
     public String getConsumerGroup() {
         return consumerGroup;
     }
@@ -44,4 +64,5 @@ public class TopicsOffsetInfo {
     public String getPartition() {
         return this.partition;
     }
+
 }

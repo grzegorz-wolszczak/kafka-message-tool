@@ -13,11 +13,11 @@ import application.logging.FixedNumberRecordsCountLogger;
 import application.model.KafkaOffsetResetType;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaTopicConfig;
+import application.root.SwingTextAreaWrapper;
 import application.utils.ConfigNameGenerator;
 import application.utils.GuiUtils;
 import application.utils.ValidatorUtils;
 import application.utils.gui.FXNodeBlinker;
-import com.sun.javafx.scene.control.skin.TextAreaSkin;
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
@@ -35,12 +35,13 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.paint.Color;
 
+import javax.swing.*;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
@@ -52,16 +53,17 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private static final String FXML_FILE = "ListenerConfigView.fxml";
     private final DisplayBehaviour displayBehaviour;
     private final TopicConfigComboBoxConfigurator comboBoxConfigurator;
-    private final MenuItem saveToFilePopupMenuItem = new MenuItem("Save to file");
+
     private final AnchorPane parentPane;
     private final ModelConfigObjectsGuiInformer guiInformer;
     private final PartitionAssignmentChangeHandler partitionAssignmentHandler;
+    private final MenuItem generateNameMenuItem = new MenuItem("Generate name");
     @FXML
     private TextField listenerNameTextField;
     @FXML
     private ComboBox<KafkaTopicConfig> topicConfigComboBox;
-    @FXML
-    private TextArea outputTextArea;
+    //@FXML
+    //private TextArea outputTextArea;
     @FXML
     private Button stopButton;
     @FXML
@@ -82,13 +84,14 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private Label assignedPartitionsLabel;
     @FXML
     private Label receivedTotalMsgLabel;
+    @FXML
+    private TitledPane outputTitlePane;
     private KafkaListenerConfig config;
     private Listeners activeConsumers;
     private Runnable refreshCallback;
     private ObservableList<KafkaTopicConfig> topicConfigs;
     private ToFileSaver toFileSaver;
     private FixedNumberRecordsCountLogger fixedRecordsLogger;
-    private final MenuItem generateNameMenuItem = new MenuItem("Generate name");
     private int totalReceivedMsgCounter = ZERO_RECEIVED_MSGS;
 
 
@@ -180,7 +183,10 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     }
 
     private void configureFixedRecordLogger() {
-        fixedRecordsLogger.setLogTextArea(outputTextArea);
+        final SwingTextAreaWrapper logTextArea = new SwingTextAreaWrapper(new JTextArea());
+        outputTitlePane.setContent(logTextArea.asNode());
+        fixedRecordsLogger.setLogTextArea(logTextArea);
+        //fixedRecordsLogger.setLogTextArea(new FxTextAreaWrapper(outputTextArea));
         fixedRecordsLogger.start();
     }
 
@@ -189,21 +195,21 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     }
 
     private void configureToFileSaver() {
-        toFileSaver.setContentSupplier(() -> outputTextArea.getText());
-        saveToFilePopupMenuItem.setOnAction(event -> toFileSaver.saveContentToFile());
+        toFileSaver.setContentSupplier(() -> fixedRecordsLogger.getText());
+        fixedRecordsLogger.setSaveToFilePopupAction(toFileSaver::saveContentToFile);
     }
 
     private void addAdditionalOptionsToTextAreaPopupMenu() {
 
-        TextAreaSkin customContextSkin = new TextAreaSkin(outputTextArea) {
-            @Override
-            public void populateContextMenu(ContextMenu contextMenu) {
-                super.populateContextMenu(contextMenu);
-                contextMenu.getItems().add(0, new SeparatorMenuItem());
-                contextMenu.getItems().add(0, saveToFilePopupMenuItem);
-            }
-        };
-        outputTextArea.setSkin(customContextSkin);
+//        TextAreaSkin customContextSkin = new TextAreaSkin(outputTextArea) {
+//            @Override
+//            public void populateContextMenu(ContextMenu contextMenu) {
+//                super.populateContextMenu(contextMenu);
+//                contextMenu.getItems().add(0, new SeparatorMenuItem());
+//                contextMenu.getItems().add(0, saveToFilePopupMenuItem);
+//            }
+//        };
+//        outputTextArea.setSkin(customContextSkin);
     }
 
     private void configureReceiveMsgLimitControls() {
@@ -262,7 +268,6 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private void appendTextScrolledToBottom(String textToAppend) {
         appendLogToTextArea(textToAppend);
         incrementReceivedMsgCount();
-
     }
 
 

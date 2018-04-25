@@ -4,7 +4,7 @@ import org.apache.kafka.common.utils.Utils;
 
 import java.nio.charset.Charset;
 
-public class KafkaParitionUtils {
+public class KafkaPartitionUtils {
 
     public static int partition(String key, int numPartitions) {
         if (key == null) {

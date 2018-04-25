@@ -25,7 +25,7 @@ public class ForCalculatingPartition extends ValidationTestBase {
     }
 
     @Test
-    public void shouldReturnFailureDueToBlankMessageKeyWhileValidationConfigForCalculatingParition() {
+    public void shouldReturnFailureDueToBlankMessageKeyWhileValidationConfigForCalculatingPartition() {
         // GIVEN
         final KafkaSenderConfig config = configWithBlankMessageKey();
 

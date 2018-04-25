@@ -1,6 +1,7 @@
 package application.kafka.cluster;
 
 import application.exceptions.ClusterConfigurationError;
+import application.logging.Logger;
 import application.utils.HostPortValue;
 import kafka.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
@@ -11,14 +12,33 @@ import java.util.concurrent.TimeoutException;
 
 public class KafkaClusterProxyFactory {
 
-    public static DefaultKafkaClusterProxy create(HostPortValue hostPort) throws ClusterConfigurationError,
-                                                                                 ExecutionException,
-                                                                                 TimeoutException,
-                                                                                 InterruptedException {
+    public static KafkaClusterProxy create(HostPortValue hostPort,
+                                                  KafkaClusterProxy previous) throws ClusterConfigurationError,
+                                                                                            ExecutionException,
+                                                                                            TimeoutException,
+                                                                                            InterruptedException {
+        KafkaClusterProxy proxy = null;
+        if (previous != null) {
+            Logger.trace(String.format("[Proxy create] Reusing already existing broker proxy for '%s'", hostPort.toHostString()));
+            proxy = previous;
+        } else {
+            Logger.trace(String.format("[Proxy create] Creating new broker proxy for '%s'", hostPort.toHostString()));
+            proxy = new DefaultKafkaClusterProxy(hostPort);
+        }
+
+        reinitialize(hostPort, proxy);
+        return proxy;
+
+    }
+
+    public static void reinitialize(HostPortValue hostPort, KafkaClusterProxy proxy) throws ClusterConfigurationError,
+                                                                                                   ExecutionException,
+                                                                                                   TimeoutException,
+                                                                                                   InterruptedException {
         final AdminClient kafkaAdminClient = createKafkaAdminClient(hostPort);
         final org.apache.kafka.clients.admin.AdminClient kafkaClientAdminClient = createKafkaClientAdminClient(hostPort);
         final TopicAdmin topicAdmin = new TopicAdmin(kafkaClientAdminClient);
-        return new DefaultKafkaClusterProxy(hostPort, topicAdmin, kafkaClientAdminClient, kafkaAdminClient);
+        proxy.refresh(topicAdmin, kafkaClientAdminClient, kafkaAdminClient);
     }
 
     private static AdminClient createKafkaAdminClient(HostPortValue hostPort) {

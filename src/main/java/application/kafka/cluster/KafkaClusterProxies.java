@@ -20,26 +20,26 @@ public class KafkaClusterProxies {
     public KafkaClusterProxies() {
     }
 
-    public KafkaClusterProxy getFreshFor(HostInfo hostInfo) throws InterruptedException,
-                                                                   ExecutionException,
-                                                                   TimeoutException,
-                                                                   ClusterConfigurationError {
+    public KafkaClusterProxy getRefreshed(HostInfo hostInfo) throws InterruptedException,
+                                                                    ExecutionException,
+                                                                    TimeoutException,
+                                                                    ClusterConfigurationError {
         // setting to 'null' first because getting new object might result in exception
         // in that case we want getAsProperty() return empty proxy (null)
         getAsProperty(hostInfo).set(null);
-        final KafkaClusterProxy newProxy = getNew(hostInfo);
+        final KafkaClusterProxy newProxy = getNewOrRefreshed(hostInfo);
         getAsProperty(hostInfo).set(newProxy);
         return newProxy;
     }
 
-    private KafkaClusterProxy getNew(HostInfo hostInfo) throws ClusterConfigurationError,
-                                                               ExecutionException,
-                                                               TimeoutException,
-                                                               InterruptedException {
+    private KafkaClusterProxy getNewOrRefreshed(HostInfo hostInfo) throws ClusterConfigurationError,
+                                                                          ExecutionException,
+                                                                          TimeoutException,
+                                                                          InterruptedException {
         final HostPortValue hostPort = HostPortValue.from(hostInfo);
-        Logger.trace(String.format("Creating new broker proxy for '%s'", hostPort.toHostString()));
+
         closeOldProxyIfExistsFor(hostPort);
-        final KafkaClusterProxy newProxy = KafkaClusterProxyFactory.create(hostPort);
+        final KafkaClusterProxy newProxy = KafkaClusterProxyFactory.create(hostPort, hostPortToProxy.getOrDefault(hostPort, null));
         hostPortToProxy.put(hostPort, newProxy);
         return newProxy;
     }
@@ -48,7 +48,6 @@ public class KafkaClusterProxies {
         if (hostPortToProxy.containsKey(hostPort)) {
             KafkaClusterProxy oldProxy = hostPortToProxy.get(hostPort);
             oldProxy.close();
-            hostPortToProxy.remove(hostPort);
         }
     }
 

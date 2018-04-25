@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<fx:root prefHeight="400.0" prefWidth="600.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<fx:root prefHeight="531.0" prefWidth="892.0" type="AnchorPane" xmlns="http://javafx.com/javafx/9.0.1" xmlns:fx="http://javafx.com/fxml/1">
    <children>
       <GridPane hgap="5.0" layoutX="156.0" layoutY="136.0" vgap="5.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -39,9 +39,12 @@
                               <TableView fx:id="topicOffsetsTableView" layoutX="166.0" layoutY="46.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                 <columns>
                                   <TableColumn fx:id="consumerGroupColumn" prefWidth="120.0" text="Consumer group" />
-                                  <TableColumn fx:id="partitionColumn" prefWidth="79.0" text="Parition" />
-                                    <TableColumn fx:id="beginOffsetColumn" prefWidth="75.0" text="Begin offset" />
-                                    <TableColumn fx:id="endOffsetColumn" prefWidth="75.0" text="End offset" />
+                                  <TableColumn fx:id="partitionColumn" prefWidth="79.0" text="Partition" />
+                                    <TableColumn fx:id="beginOffsetColumn" prefWidth="89.0" text="Begin offset" />
+                                    <TableColumn fx:id="currentOffsetColumn" prefWidth="116.0" text="Current offset" />
+                                    <TableColumn fx:id="endOffsetColumn" prefWidth="82.0" text="End offset" />
+                                    <TableColumn fx:id="lagColumn" prefWidth="100.0" text="Lag" />
+                                    <TableColumn fx:id="totalColumn" prefWidth="90.0" text="Total msgs" />
                                 </columns>
                               </TableView>
                            </children></AnchorPane>
@@ -49,7 +52,7 @@
                 </Tab>
               </tabs>
             </TabPane>
-            <Button fx:id="closeButton" mnemonicParsing="false" onAction="#closeOnAction" text="Close" GridPane.rowIndex="2" />
+            <Button fx:id="closeButton" mnemonicParsing="false" onAction="#closeOnAction" prefWidth="100.0" text="Close" GridPane.rowIndex="2" />
             <Label fx:id="titleLabel" text="Label">
                <font>
                   <Font name="System Bold Italic" size="18.0" />

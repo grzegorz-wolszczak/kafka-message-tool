@@ -7,6 +7,7 @@ import application.customfxwidgets.mainviewcontroller.ControllerRepositoryFactor
 import application.customfxwidgets.mainviewcontroller.DefaultControllerRepositoryFactory;
 import application.customfxwidgets.mainviewcontroller.MainApplicationController;
 import application.globals.AppGlobals;
+import application.globals.Timers;
 import application.kafka.cluster.ClusterStatusChecker;
 import application.kafka.cluster.KafkaClusterProxies;
 import application.kafka.listener.KafkaListeners;
@@ -36,6 +37,7 @@ import javafx.scene.Scene;
 import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
+import javax.swing.*;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -73,6 +75,7 @@ public class KafkaMessageToolApplication implements ApplicationRoot {
         restartables.stop();
         applicationSettings.save();
         KafkaProducers.close();
+        Timers.stop();
         executorService.shutdown();
     }
 
@@ -129,8 +132,9 @@ public class KafkaMessageToolApplication implements ApplicationRoot {
         final UserGuiInteractor interactor = new UserGuiInteractor(mainStage);
         final ApplicationBusySwitcher busySwitcher = new DefaultApplicationBusySwitcher(mainStage);
 
-        final TextArea logTextArea = getTextAreaForLogging();
-        final FixedNumberRecordsCountLogger fixedRecordsLogger = new FixedNumberRecordsCountLogger(logTextArea, new CyclicStringBuffer());
+        final TextAreaWrapper logTextArea = getTextArea();
+        final FixedNumberRecordsCountLogger fixedRecordsLogger = new FixedNumberRecordsCountLogger(logTextArea,
+                                                                                                   new CyclicStringBuffer());
         restartables.register(fixedRecordsLogger);
         Logger.registerLogger(new GuiWindowedLogger(fixedRecordsLogger));
         applicationSettings = new DefaultApplicationSettings(xmlFileConfig);
@@ -155,25 +159,27 @@ public class KafkaMessageToolApplication implements ApplicationRoot {
                                                                                        dataModel,
                                                                                        getApplication(),
                                                                                        applicationSettings,
-                                                                                       logTextArea,
+                                                                                       logTextArea.asNode(),
                                                                                        controllerRepositoryFactory,
                                                                                        actionHandlerFactory,
                                                                                        busySwitcher);
 
         CustomFxWidgetsLoader.loadOnAnchorPane(mainController, MAIN_APPLICATION_VIEW_FXML_FILE);
 
-
-
         mainController.setupControls();
-
         scene = new Scene(mainController);
     }
 
-    private TextArea getTextAreaForLogging() {
+    private TextAreaWrapper getTextArea() {
         final TextArea textArea = new TextArea();
         textArea.setWrapText(true);
         textArea.setEditable(false);
-        return textArea;
+
+        JTextArea ta = new JTextArea();
+
+
+        return new SwingTextAreaWrapper(ta);
+        //return new FxTextAreaWrapper(textArea);
     }
 
 }

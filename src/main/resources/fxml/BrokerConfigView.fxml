@@ -67,7 +67,7 @@
                                                             <TableView fx:id="topicsTableView" layoutX="243.0" layoutY="14.0" prefHeight="200.0" prefWidth="200.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
                                                               <columns>
                                                                 <TableColumn fx:id="topicNameColumn" editable="false" prefWidth="94.0" text="Topic name" />
-                                                                <TableColumn fx:id="partitionCountColumn" editable="false" prefWidth="95.0" text="Parition count" />
+                                                                <TableColumn fx:id="partitionCountColumn" editable="false" prefWidth="95.0" text="Partitions" />
                                                                   <TableColumn fx:id="activeAssignedConsumersColumn" editable="false" prefWidth="191.0" text="Active assigned consumers" />
                                                                   <TableColumn fx:id="consumerGroupsCountColumn" editable="false" minWidth="8.0" prefWidth="120.0" text="Consumer groups" />
                                                               </columns>
@@ -80,7 +80,7 @@
                                                                <columns>
                                                                   <TableColumn fx:id="assignedConsumerClientIdColumn" editable="false" prefWidth="157.0" text="Client id" />
                                                                   <TableColumn fx:id="assignedConsumerGroupColumn" editable="false" prefWidth="185.0" text="Consumer group" />
-                                                                  <TableColumn fx:id="assignedConsumerPartitionColumn" editable="false" prefWidth="118.0" text="Assigned partition" />
+                                                                  <TableColumn fx:id="assignedConsumerPartitionColumn" editable="false" prefWidth="118.0" text="Partition" />
                                                                   <TableColumn fx:id="assignedConsumerNextMsgOffsetColumn" editable="false" prefWidth="113.0" text="Next rcvd msg offset" />
                                                                   <TableColumn fx:id="assignedConsumerHostColumn" editable="false" prefWidth="84.0" text="Host" />
                                                                   <TableColumn fx:id="assignedConsumerIdColumn" editable="false" maxWidth="1.7976931348623157E308" prefWidth="366.0" text="Consumer id" />

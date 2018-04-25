@@ -40,6 +40,7 @@ public class ConfigEntriesView extends TitledPane {
         this.title = title;
         observableEntries.setAll(entries);
         this.columnWidths = columnWidths;
+
         CustomFxWidgetsLoader.loadOnAnchorPane(this, FXML_FILE);
     }
 
@@ -55,7 +56,7 @@ public class ConfigEntriesView extends TitledPane {
         configEntriesTableView.setItems(observableEntries);
         configEntriesTableView.getSortOrder().add(nameColumn);
         TableUtils.installCopyPasteHandlerForSingleCell(configEntriesTableView);
-
+        TableUtils.autoResizeColumns(configEntriesTableView);
     }
 
     private void configureColumns() {

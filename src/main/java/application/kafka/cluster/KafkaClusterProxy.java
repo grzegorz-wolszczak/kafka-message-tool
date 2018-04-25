@@ -1,14 +1,18 @@
 package application.kafka.cluster;
 
+import application.exceptions.ClusterConfigurationError;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.TopicToAdd;
 import application.kafka.dto.UnassignedConsumerInfo;
+import javafx.collections.ObservableList;
+import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConfigEntry;
 
-import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeoutException;
 import java.util.function.Consumer;
 
 public interface KafkaClusterProxy {
@@ -35,9 +39,12 @@ public interface KafkaClusterProxy {
 
     Set<ClusterNodeInfo> getNodesInfo();
 
-    ArrayList<TopicsOffsetInfo> getTopicOffsetsInfo();
+    ObservableList<TopicsOffsetInfo> getTopicOffsetsInfo();
 
     Set<TopicAggregatedSummary> getAggregatedTopicSummary();
 
     int partitionsForTopic(String topicName);
+
+
+    void refresh(TopicAdmin topicAdmin, AdminClient kafkaClientAdminClient, kafka.admin.AdminClient kafkaAdminClient) throws ClusterConfigurationError, InterruptedException, ExecutionException, TimeoutException;
 }

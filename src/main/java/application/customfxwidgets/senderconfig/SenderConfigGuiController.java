@@ -21,7 +21,7 @@ import application.utils.TooltipCreator;
 import application.utils.ValidationStatus;
 import application.utils.Validations;
 import application.utils.ValidatorUtils;
-import application.utils.kafka.KafkaParitionUtils;
+import application.utils.kafka.KafkaPartitionUtils;
 import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ReadOnlyStringWrapper;
@@ -343,7 +343,7 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
         final KafkaClusterProxy kafkaClusterProxy = kafkaClusterProxies.get(brokerConfig.getHostInfo());
         final int partitions = kafkaClusterProxy.partitionsForTopic(topicConfig.getTopicName());
-        final int expectedAssignedPartitions = KafkaParitionUtils.partition(messageKey, partitions);
+        final int expectedAssignedPartitions = KafkaPartitionUtils.partition(messageKey, partitions);
         final String msg = String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions);
         statusBarNotifier.displayMessageWithFadeTimeout(msg, MESSAGE_FADE_MS);
 

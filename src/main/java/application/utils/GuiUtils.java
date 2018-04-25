@@ -62,7 +62,7 @@ public class GuiUtils {
     public static <T> void resetComboboxValue(ComboBox<T> comboBox, T value) {
         // if value (reference to object) does not change as combobox value
         // but the internals of reference  will change (eg. some field of object)
-        // combobox will not refresh it , need to to clear and reset it manually
+        // combobox will not reinitialize it , need to to clear and reset it manually
 
         if (comboBox.getValue() == value) {
             comboBox.setValue(null);

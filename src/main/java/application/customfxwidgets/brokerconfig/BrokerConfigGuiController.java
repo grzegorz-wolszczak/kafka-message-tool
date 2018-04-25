@@ -317,6 +317,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         clusterSummaryTabPane.getTabs().add(unassignedConsumersTab);
         unassignedConsumerListTableView.setItems(FXCollections.observableArrayList(info));
         unassignedConsumerListTableView.getSortOrder().add(unassignedClientIdColumn);
+        TableUtils.autoResizeColumns(unassignedConsumerListTableView);
     }
 
 
@@ -352,6 +353,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         topicsTableView.getItems().clear();
         topicsTableView.setItems(FXCollections.observableArrayList(aggregatedTopicSummary));
         topicsTableView.getSortOrder().add(topicNameColumn);
+        TableUtils.autoResizeColumns(topicsTableView);
 
     }
 
@@ -379,6 +381,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         final Set<AssignedConsumerInfo> consumers = currentProxy.getConsumersForTopic(topicName);
         assignedConsumerListTableView.getItems().clear();
         assignedConsumerListTableView.setItems(FXCollections.observableArrayList(consumers));
+        TableUtils.autoResizeColumns(assignedConsumerListTableView);
     }
 
     private void bindPopupMenuToSelectedRow(KafkaClusterProxy proxy, TableRow<TopicAggregatedSummary> row) {

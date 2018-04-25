@@ -27,7 +27,7 @@ public class ClusterStatusChecker {
                 busySwitcher.setAppBusy(true);
             });
             try {
-                final KafkaClusterProxy proxy = kafkaClusterProxies.getFreshFor(hostInfo);
+                final KafkaClusterProxy proxy = kafkaClusterProxies.getRefreshed(hostInfo);
                 showWarningOnInvalidClusterConfig(proxy, shouldShowWarningOnInvalidConfig);
             } catch (Throwable e) {
                 Logger.error(e);
@@ -37,7 +37,7 @@ public class ClusterStatusChecker {
                     busySwitcher.setAppBusy(false);
                 });
             }
-        }).start();
+        }, "ClusterStatusChecker-Thread").start();
     }
 
     private void showGuiErrorMessage(String header, String content) {

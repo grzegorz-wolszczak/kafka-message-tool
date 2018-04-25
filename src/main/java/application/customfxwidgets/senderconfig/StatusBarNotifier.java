@@ -1,5 +1,6 @@
 package application.customfxwidgets.senderconfig;
 
+import application.globals.Timers;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.collections.ObservableList;
@@ -14,12 +15,16 @@ public class StatusBarNotifier {
     public static final double PERCENTAGE_MAX = 100.0;
     private DoubleProperty doubleProperty;
     private StatusBar statusBar;
-    private Timer timer = new Timer();
+    private Timer timer = createTimer();
 
 
     public StatusBarNotifier(StatusBar statusBar) {
         this.statusBar = statusBar;
         resetStatusBarOnConstruction();
+    }
+
+    private static Timer createTimer(){
+        return Timers.newTimer("StatusBarNotifier-Thread");
     }
 
     // count is 1-based
@@ -31,7 +36,6 @@ public class StatusBarNotifier {
 
     public void clearMsgSentProgress() {
         displayProgressOnProgressBar(0.0);
-
     }
 
     private void resetStatusBarOnConstruction() {
@@ -57,7 +61,7 @@ public class StatusBarNotifier {
 
     private void scheduleFadingOut(long delayMs) {
         timer.cancel();
-        timer = new Timer();
+        timer = createTimer();
         timer.schedule(new TimerTask() {
 
             @Override
