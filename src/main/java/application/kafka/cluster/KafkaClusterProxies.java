@@ -1,7 +1,6 @@
 package application.kafka.cluster;
 
 import application.exceptions.ClusterConfigurationError;
-import application.logging.Logger;
 import application.utils.HostInfo;
 import application.utils.HostPortValue;
 import javafx.beans.property.ObjectProperty;
@@ -32,6 +31,17 @@ public class KafkaClusterProxies {
         return newProxy;
     }
 
+    public KafkaClusterProxy get(HostInfo hostInfo) {
+        return getAsProperty(hostInfo).get();
+    }
+
+    public ObjectProperty<KafkaClusterProxy> getAsProperty(HostInfo hostInfo) {
+        if (!hostInfoToBrokerProperty.containsKey(hostInfo)) {
+            hostInfoToBrokerProperty.put(hostInfo, new SimpleObjectProperty<>());
+        }
+        return hostInfoToBrokerProperty.get(hostInfo);
+    }
+
     private KafkaClusterProxy getNewOrRefreshed(HostInfo hostInfo) throws ClusterConfigurationError,
                                                                           ExecutionException,
                                                                           TimeoutException,
@@ -49,17 +59,6 @@ public class KafkaClusterProxies {
             KafkaClusterProxy oldProxy = hostPortToProxy.get(hostPort);
             oldProxy.close();
         }
-    }
-
-    public KafkaClusterProxy get(HostInfo hostInfo) {
-        return getAsProperty(hostInfo).get();
-    }
-
-    public ObjectProperty<KafkaClusterProxy> getAsProperty(HostInfo hostInfo) {
-        if (!hostInfoToBrokerProperty.containsKey(hostInfo)) {
-            hostInfoToBrokerProperty.put(hostInfo, new SimpleObjectProperty<>());
-        }
-        return hostInfoToBrokerProperty.get(hostInfo);
     }
 
 }

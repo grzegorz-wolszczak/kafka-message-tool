@@ -5,7 +5,6 @@ import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.ClusterTopicInfo;
 import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.UnassignedConsumerInfo;
-import application.utils.AppUtils;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.kafka.clients.admin.ConfigEntry;

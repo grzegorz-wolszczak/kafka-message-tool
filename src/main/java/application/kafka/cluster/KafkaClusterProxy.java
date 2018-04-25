@@ -17,6 +17,7 @@ import java.util.function.Consumer;
 
 public interface KafkaClusterProxy {
 
+
     void reportInvalidClusterConfigurationTo(Consumer<String> problemReporter);
 
     void createTopic(TopicToAdd topicToAdd) throws Exception;
@@ -45,6 +46,11 @@ public interface KafkaClusterProxy {
 
     int partitionsForTopic(String topicName);
 
-
-    void refresh(TopicAdmin topicAdmin, AdminClient kafkaClientAdminClient, kafka.admin.AdminClient kafkaAdminClient) throws ClusterConfigurationError, InterruptedException, ExecutionException, TimeoutException;
+    void refresh(TopicAdmin topicAdmin,
+                 AdminClient kafkaClientAdminClient,
+                 kafka.admin.AdminClient kafkaAdminClient) throws
+                                                           ClusterConfigurationError,
+                                                           InterruptedException,
+                                                           ExecutionException,
+                                                           TimeoutException;
 }
