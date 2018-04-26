@@ -34,7 +34,6 @@ import application.utils.kafka.KafkaProducers;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.scene.Scene;
-import javafx.scene.control.TextArea;
 import javafx.stage.Stage;
 
 import javax.swing.*;
@@ -171,12 +170,7 @@ public class KafkaMessageToolApplication implements ApplicationRoot {
     }
 
     private TextAreaWrapper getTextArea() {
-//        final TextArea textArea = new TextArea();
-//        textArea.setWrapText(true);
-//        textArea.setEditable(false);
-//
         JTextArea ta = new JTextArea();
-
         return new SwingTextAreaWrapper(ta);
     }
 
