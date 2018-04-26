@@ -12,6 +12,7 @@ import org.apache.kafka.clients.admin.ConfigEntry;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -125,6 +126,23 @@ public final class ClusterStateSummary {
         });
 
         return summaries;
+    }
+
+    public String getTopicPropertyByName(String topicName, String propertyName) {
+        final Optional<ClusterTopicInfo> found = topicsInfo.stream().filter(e -> e.getTopicName().equals(topicName)).findFirst();
+        if (!found.isPresent()) {
+            throw new RuntimeException(String.format("Topic with name '%s' not found", topicName));
+        }
+        final ClusterTopicInfo clusterTopicInfo = found.get();
+        final Optional<ConfigEntry> propertyFound = clusterTopicInfo
+            .getConfigEntries()
+            .stream()
+            .filter(e -> e.name().equalsIgnoreCase(propertyName)).findFirst();
+        if (!propertyFound.isPresent()) {
+            throw new RuntimeException(String.format("Could not find property '%s' for topic '%s' ", propertyName, topicName));
+        }
+        return propertyFound.get().value();
+
     }
 
     private TopicSummary getTopicSummaryFor(String topicName) {

@@ -1,6 +1,8 @@
 package application.customfxwidgets.brokerconfig;
 
 import application.customfxwidgets.AddTopicDialog;
+import application.customfxwidgets.AlterTopicDialog;
+import application.customfxwidgets.ConfigEntriesView;
 import application.customfxwidgets.ConfigEntriesViewPreferences;
 import application.customfxwidgets.CustomFxWidgetsLoader;
 import application.customfxwidgets.Displayable;
@@ -8,19 +10,23 @@ import application.customfxwidgets.topicpropertieswindow.TopicPropertiesWindow;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
-import application.kafka.cluster.KafkaClusterProxies;
-import application.kafka.dto.TopicToAdd;
-import application.customfxwidgets.ConfigEntriesView;
 import application.kafka.cluster.ClusterStatusChecker;
+import application.kafka.cluster.KafkaClusterProxies;
 import application.kafka.cluster.KafkaClusterProxy;
 import application.kafka.cluster.TriStateConfigEntryValue;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
+import application.kafka.dto.TopicToAdd;
+import application.kafka.dto.TopicAlterableProperties;
 import application.kafka.dto.UnassignedConsumerInfo;
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
-import application.utils.*;
+import application.utils.GuiUtils;
+import application.utils.TableUtils;
+import application.utils.TooltipCreator;
+import application.utils.UserInteractor;
+import application.utils.ValidatorUtils;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
@@ -388,10 +394,12 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
 
         final MenuItem deleteTopicMenuItem = createMenuItemForDeletingTopic();
         final MenuItem createTopicMenuItem = createMenuItemForCreatingNewTopic();
+        final MenuItem alterTopicMenuItem = createMenuItemForAlteringTopic();
         final MenuItem topicPropertiesMenuItem = createMenuItemForShowingTopicProperties();
 
         final ContextMenu contextMenu = getTopicManagementContextMenu(deleteTopicMenuItem,
                                                                       createTopicMenuItem,
+                                                                      alterTopicMenuItem,
                                                                       topicPropertiesMenuItem);
 
         row.contextMenuProperty().bind(new ReadOnlyObjectWrapper<>(contextMenu));
@@ -403,14 +411,17 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         } else {
             deleteTopicMenuItem.disableProperty().bind(row.emptyProperty());
         }
+        alterTopicMenuItem.disableProperty().bind(row.emptyProperty());
     }
 
     private ContextMenu getTopicManagementContextMenu(MenuItem deleteTopicMenuItem,
                                                       MenuItem createTopicMenuItem,
+                                                      MenuItem alterTopicMenuItem,
                                                       MenuItem topicPropertiesMenuItem) {
         final ContextMenu contextMenu = new ContextMenu();
-        contextMenu.getItems().setAll(deleteTopicMenuItem,
-                                      createTopicMenuItem,
+        contextMenu.getItems().setAll(createTopicMenuItem,
+                                      deleteTopicMenuItem,
+                                      alterTopicMenuItem,
                                       new SeparatorMenuItem(),
                                       topicPropertiesMenuItem);
         return contextMenu;
@@ -431,7 +442,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
             try {
                 createNewTopicAction(kafkaBrokerProxyProperty.get());
             } catch (Exception e) {
-                Logger.error("Could not createFrom config", e);
+                Logger.error("Could not create topic", e);
             }
         });
         return createTopicMenuItem;
@@ -444,10 +455,38 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
             try {
                 deleteTopic(kafkaBrokerProxyProperty.get(), summary);
             } catch (Exception e) {
-                Logger.error("Could not delete config", e);
+                Logger.error("Could not delete topic", e);
             }
         });
         return deleteTopicMenuItem;
+    }
+
+    private MenuItem createMenuItemForAlteringTopic() {
+        final MenuItem alterTopic = new MenuItem("Alter topic");
+        alterTopic.setOnAction(event -> {
+            final TopicAggregatedSummary summary = topicsTableView.getSelectionModel().selectedItemProperty().get();
+            try {
+                alterTopicAction(kafkaBrokerProxyProperty.get(), summary);
+            } catch (Exception e) {
+                Logger.error("Could not delete topic", e);
+            }
+        });
+        return alterTopic;
+    }
+
+    private void alterTopicAction(KafkaClusterProxy kafkaClusterProxy,
+                                  TopicAggregatedSummary summary) throws IOException {
+
+        final String topicName = summary.getTopicName();
+
+        final TopicAlterableProperties topicDetails = kafkaClusterProxy.getAlterableTopicProperties(topicName);
+         //= new TopicAlterableProperties();
+        final ButtonType callType = new AlterTopicDialog(getParentWindow()).call(topicDetails);
+        if (callType == ButtonType.OK) {
+            kafkaClusterProxy.updateTopic(topicDetails);
+            refreshBrokerStatus(false);
+        }
+
     }
 
     private void showTopicConfigPropertiesWindow(KafkaClusterProxy kafkaClusterProxy,
@@ -554,7 +593,6 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         Logger.debug("Adding topic " + topicToAdd);
         try {
             proxy.createTopic(topicToAdd);
-
             refreshBrokerStatus(false);
         } catch (Exception e) {
             userInteractor.showError("Adding new topic failed", e);

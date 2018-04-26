@@ -5,6 +5,7 @@ import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
 import application.kafka.dto.TopicToAdd;
+import application.kafka.dto.TopicAlterableProperties;
 import application.kafka.dto.UnassignedConsumerInfo;
 import javafx.collections.ObservableList;
 import org.apache.kafka.clients.admin.AdminClient;
@@ -50,4 +51,8 @@ public interface KafkaClusterProxy {
                                                            InterruptedException,
                                                            ExecutionException,
                                                            TimeoutException;
+
+    TopicAlterableProperties getAlterableTopicProperties(String topicName);
+
+    void updateTopic(TopicAlterableProperties topicDetails);
 }

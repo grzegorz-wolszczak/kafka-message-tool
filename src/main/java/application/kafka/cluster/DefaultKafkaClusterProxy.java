@@ -5,6 +5,7 @@ import application.exceptions.ClusterConfigurationError;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
+import application.kafka.dto.TopicAlterableProperties;
 import application.kafka.dto.TopicToAdd;
 import application.kafka.dto.UnassignedConsumerInfo;
 import application.logging.Logger;
@@ -25,6 +26,7 @@ import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
+import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.protocol.ApiKeys;
 import org.apache.kafka.common.requests.ApiVersionsResponse;
 import org.apache.kafka.common.serialization.StringDeserializer;
@@ -69,6 +71,30 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         assignNewDependencies(topicAdmin, adminClient2, kafkaAdminClient);
         throwIfInvalidConfigMakesClusterUnusable();
         fetchClusterStateSummary();
+    }
+
+    @Override
+    public TopicAlterableProperties getAlterableTopicProperties(String topicName) {
+        final TopicAlterableProperties t = new TopicAlterableProperties(topicName);
+        t.setRetentionMilliseconds(
+            Integer.parseUnsignedInt(
+            clusterSummary.getTopicPropertyByName(topicName,
+                                                  TopicConfig.RETENTION_MS_CONFIG)));
+        return t;
+    }
+
+    @Override
+    public void updateTopic(TopicAlterableProperties topicDetails) {
+        Map<ConfigResource, Config> configs = new HashMap<>();
+
+        final ArrayList<ConfigEntry> configEntries = new ArrayList<>();
+
+        configEntries.add(new ConfigEntry(TopicConfig.RETENTION_MS_CONFIG,
+                                          String.valueOf(topicDetails.getRetentionMilliseconds())));
+
+        final Config config = new Config(configEntries);
+        configs.put(new ConfigResource(ConfigResource.Type.TOPIC, topicDetails.getTopicName()), config);
+        kafkaClientsAdminClient.alterConfigs(configs);
     }
 
     private void assignNewDependencies(TopicAdmin topicAdmin, org.apache.kafka.clients.admin.AdminClient adminClient2, AdminClient kafkaAdminClient) {
