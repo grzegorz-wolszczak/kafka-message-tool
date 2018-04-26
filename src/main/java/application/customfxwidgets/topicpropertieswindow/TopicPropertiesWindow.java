@@ -5,6 +5,7 @@ import application.customfxwidgets.ConfigEntriesView;
 import application.kafka.cluster.TopicsOffsetInfo;
 import application.utils.GuiUtils;
 import application.utils.TableUtils;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -99,6 +100,11 @@ public final class TopicPropertiesWindow extends AnchorPane {
             .filter(e -> e.getTopicName().equals(this.topicName))
             .collect(Collectors.toList());
         privateInfos.setAll(filtered);
+        Platform.runLater(()->{
+            topicOffsetsTableView.getSortOrder().clear();
+            topicOffsetsTableView.getSortOrder().add(consumerGroupColumn);
+        });
+
     }
 
     public static TopicPropertiesWindow get(String topicName,
