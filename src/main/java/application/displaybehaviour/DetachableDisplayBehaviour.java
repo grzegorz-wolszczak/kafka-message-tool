@@ -80,7 +80,7 @@ public class DetachableDisplayBehaviour implements DisplayBehaviour {
         guiInformer.lastRemovedObjectProperty().addListener((observable, oldValue, newValue) -> {
             if (newValue == trackedModeObject) {
                 // element (modelObject) for this view is just removed
-                // if we are in detached state then close the window
+                // if we are in detached state then closeOldDependencies the window
                 detachFromOwnStage();
             }
         });

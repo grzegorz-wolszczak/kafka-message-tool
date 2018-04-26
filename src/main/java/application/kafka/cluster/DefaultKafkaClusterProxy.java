@@ -64,17 +64,22 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
                         org.apache.kafka.clients.admin.AdminClient adminClient2,
                         AdminClient kafkaAdminClient)
         throws ClusterConfigurationError, InterruptedException, ExecutionException, TimeoutException {
-        this.topicAdmin = topicAdmin;
-        this.kafkaClientsAdminClient = adminClient2;
-        this.kafkaAdminClient = kafkaAdminClient;
+        closeOldDependencies();
+        clearClusterSummary();
+        assignNewDependencies(topicAdmin, adminClient2, kafkaAdminClient);
         throwIfInvalidConfigMakesClusterUnusable();
         fetchClusterStateSummary();
     }
 
-    public DefaultKafkaClusterProxy(HostPortValue hostPort    ) {
+    private void assignNewDependencies(TopicAdmin topicAdmin, org.apache.kafka.clients.admin.AdminClient adminClient2, AdminClient kafkaAdminClient) {
+        this.topicAdmin = topicAdmin;
+        this.kafkaClientsAdminClient = adminClient2;
+        this.kafkaAdminClient = kafkaAdminClient;
+    }
+
+    public DefaultKafkaClusterProxy(HostPortValue hostPort) {
         Logger.trace("New DefaultKafkaClusterProxy: real Hash : " + AppUtils.realHash(this));
         this.hostPort = hostPort;
-
     }
 
     @Override
@@ -87,11 +92,16 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         }
     }
 
-    @Override
-    public void close() {
-        Logger.trace("Closing kafka admin proxy");
-        kafkaClientsAdminClient.close(ApplicationConstants.CLOSE_CONNECTION_TIMEOUT_MS, TimeUnit.MILLISECONDS);
-        kafkaAdminClient.close();
+
+    public void closeOldDependencies() {
+        if (kafkaClientsAdminClient != null) {
+            Logger.trace("Closing kafka admin proxy");
+            kafkaClientsAdminClient.close(ApplicationConstants.CLOSE_CONNECTION_TIMEOUT_MS,
+                                          TimeUnit.MILLISECONDS);
+        }
+        if (kafkaAdminClient != null) {
+            kafkaAdminClient.close();
+        }
         Logger.trace("Closing done");
     }
 
@@ -124,7 +134,6 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     public int partitionsForTopic(String topicName) {
         return clusterSummary.partitionsForTopic(topicName);
     }
-
 
 
     @Override
@@ -200,7 +209,6 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     private void fetchClusterStateSummary() throws InterruptedException, ExecutionException, TimeoutException {
-        clearClusterSummary();
         describeCluster();
         describeTopics();
         describeConsumers();

@@ -69,37 +69,35 @@ public final class TopicPropertiesWindow extends AnchorPane {
     private double stageHeight = -1d;
     private ObservableList<TopicsOffsetInfo> parentInfos;
     private final ConfigEntriesView entriesView;
-    private final String topicName;
+    private String topicName;
     private ObservableList<TopicsOffsetInfo> observablesOffsetsFromCaller;
 
     private TopicPropertiesWindow(ConfigEntriesView entriesView,
-                                  String topicName,
                                   ObservableList<TopicsOffsetInfo> topicOffsetsInfo) throws IOException {
 
         this.entriesView = entriesView;
-        this.topicName = topicName;
         observablesOffsetsFromCaller = topicOffsetsInfo;
 
         loadAnchorPane(this, FXML_FILE);
         configureTable();
-
         setupTopicPropertiesAnchorPane(entriesView);
-
-        setupTitleLabel(topicName);
 
         topicOffsetsInfo.addListener(new ListChangeListener<TopicsOffsetInfo>() {
             @Override
             public void onChanged(Change<? extends TopicsOffsetInfo> c) {
-                resetTableContent(observablesOffsetsFromCaller);
+                resetTableContent(topicName, observablesOffsetsFromCaller);
             }
         });
 
     }
 
-    private void resetTableContent(ObservableList<TopicsOffsetInfo> topicOffsetsInfo) {
+    private void resetTableContent(String topicName,
+                                   ObservableList<TopicsOffsetInfo> topicOffsetsInfo) {
+        this.topicName = topicName;
+        setupTitleLabel(topicName);
         final List<TopicsOffsetInfo> filtered = topicOffsetsInfo
             .stream()
-            .filter(e -> e.getTopicName().equals(topicName))
+            .filter(e -> e.getTopicName().equals(this.topicName))
             .collect(Collectors.toList());
         privateInfos.setAll(filtered);
     }
@@ -108,9 +106,9 @@ public final class TopicPropertiesWindow extends AnchorPane {
                                             ConfigEntriesView entriesView,
                                             ObservableList<TopicsOffsetInfo> topicOffsetsInfo) throws IOException {
         if (instance == null) {
-            instance = new TopicPropertiesWindow(entriesView, topicName, topicOffsetsInfo);
+            instance = new TopicPropertiesWindow(entriesView, topicOffsetsInfo);
         }
-        instance.resetTableContent(topicOffsetsInfo);
+        instance.resetTableContent(topicName, topicOffsetsInfo);
         return instance;
     }
 

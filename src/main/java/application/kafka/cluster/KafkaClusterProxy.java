@@ -17,7 +17,6 @@ import java.util.function.Consumer;
 
 public interface KafkaClusterProxy {
 
-
     void reportInvalidClusterConfigurationTo(Consumer<String> problemReporter);
 
     void createTopic(TopicToAdd topicToAdd) throws Exception;
@@ -31,8 +30,6 @@ public interface KafkaClusterProxy {
     boolean hasTopic(String topicName);
 
     Set<ConfigEntry> getTopicProperties(String topicName);
-
-    void close();
 
     Set<AssignedConsumerInfo> getConsumersForTopic(String topicName);
 

@@ -71,6 +71,7 @@ public final class ClusterStateSummary {
         nodesInfo.clear();
         topicsInfo.clear();
         assignedConsumersInfo.clear();
+        topicOffsetInfo.clear();
     }
 
     public void addNodeInfo(ClusterNodeInfo clusterNodeInfo) {

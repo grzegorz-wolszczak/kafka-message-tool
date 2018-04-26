@@ -47,18 +47,9 @@ public class KafkaClusterProxies {
                                                                           TimeoutException,
                                                                           InterruptedException {
         final HostPortValue hostPort = HostPortValue.from(hostInfo);
-
-        closeOldProxyIfExistsFor(hostPort);
-        final KafkaClusterProxy newProxy = KafkaClusterProxyFactory.create(hostPort, hostPortToProxy.getOrDefault(hostPort, null));
+        final KafkaClusterProxy newProxy = KafkaClusterProxyFactory.create(hostPort,
+                                                                           hostPortToProxy.getOrDefault(hostPort, null));
         hostPortToProxy.put(hostPort, newProxy);
         return newProxy;
     }
-
-    private void closeOldProxyIfExistsFor(HostPortValue hostPort) {
-        if (hostPortToProxy.containsKey(hostPort)) {
-            KafkaClusterProxy oldProxy = hostPortToProxy.get(hostPort);
-            oldProxy.close();
-        }
-    }
-
 }
