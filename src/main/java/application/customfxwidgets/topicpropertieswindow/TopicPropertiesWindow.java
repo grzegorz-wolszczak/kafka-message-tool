@@ -31,6 +31,7 @@ import static application.customfxwidgets.CustomFxWidgetsLoader.loadAnchorPane;
 public final class TopicPropertiesWindow extends AnchorPane {
     private static final String FXML_FILE = "TopicPropertiesView.fxml";
     private static TopicPropertiesWindow instance;
+    ObservableList<TopicsOffsetInfo> privateInfos = FXCollections.observableArrayList();
     private Stage stage = new Stage();
     @FXML
     private Button closeButton;
@@ -42,78 +43,50 @@ public final class TopicPropertiesWindow extends AnchorPane {
     private AnchorPane consumerGroupsAnchorPane;
     @FXML
     private TableColumn<TopicsOffsetInfo, String> consumerGroupColumn;
-
     @FXML
     private TableColumn<TopicsOffsetInfo, String> partitionColumn;
-
     @FXML
     private TableColumn<TopicsOffsetInfo, String> beginOffsetColumn;
-
     @FXML
     private TableColumn<TopicsOffsetInfo, String> endOffsetColumn;
-
     @FXML
     private TableColumn<TopicsOffsetInfo, String> totalColumn;
-
     @FXML
     private TableView<TopicsOffsetInfo> topicOffsetsTableView;
-
     @FXML
     private TableColumn<TopicsOffsetInfo, String> currentOffsetColumn;
-
     @FXML
     private TableColumn<TopicsOffsetInfo, String> lagColumn;
-
-    ObservableList<TopicsOffsetInfo> privateInfos = FXCollections.observableArrayList();
-
     private double stageWidth = -1d;
     private double stageHeight = -1d;
     private ObservableList<TopicsOffsetInfo> parentInfos;
-    private final ConfigEntriesView entriesView;
     private String topicName;
+    private ConfigEntriesView entriesView;
     private ObservableList<TopicsOffsetInfo> observablesOffsetsFromCaller;
 
-    private TopicPropertiesWindow(ConfigEntriesView entriesView,
-                                  ObservableList<TopicsOffsetInfo> topicOffsetsInfo) throws IOException {
+    private TopicPropertiesWindow(ObservableList<TopicsOffsetInfo> topicOffsetsInfo) throws IOException {
 
-        this.entriesView = entriesView;
         observablesOffsetsFromCaller = topicOffsetsInfo;
 
         loadAnchorPane(this, FXML_FILE);
         configureTable();
-        setupTopicPropertiesAnchorPane(entriesView);
+
 
         topicOffsetsInfo.addListener(new ListChangeListener<TopicsOffsetInfo>() {
             @Override
             public void onChanged(Change<? extends TopicsOffsetInfo> c) {
-                resetTableContent(topicName, observablesOffsetsFromCaller);
+                refresh(topicName, entriesView, observablesOffsetsFromCaller);
             }
         });
-    }
-
-    private void resetTableContent(String topicName,
-                                   ObservableList<TopicsOffsetInfo> topicOffsetsInfo) {
-        this.topicName = topicName;
-        setupTitleLabel(topicName);
-        final List<TopicsOffsetInfo> filtered = topicOffsetsInfo
-            .stream()
-            .filter(e -> e.getTopicName().equals(this.topicName))
-            .collect(Collectors.toList());
-        privateInfos.setAll(filtered);
-        Platform.runLater(()->{
-            topicOffsetsTableView.getSortOrder().clear();
-            topicOffsetsTableView.getSortOrder().add(consumerGroupColumn);
-        });
-
     }
 
     public static TopicPropertiesWindow get(String topicName,
                                             ConfigEntriesView entriesView,
                                             ObservableList<TopicsOffsetInfo> topicOffsetsInfo) throws IOException {
         if (instance == null) {
-            instance = new TopicPropertiesWindow(entriesView, topicOffsetsInfo);
+            instance = new TopicPropertiesWindow(topicOffsetsInfo);
         }
-        instance.resetTableContent(topicName, topicOffsetsInfo);
+        instance.refresh(topicName, entriesView, topicOffsetsInfo);
         return instance;
     }
 
@@ -122,7 +95,29 @@ public final class TopicPropertiesWindow extends AnchorPane {
         stage.show();
     }
 
+    private void refresh(String topicName,
+                         ConfigEntriesView entriesView,
+                         ObservableList<TopicsOffsetInfo> topicOffsetsInfo) {
+        this.topicName = topicName;
+        this.entriesView = entriesView;
 
+        setupTitleLabel(topicName);
+        setupTopicPropertiesAnchorPane(entriesView);
+        refreshTopicOffsetsView(topicOffsetsInfo);
+
+    }
+
+    private void refreshTopicOffsetsView(ObservableList<TopicsOffsetInfo> topicOffsetsInfo) {
+        final List<TopicsOffsetInfo> filtered = topicOffsetsInfo
+            .stream()
+            .filter(e -> e.getTopicName().equals(this.topicName))
+            .collect(Collectors.toList());
+        privateInfos.setAll(filtered);
+        Platform.runLater(() -> {
+            topicOffsetsTableView.getSortOrder().clear();
+            topicOffsetsTableView.getSortOrder().add(consumerGroupColumn);
+        });
+    }
 
     private void configureTable() {
         consumerGroupColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getConsumerGroup()));
@@ -166,7 +161,7 @@ public final class TopicPropertiesWindow extends AnchorPane {
     }
 
     private void setupTitleLabel(String topicName) {
-        titleLabel.setText(String.format("Information for topic '%s'" , topicName));
+        titleLabel.setText(String.format("Information for topic '%s'", topicName));
         stage.setTitle(titleLabel.getText());
     }
 
