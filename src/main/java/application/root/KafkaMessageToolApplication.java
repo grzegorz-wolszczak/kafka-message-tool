@@ -171,15 +171,13 @@ public class KafkaMessageToolApplication implements ApplicationRoot {
     }
 
     private TextAreaWrapper getTextArea() {
-        final TextArea textArea = new TextArea();
-        textArea.setWrapText(true);
-        textArea.setEditable(false);
-
+//        final TextArea textArea = new TextArea();
+//        textArea.setWrapText(true);
+//        textArea.setEditable(false);
+//
         JTextArea ta = new JTextArea();
 
-
         return new SwingTextAreaWrapper(ta);
-        //return new FxTextAreaWrapper(textArea);
     }
 
 }

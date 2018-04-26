@@ -5,7 +5,7 @@ import org.apache.commons.collections4.queue.CircularFifoQueue;
 import java.util.Iterator;
 
 public class CyclicStringBuffer {
-    public static final int DEFAULT_BUFFER_SIZE = 10000;
+    public static final int DEFAULT_BUFFER_SIZE = 2000;
     private CircularFifoQueue<String> buffer;
 
     public CyclicStringBuffer(){

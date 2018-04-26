@@ -37,7 +37,7 @@ public class ClusterStatusChecker {
                     busySwitcher.setAppBusy(false);
                 });
             }
-        }, "ClusterStatusChecker-Thread").start();
+        }, "KMT-Thread-ClusterStatusChecker").start();
     }
 
     private void showGuiErrorMessage(String header, String content) {

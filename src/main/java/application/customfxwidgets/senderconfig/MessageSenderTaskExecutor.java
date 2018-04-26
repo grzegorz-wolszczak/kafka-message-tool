@@ -35,7 +35,7 @@ public class MessageSenderTaskExecutor {
 
         // todo: consider thread pool - but remember that we must
         // stop all threadpool on application exit
-        executorThread = new Thread(futureTask, "MessageSenderTaskExecutor-Thread");
+        executorThread = new Thread(futureTask, "KMT-Thread-MessageSenderTaskExecutor");
         executorThread.start();
 
     }

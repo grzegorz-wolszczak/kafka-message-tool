@@ -67,7 +67,7 @@ public class HostnameUtils {
             }
         });
 
-        new Thread(checkValidityTask, "CheckAvailabilityTask-Thread").start();
+        new Thread(checkValidityTask, "KMT-Thread-CheckAvailabilityTask").start();
         return checkValidityTask;
     }
 

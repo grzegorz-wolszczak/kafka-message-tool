@@ -24,7 +24,7 @@ public class StatusBarNotifier {
     }
 
     private static Timer createTimer(){
-        return Timers.newTimer("StatusBarNotifier-Thread");
+        return Timers.newTimer("KMT-Thread-StatusBarNotifier");
     }
 
     // count is 1-based

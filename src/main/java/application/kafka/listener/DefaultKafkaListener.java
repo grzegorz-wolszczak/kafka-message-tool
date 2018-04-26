@@ -233,7 +233,7 @@ public class DefaultKafkaListener implements Listener {
             return null;
         });
         // todo: consider thread pool
-        new Thread(task, "Consumer-Poll-WakeUpThread").start();
+        new Thread(task, "KMT-Thread-Consumer-Poll-WakeUp").start();
         return task;
     }
 
@@ -262,7 +262,7 @@ public class DefaultKafkaListener implements Listener {
     }
 
     private String buildThreadNameForDebugging() {
-        return "Thread-KafkaListener:" + listenerConfig.getName();
+        return "KMT-Thread-KafkaListener:" + listenerConfig.getName();
     }
 
     private void tryStop() {

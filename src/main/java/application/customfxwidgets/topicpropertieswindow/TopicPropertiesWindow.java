@@ -88,7 +88,6 @@ public final class TopicPropertiesWindow extends AnchorPane {
                 resetTableContent(topicName, observablesOffsetsFromCaller);
             }
         });
-
     }
 
     private void resetTableContent(String topicName,
