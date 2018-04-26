@@ -1,3 +1,5 @@
+[v.1.0.3.1]
+ - fix: topic properties view not refreshed when new cluster status fetched
 
 [v.1.0.3.0]
 - feature - added About window
