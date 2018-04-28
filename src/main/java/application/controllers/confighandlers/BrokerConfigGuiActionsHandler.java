@@ -4,7 +4,7 @@ import application.constants.ApplicationConstants;
 import application.controllers.ControllerProvider;
 import application.controllers.helpers.ListViewActionsHandler;
 import application.controllers.helpers.TemplateGuiActionsHandler;
-import application.customfxwidgets.brokerconfig.BrokerConfigGuiController;
+import application.customfxwidgets.brokerconfig.BrokerConfigView;
 import application.controllers.helpers.TabPaneSelectionInformer;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
@@ -50,11 +50,11 @@ public class BrokerConfigGuiActionsHandler extends TemplateGuiActionsHandler<Kaf
 
     @Override
     protected void loadController(KafkaBrokerConfig config) {
-        final BrokerConfigGuiController controller = controllerProvider.getBrokerConfigGuiController(config,
-                                                                                         parentPane,
-                                                                                         listViewActionsHandler::refresh,
-                                                                                         interactor,
-                                                                                         parentWindow);
+        final BrokerConfigView controller = controllerProvider.getBrokerConfigGuiController(config,
+                                                                                            parentPane,
+                                                                                            listViewActionsHandler::refresh,
+                                                                                            interactor,
+                                                                                            parentWindow);
         controller.display();
     }
 

@@ -1,6 +1,7 @@
 package application.kafka.cluster;
 
 import application.constants.ApplicationConstants;
+import application.customfxwidgets.consumergroupview.ConsumerGroupDetailRecord;
 import application.exceptions.ClusterConfigurationError;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
@@ -154,6 +155,12 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     @Override
     public Set<TopicAggregatedSummary> getAggregatedTopicSummary() {
         return clusterSummary.getAggregatedTopicSummary();
+    }
+
+    @Override
+    public List<ConsumerGroupDetailRecord> getConsumerGroupDetails() {
+        return clusterSummary.getConsumerGroupsDetails();
+
     }
 
     @Override
@@ -321,10 +328,11 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     private void describeConsumers() {
-        final List<String> consumerGroupIds = getConsumerGroupIds();
+
+        clusterSummary.setConsumerGroupIds(getConsumerGroupIds());
         final List<TopicsOffsetInfo> topicOffsetsInfo = new ArrayList<>();
 
-        consumerGroupIds.forEach(consumerGroupId -> {
+        clusterSummary.getConsumerGroupIds().forEach(consumerGroupId -> {
             final Map<TopicPartition, Object> offsetForPartition = getPartitionsForConsumerGroup(consumerGroupId);
             final List<TopicsOffsetInfo> topicOffsetsFor = getTopicOffsetsFor(consumerGroupId, offsetForPartition);
             topicOffsetsInfo.addAll(topicOffsetsFor);
@@ -438,7 +446,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
             .clientId(consumerSummary.clientId())
             .host(consumerSummary.host())
             .topic(topicPartition.topic())
-            .partition(topicPartition.partition())
+            .partition(String.valueOf(topicPartition.partition()))
             .offset(getOffsetForPartition(offsetForPartition, topicPartition))
             .build();
     }

@@ -22,7 +22,6 @@ public class SettingsWindow extends AnchorPane {
 
         loadAnchorPane(this, FXML_FILE);
         setupStage(owner);
-        //configureCloseButton();
     }
 
     private void setupStage(Window owner) {

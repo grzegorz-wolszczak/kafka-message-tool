@@ -1,5 +1,6 @@
 package application.kafka.cluster;
 
+import application.customfxwidgets.consumergroupview.ConsumerGroupDetailRecord;
 import application.exceptions.ClusterConfigurationError;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
@@ -11,6 +12,7 @@ import javafx.collections.ObservableList;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.ConfigEntry;
 
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -41,6 +43,8 @@ public interface KafkaClusterProxy {
     ObservableList<TopicsOffsetInfo> getTopicOffsetsInfo();
 
     Set<TopicAggregatedSummary> getAggregatedTopicSummary();
+
+    List<ConsumerGroupDetailRecord> getConsumerGroupDetails();
 
     int partitionsForTopic(String topicName);
 

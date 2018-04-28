@@ -15,7 +15,6 @@ class GuiStrings {
     public static final String BEFORE_FIRST_MSGS_SCRIPT_TAB_NAME = "Before FIRST message";
     public static final String MESSAGE_BODY_TEMPLATE_NAME = "Message body"
     public static final String REPEAT_COUNT_LABEL_TEXT = "Repeat count";
-
     public static final String SEND_BUTTON_TEXT = "Send";
     private static final String varName = "cat_age";
 

@@ -6,6 +6,7 @@ import application.customfxwidgets.ConfigEntriesView;
 import application.customfxwidgets.ConfigEntriesViewPreferences;
 import application.customfxwidgets.CustomFxWidgetsLoader;
 import application.customfxwidgets.Displayable;
+import application.customfxwidgets.consumergroupview.ConsumerGroupView;
 import application.customfxwidgets.topicpropertieswindow.TopicPropertiesWindow;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
@@ -17,8 +18,8 @@ import application.kafka.cluster.TriStateConfigEntryValue;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
-import application.kafka.dto.TopicToAdd;
 import application.kafka.dto.TopicAlterableProperties;
+import application.kafka.dto.TopicToAdd;
 import application.kafka.dto.UnassignedConsumerInfo;
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
@@ -64,7 +65,7 @@ import java.util.List;
 import java.util.Set;
 
 
-public class BrokerConfigGuiController extends AnchorPane implements Displayable {
+public class BrokerConfigView extends AnchorPane implements Displayable {
 
     private static final String FXML_FILE = "BrokerConfigView.fxml";
     private final ClusterStatusChecker statusChecker;
@@ -93,6 +94,9 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
     @FXML
     private ToggleButton detachPaneButton;
 
+    @FXML
+    private Tab consumerGroupsTab;
+
     /* topicsTableView and related gui controls f*/
     @FXML
     private TableView<TopicAggregatedSummary> topicsTableView;
@@ -114,7 +118,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
     @FXML
     private TableColumn<AssignedConsumerInfo, String> assignedConsumerGroupColumn;
     @FXML
-    private TableColumn<AssignedConsumerInfo, Integer> assignedConsumerPartitionColumn;
+    private TableColumn<AssignedConsumerInfo, String> assignedConsumerPartitionColumn;
     @FXML
     private TableColumn<AssignedConsumerInfo, String> assignedConsumerNextMsgOffsetColumn;
     @FXML
@@ -151,14 +155,14 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
 
     private DisplayBehaviour displayBehaviour;
 
-    public BrokerConfigGuiController(KafkaBrokerConfig config,
-                                     AnchorPane parentPane,
-                                     ModelConfigObjectsGuiInformer guiInformer,
-                                     Window parentWindow,
-                                     Runnable refeshCallback,
-                                     UserInteractor guiInteractor,
-                                     ClusterStatusChecker statusChecker,
-                                     KafkaClusterProxies kafkaClusterProxies) throws IOException {
+    public BrokerConfigView(KafkaBrokerConfig config,
+                            AnchorPane parentPane,
+                            ModelConfigObjectsGuiInformer guiInformer,
+                            Window parentWindow,
+                            Runnable refeshCallback,
+                            UserInteractor guiInteractor,
+                            ClusterStatusChecker statusChecker,
+                            KafkaClusterProxies kafkaClusterProxies) throws IOException {
 
         this.statusChecker = statusChecker;
         this.kafkaClusterProxies = kafkaClusterProxies;
@@ -273,6 +277,11 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         initializeTopicDetailTableView();
         initializeAssignedConsumersTableView();
         initializeUnassignedConsumersTableView();
+        intializeConsumerGroupView();
+    }
+
+    private void intializeConsumerGroupView() {
+
     }
 
     private void initializeUnassignedConsumersTableView() {
@@ -287,7 +296,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         TableUtils.installCopyPasteHandlerForSingleCell(assignedConsumerListTableView);
         assignedConsumerClientIdColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getClientId()));
         assignedConsumerGroupColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getConsumerGroupId()));
-        assignedConsumerPartitionColumn.setCellValueFactory(param -> new SimpleIntegerProperty(param.getValue().getPartition()).asObject());
+        assignedConsumerPartitionColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getPartition()));
         assignedConsumerNextMsgOffsetColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getOffset()));
         assignedConsumerHostColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getHost()));
         assignedConsumerIdColumn.setCellValueFactory(param -> new SimpleStringProperty(param.getValue().getConsumerId()));
@@ -309,6 +318,19 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         Platform.runLater(() -> this.refreshClusterSummaryPaneContent(proxy));
         Platform.runLater(() -> this.fillTopicInfoPane(proxy));
         Platform.runLater(() -> this.fillUnassignedConsumersTab(proxy));
+        Platform.runLater(() -> this.refreshConsumerGroupPaneContent(proxy));
+    }
+
+    private void refreshConsumerGroupPaneContent(KafkaClusterProxy proxy) {
+        Logger.trace("Refreshing consumer groups pane");
+
+        try {
+            ConsumerGroupView consumerGroupsPropertiesView = new ConsumerGroupView(proxy);
+            consumerGroupsTab.setContent(consumerGroupsPropertiesView);
+            consumerGroupsPropertiesView.refresh();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void fillUnassignedConsumersTab(KafkaClusterProxy proxy) {
@@ -480,7 +502,7 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         final String topicName = summary.getTopicName();
 
         final TopicAlterableProperties topicDetails = kafkaClusterProxy.getAlterableTopicProperties(topicName);
-         //= new TopicAlterableProperties();
+        //= new TopicAlterableProperties();
         final ButtonType callType = new AlterTopicDialog(getParentWindow()).call(topicDetails);
         if (callType == ButtonType.OK) {
             kafkaClusterProxy.updateTopic(topicDetails);

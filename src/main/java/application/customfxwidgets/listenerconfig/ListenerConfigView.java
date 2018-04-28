@@ -46,7 +46,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Optional;
 
-public class ListenerConfigGuiController extends AnchorPane implements Displayable {
+public class ListenerConfigView extends AnchorPane implements Displayable {
 
     public static final int ZERO_RECEIVED_MSGS = 0;
     public static final String TOTAL_RECEIVED_PREFIX = "Total received msgs: %s";
@@ -95,14 +95,14 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
     private int totalReceivedMsgCounter = ZERO_RECEIVED_MSGS;
 
 
-    public ListenerConfigGuiController(KafkaListenerConfig config,
-                                       AnchorPane parentPane,
-                                       ModelConfigObjectsGuiInformer guiInformer,
-                                       Listeners activeConsumers,
-                                       Runnable refreshCallback,
-                                       ObservableList<KafkaTopicConfig> topicConfigs,
-                                       ToFileSaver toFileSaver,
-                                       FixedNumberRecordsCountLogger fixedRecordsLogger) throws IOException {
+    public ListenerConfigView(KafkaListenerConfig config,
+                              AnchorPane parentPane,
+                              ModelConfigObjectsGuiInformer guiInformer,
+                              Listeners activeConsumers,
+                              Runnable refreshCallback,
+                              ObservableList<KafkaTopicConfig> topicConfigs,
+                              ToFileSaver toFileSaver,
+                              FixedNumberRecordsCountLogger fixedRecordsLogger) throws IOException {
         this.parentPane = parentPane;
         this.guiInformer = guiInformer;
         this.toFileSaver = toFileSaver;

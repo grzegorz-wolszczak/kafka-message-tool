@@ -47,7 +47,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 
-public class TopicConfigGuiController extends AnchorPane implements Displayable {
+public class TopicConfigView extends AnchorPane implements Displayable {
     private static final String FXML_FILE = "TopicConfigView.fxml";
     private static final PseudoClass OK_TOPIC_EXISTS_PSEUDO_CLASS = PseudoClass.getPseudoClass("ok_topic_exists");
     private static final PseudoClass TOPIC_WILL_BE_AUTOCREATED_PSEUDO_CLASS = PseudoClass.getPseudoClass("warn_topic_will_be_autocreated");
@@ -72,13 +72,13 @@ public class TopicConfigGuiController extends AnchorPane implements Displayable 
     private Runnable refreshCallback;
     private final MenuItem generateNameMenuItem = new MenuItem("Generate name");
 
-    public TopicConfigGuiController(KafkaTopicConfig config,
-                                    AnchorPane parentPane,
-                                    ModelConfigObjectsGuiInformer guiInformer,
-                                    Runnable refreshCallback,
-                                    ObservableList<KafkaBrokerConfig> brokerConfigs,
-                                    ClusterStatusChecker statusChecker,
-                                    KafkaClusterProxies kafkaClusterProxies) throws IOException {
+    public TopicConfigView(KafkaTopicConfig config,
+                           AnchorPane parentPane,
+                           ModelConfigObjectsGuiInformer guiInformer,
+                           Runnable refreshCallback,
+                           ObservableList<KafkaBrokerConfig> brokerConfigs,
+                           ClusterStatusChecker statusChecker,
+                           KafkaClusterProxies kafkaClusterProxies) throws IOException {
         this.statusChecker = statusChecker;
         this.kafkaClusterProxies = kafkaClusterProxies;
 

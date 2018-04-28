@@ -52,7 +52,7 @@ import java.time.Duration;
 import java.time.Instant;
 
 
-public class SenderConfigGuiController extends AnchorPane implements Displayable {
+public class SenderConfigView extends AnchorPane implements Displayable {
     public static final int MARGINS_SIZE = 5;
     private static final String FXML_FILE = "SenderConfigView.fxml";
     private static final int MIN_REPEAT_COUNT = 1;
@@ -123,18 +123,18 @@ public class SenderConfigGuiController extends AnchorPane implements Displayable
 
     private final MenuItem generateNameMenuItem = new MenuItem("Generate name");
 
-    public SenderConfigGuiController(KafkaSenderConfig config,
-                                     AnchorPane parentPane,
-                                     ModelConfigObjectsGuiInformer guiInformer,
-                                     Runnable refreshCallback,
-                                     ObservableList<KafkaTopicConfig> topicConfigs,
-                                     MessageTemplateSender msgTemplateSender,
-                                     VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesSharedScriptScrollPane,
-                                     VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesScriptScrollPane,
-                                     VirtualizedScrollPane<StyleClassedTextArea> beforeEachMessageScriptScrollPane,
-                                     VirtualizedScrollPane<StyleClassedTextArea> messageContentScrollPane,
-                                     KafkaClusterProxies kafkaClusterProxies,
-                                     ApplicationSettings applicationSettings) throws IOException {
+    public SenderConfigView(KafkaSenderConfig config,
+                            AnchorPane parentPane,
+                            ModelConfigObjectsGuiInformer guiInformer,
+                            Runnable refreshCallback,
+                            ObservableList<KafkaTopicConfig> topicConfigs,
+                            MessageTemplateSender msgTemplateSender,
+                            VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesSharedScriptScrollPane,
+                            VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesScriptScrollPane,
+                            VirtualizedScrollPane<StyleClassedTextArea> beforeEachMessageScriptScrollPane,
+                            VirtualizedScrollPane<StyleClassedTextArea> messageContentScrollPane,
+                            KafkaClusterProxies kafkaClusterProxies,
+                            ApplicationSettings applicationSettings) throws IOException {
         this.msgTemplateSender = msgTemplateSender;
 
         this.beforeAllMessagesSharedScriptScrollPane = beforeAllMessagesSharedScriptScrollPane;

@@ -1,5 +1,6 @@
 package application.kafka.cluster;
 
+import application.customfxwidgets.consumergroupview.ConsumerGroupDetailRecord;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.ClusterTopicInfo;
@@ -9,6 +10,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import org.apache.kafka.clients.admin.ConfigEntry;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -24,6 +26,7 @@ public final class ClusterStateSummary {
     private final Set<AssignedConsumerInfo> assignedConsumersInfo = new HashSet<>();
     private final Set<UnassignedConsumerInfo> unassignedConsumersInfo = new HashSet<>();
     private final ObservableList<TopicsOffsetInfo> topicOffsetInfo = FXCollections.observableArrayList();
+    private final List<String> consumerGroupIds = new ArrayList<>();
     private String clusterId;
 
     public ObservableList<TopicsOffsetInfo> getTopicOffsetInfo() {
@@ -97,7 +100,7 @@ public final class ClusterStateSummary {
     }
 
     public Set<ConfigEntry> getTopicProperties(String topicName) {
-        // just getAsProperty first topicsInfo for first node,
+        // just get first topicsInfo for first node,
         // it should be the same on rest of nodes any way
         for (ClusterTopicInfo clusterTopicInfo : topicsInfo) {
             if (clusterTopicInfo.getTopicName().equals(topicName)) {
@@ -143,6 +146,64 @@ public final class ClusterStateSummary {
         }
         return propertyFound.get().value();
 
+    }
+
+    public List<ConsumerGroupDetailRecord> getConsumerGroupsDetails() {
+
+        List<ConsumerGroupDetailRecord> result = new ArrayList<>();
+
+        consumerGroupIds.forEach(consumerGroupId -> {
+
+
+            List<TopicsOffsetInfo> topicOffsets = topicOffsetInfo
+                .stream()
+                .filter(e -> e.getConsumerGroup().equals(consumerGroupId)).collect(Collectors.toList());
+
+            final List<AssignedConsumerInfo> assignedConsumers = assignedConsumersInfo
+                .stream()
+                .filter(e -> e.getConsumerGroupId().equals(consumerGroupId)).collect(Collectors.toList());
+
+            topicOffsets.forEach(to -> {
+                final Optional<AssignedConsumerInfo> optAssignedConsumer = assignedConsumers
+                    .stream()
+                    .filter(c -> c.getPartition().equals(to.getPartition()) &&
+                        c.getTopic().equals(to.getTopicName()))
+                    .findFirst();
+
+                String consumerId = "-";
+                String host = "-";
+                String clientId = "-";
+
+                if (optAssignedConsumer.isPresent()) {
+                    final AssignedConsumerInfo ac = optAssignedConsumer.get();
+                    consumerId = ac.getConsumerId();
+                    host = ac.getHost();
+                    clientId = ac.getClientId();
+                }
+
+                result.add(new ConsumerGroupDetailRecord(to.getTopicName(),
+                                                         to.getPartition(),
+                                                         to.getCurrentOffset(),
+                                                         to.getEndOffset(),
+                                                         to.getLag(),
+                                                         consumerId,
+                                                         host,
+                                                         clientId,
+                                                         consumerGroupId));
+            });
+        });
+
+
+        return result;
+    }
+
+    public List<String> getConsumerGroupIds() {
+        return consumerGroupIds;
+    }
+
+    public void setConsumerGroupIds(List<String> consumerGroupIds) {
+        this.consumerGroupIds.clear();
+        this.consumerGroupIds.addAll(consumerGroupIds);
     }
 
     private TopicSummary getTopicSummaryFor(String topicName) {

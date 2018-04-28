@@ -5,7 +5,7 @@ import application.controllers.ControllerProvider;
 import application.controllers.helpers.ListViewActionsHandler;
 import application.controllers.helpers.TabPaneSelectionInformer;
 import application.controllers.helpers.TemplateGuiActionsHandler;
-import application.customfxwidgets.topicconfig.TopicConfigGuiController;
+import application.customfxwidgets.topicconfig.TopicConfigView;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
 import application.model.ToPojoConverter;
@@ -46,10 +46,10 @@ public class TopicConfigGuiActionsHandler extends TemplateGuiActionsHandler<Kafk
     @Override
     protected void loadController(KafkaTopicConfig config) {
 
-        final TopicConfigGuiController controller = controllerProvider.getTopicConfigGuiController(config,
-                                                                                     parentPane,
-                                                                                     listViewActionsHandler::refresh,
-                                                                                     brokerConfigs.getItems());
+        final TopicConfigView controller = controllerProvider.getTopicConfigGuiController(config,
+                                                                                          parentPane,
+                                                                                          listViewActionsHandler::refresh,
+                                                                                          brokerConfigs.getItems());
 
         controller.display();
     }

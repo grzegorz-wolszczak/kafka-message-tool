@@ -17,8 +17,6 @@ public class ApplicationConstants {
     public static final String DEFAULT_MESSAGE_KEY = "kmt-msg-key";
     public static final int HOSTNAME_REACHABLE_TIMEOUT_MS = 2000; // warning, less than 2000 seconds causes timeouts
 
-
-
     public static final long FUTURE_GET_TIMEOUT_MS = 5000L;
     public static final long DESCRIBE_CONSUMER_METEADATA_TIMEOUT_MS = 2000L;
     public static final long CLOSE_CONNECTION_TIMEOUT_MS = 2000L;
@@ -27,7 +25,6 @@ public class ApplicationConstants {
     public static final String DEFAULT_NEW_TOPIC_CONFIG_NAME = "<empty name>";
     public static final String GROOVY_KEYWORDS_STYLES_CSS = "/groovy_keywords_styles.css";
     public static final String JSON_STYLES_CSS = "/json_styles.css";
-
     public static final String DEFAULT_BROKER_CONFIG_NAME = "<new broker config>";
     public static final String DEFAULT_PORT_AS_STRING = "9092";
     public static final String DEFAULT_HOSTNAME = "localhost";

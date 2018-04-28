@@ -1,7 +1,7 @@
 package application.controllers;
 
-import application.customfxwidgets.brokerconfig.BrokerConfigGuiController;
-import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
+import application.customfxwidgets.brokerconfig.BrokerConfigView;
+import application.customfxwidgets.listenerconfig.ListenerConfigView;
 import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.kafka.cluster.KafkaClusterProxies;
 import application.logging.CyclicStringBuffer;
@@ -10,8 +10,8 @@ import application.persistence.ApplicationSettings;
 import application.root.Restartables;
 import application.scripting.GroovyScriptEvaluator;
 import application.scripting.MessageTemplateSender;
-import application.customfxwidgets.senderconfig.SenderConfigGuiController;
-import application.customfxwidgets.topicconfig.TopicConfigGuiController;
+import application.customfxwidgets.senderconfig.SenderConfigView;
+import application.customfxwidgets.topicconfig.TopicConfigView;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
 import application.kafka.cluster.ClusterStatusChecker;
 import application.kafka.sender.KafkaMessageSender;
@@ -38,10 +38,10 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 public class DefaultControllerProvider implements ControllerProvider {
-    private final Map<String /*uuid*/, BrokerConfigGuiController> brokerControllers = new HashMap<>();
-    private final Map<String /*uuid*/, ListenerConfigGuiController> listenersControllers = new HashMap<>();
-    private final Map<String /*uuid*/, TopicConfigGuiController> topicControllers = new HashMap<>();
-    private final Map<String /*uuid*/, SenderConfigGuiController> messageControllers = new HashMap<>();
+    private final Map<String /*uuid*/, BrokerConfigView> brokerControllers = new HashMap<>();
+    private final Map<String /*uuid*/, ListenerConfigView> listenersControllers = new HashMap<>();
+    private final Map<String /*uuid*/, TopicConfigView> topicControllers = new HashMap<>();
+    private final Map<String /*uuid*/, SenderConfigView> messageControllers = new HashMap<>();
     private final ClusterStatusChecker statusChecker;
     private final ModelConfigObjectsGuiInformer guiInformer;
     private final SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator;
@@ -65,21 +65,21 @@ public class DefaultControllerProvider implements ControllerProvider {
 
 
     @Override
-    public BrokerConfigGuiController getBrokerConfigGuiController(KafkaBrokerConfig config,
-                                                                  AnchorPane parentPane,
-                                                                  Runnable refeshCallback,
-                                                                  UserInteractor guiInteractor,
-                                                                  Window parentWindow) {
+    public BrokerConfigView getBrokerConfigGuiController(KafkaBrokerConfig config,
+                                                         AnchorPane parentPane,
+                                                         Runnable refeshCallback,
+                                                         UserInteractor guiInteractor,
+                                                         Window parentWindow) {
         return getControllerFor(config, brokerControllers, () -> {
             try {
-                return new BrokerConfigGuiController(config,
-                                                     parentPane,
-                                                     guiInformer,
-                                                     parentWindow,
-                                                     refeshCallback,
-                                                     guiInteractor,
-                                                     statusChecker,
-                                                     kafkaClusterProxies);
+                return new BrokerConfigView(config,
+                                            parentPane,
+                                            guiInformer,
+                                            parentWindow,
+                                            refeshCallback,
+                                            guiInteractor,
+                                            statusChecker,
+                                            kafkaClusterProxies);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;
@@ -88,26 +88,26 @@ public class DefaultControllerProvider implements ControllerProvider {
     }
 
     @Override
-    public ListenerConfigGuiController getListenerConfigGuiController(KafkaListenerConfig config,
-                                                                      AnchorPane parentPane,
-                                                                      Listeners activeConsumers,
-                                                                      Runnable refreshCallback,
-                                                                      ObservableList<KafkaTopicConfig> topicConfigs,
-                                                                      ToFileSaver toFileSaver
+    public ListenerConfigView getListenerConfigGuiController(KafkaListenerConfig config,
+                                                             AnchorPane parentPane,
+                                                             Listeners activeConsumers,
+                                                             Runnable refreshCallback,
+                                                             ObservableList<KafkaTopicConfig> topicConfigs,
+                                                             ToFileSaver toFileSaver
     ) {
 
         return getControllerFor(config, listenersControllers, () -> {
             try {
                 final FixedNumberRecordsCountLogger fixedRecordsLogger = new FixedNumberRecordsCountLogger(new CyclicStringBuffer());
                 restartables.register(fixedRecordsLogger);
-                return new ListenerConfigGuiController(config,
-                                                       parentPane,
-                                                       guiInformer,
-                                                       activeConsumers,
-                                                       refreshCallback,
-                                                       topicConfigs,
-                                                       toFileSaver,
-                                                       fixedRecordsLogger);
+                return new ListenerConfigView(config,
+                                              parentPane,
+                                              guiInformer,
+                                              activeConsumers,
+                                              refreshCallback,
+                                              topicConfigs,
+                                              toFileSaver,
+                                              fixedRecordsLogger);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;
@@ -116,19 +116,19 @@ public class DefaultControllerProvider implements ControllerProvider {
     }
 
     @Override
-    public TopicConfigGuiController getTopicConfigGuiController(KafkaTopicConfig config,
-                                                                AnchorPane parentPane,
-                                                                Runnable refreshCallback,
-                                                                ObservableList<KafkaBrokerConfig> brokerConfigs) {
+    public TopicConfigView getTopicConfigGuiController(KafkaTopicConfig config,
+                                                       AnchorPane parentPane,
+                                                       Runnable refreshCallback,
+                                                       ObservableList<KafkaBrokerConfig> brokerConfigs) {
         return getControllerFor(config, topicControllers, () -> {
             try {
-                return new TopicConfigGuiController(config,
-                                                    parentPane,
-                                                    guiInformer,
-                                                    refreshCallback,
-                                                    brokerConfigs,
-                                                    statusChecker,
-                                                    kafkaClusterProxies);
+                return new TopicConfigView(config,
+                                           parentPane,
+                                           guiInformer,
+                                           refreshCallback,
+                                           brokerConfigs,
+                                           statusChecker,
+                                           kafkaClusterProxies);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;
@@ -138,11 +138,11 @@ public class DefaultControllerProvider implements ControllerProvider {
 
 
     @Override
-    public SenderConfigGuiController getSenderConfigGuiController(KafkaSenderConfig config,
-                                                                  AnchorPane parentPane,
-                                                                  KafkaMessageSender sender,
-                                                                  Runnable refreshCallback,
-                                                                  ObservableList<KafkaTopicConfig> topicConfigs) {
+    public SenderConfigView getSenderConfigGuiController(KafkaSenderConfig config,
+                                                         AnchorPane parentPane,
+                                                         KafkaMessageSender sender,
+                                                         Runnable refreshCallback,
+                                                         ObservableList<KafkaTopicConfig> topicConfigs) {
 
         return getControllerFor(config, messageControllers, () -> {
             try {
@@ -171,18 +171,18 @@ public class DefaultControllerProvider implements ControllerProvider {
                 syntaxHighlightConfigurator.configureGroovySyntaxHighlighting(beforeEachCodeArea);
                 syntaxHighlightConfigurator.configureJsonSyntaxHighlighting(messageContentCodeArea);
 
-                return new SenderConfigGuiController(config,
-                                                     parentPane,
-                                                     guiInformer,
-                                                     refreshCallback,
-                                                     topicConfigs,
-                                                     msgTemplateEvaluator,
-                                                     beforeAllMessagesSharedScriptScrollPane,
-                                                     beforeAllMessagesScriptScrollPane,
-                                                     beforeEachMessageScriptScrollPane,
-                                                     messageContentScrollPane,
-                                                     kafkaClusterProxies,
-                                                     applicationSettings);
+                return new SenderConfigView(config,
+                                            parentPane,
+                                            guiInformer,
+                                            refreshCallback,
+                                            topicConfigs,
+                                            msgTemplateEvaluator,
+                                            beforeAllMessagesSharedScriptScrollPane,
+                                            beforeAllMessagesScriptScrollPane,
+                                            beforeEachMessageScriptScrollPane,
+                                            messageContentScrollPane,
+                                            kafkaClusterProxies,
+                                            applicationSettings);
             } catch (IOException e) {
                 Logger.error(e);
                 return null;
