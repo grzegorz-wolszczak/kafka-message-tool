@@ -88,7 +88,7 @@ public final class ClusterStateSummary {
 
     public boolean hasTopic(String topicName) {
         for (ClusterTopicInfo topicInfo : topicsInfo) {
-            if (topicInfo.getTopicName().equalsIgnoreCase(topicName)) {
+            if (topicInfo.getTopicName().equals(topicName)) {
                 return true;
             }
         }
