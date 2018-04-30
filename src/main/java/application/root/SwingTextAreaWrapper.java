@@ -11,15 +11,16 @@ import java.awt.*;
 public class SwingTextAreaWrapper implements TextAreaWrapper {
 
     private static final int FONT_SIZE = 14;
-    private static final String FONT_NAME = "Courier New";
+    private static final String FONT_NAME = "monospaced";
     public static final Font FONT = new Font(FONT_NAME, Font.PLAIN, FONT_SIZE);
     private final JTextArea textArea;
     private final SwingNode node;
     private final JPopupMenu popupMenu = new JPopupMenu();
+    private JMenuItem saveToFileMenu = new JMenuItem("Save to file");;
 
     public SwingTextAreaWrapper(JTextArea textArea) {
         this.textArea = textArea;
-        textArea.setEditable(false);
+        textArea.setEditable(true);
         textArea.setFont(FONT);
 
         final DefaultCaret caret = (DefaultCaret) textArea.getCaret();
@@ -29,6 +30,9 @@ public class SwingTextAreaWrapper implements TextAreaWrapper {
         JScrollPane sp = new JScrollPane(textArea);
         textArea.setComponentPopupMenu(popupMenu);
         node.setContent(sp);
+
+        popupMenu.add(saveToFileMenu);
+
     }
 
     @Override
@@ -53,10 +57,6 @@ public class SwingTextAreaWrapper implements TextAreaWrapper {
 
     @Override
     public void setPopupSaveToAction(Executable saveContentToFile) {
-        final JMenuItem saveToFileMenu = new JMenuItem("Save to file");
-        saveToFileMenu.addActionListener(e -> Platform.runLater(() -> {
-            saveContentToFile.execute();
-        }));
-        popupMenu.add(saveToFileMenu);
+        saveToFileMenu.addActionListener(e -> Platform.runLater(saveContentToFile::execute));
     }
 }
