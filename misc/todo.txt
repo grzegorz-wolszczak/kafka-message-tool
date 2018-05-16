@@ -2,6 +2,7 @@
 
 ### BUGS ###
       bug: when topic config names changes, related sender config combobox does not always refresh this new name with dropdown list (but it is refreshed in the 'selected' value)
+      bug: log window has 'save to file' popup menu option but does not do anything
 ### TODO ###
 
 todo: big feature : enable providing multiple bootstrap servers in broker config
@@ -20,15 +21,8 @@ todo: add word wrap enable/disable checkbox for all CodeArea / LogArea
 todo: refactor kafka proxy class
 todo: add isSuccess bar with popup hints (similar in Intelij IDEA) to communicate with the user, and remove 'logging window'
 todo: add config opiton - add opition: don't show warning about invalid configuraiton
-todo: on Linux (Mint with Xfce) - application fonts are ugly and too big - suggest other fonts for linux ?
 
 
-### Refactor
-todo: replace (wherever possible)
-from: GuiUtils.configureTextFieldToAcceptOnlyValidData
-to: configureTextFieldToAcceptOnlyDecimalValues
-
-        ValidatorUtils.configureTextFieldToAcceptOnlyDecimalValues(receiveMsgLimitTextField);
 
 ### TODO_LOW_PRIORITY ###
 todo: feature: replace 'isSuccess' button with 'connect/disconnect' . Connect will result in fetching info every e.g. 1 second

@@ -150,7 +150,7 @@ public class ListenerConfigGuiController extends AnchorPane implements Displayab
         configureFixedRecordLogger();
         configureDisplayBehaviour();
         configureToFileSaver();
-        addAdditionalOptionsToTextAreaPopupMenu();
+
         resetTotalReceivedLabeltext();
         configurePartitionsAssignmentsChangedLabel();
         configureNameGenerator();

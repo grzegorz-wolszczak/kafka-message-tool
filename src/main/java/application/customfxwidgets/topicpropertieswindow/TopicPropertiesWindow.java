@@ -31,7 +31,7 @@ import static application.customfxwidgets.CustomFxWidgetsLoader.loadAnchorPane;
 public final class TopicPropertiesWindow extends AnchorPane {
     private static final String FXML_FILE = "TopicPropertiesView.fxml";
     private static TopicPropertiesWindow instance;
-    ObservableList<TopicsOffsetInfo> privateInfos = FXCollections.observableArrayList();
+    private ObservableList<TopicsOffsetInfo> privateInfos = FXCollections.observableArrayList();
     private Stage stage = new Stage();
     @FXML
     private Button closeButton;

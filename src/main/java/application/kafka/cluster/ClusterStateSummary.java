@@ -23,6 +23,7 @@ public final class ClusterStateSummary {
     private final Set<AssignedConsumerInfo> assignedConsumersInfo = new HashSet<>();
     private final Set<UnassignedConsumerInfo> unassignedConsumersInfo = new HashSet<>();
     private final ObservableList<TopicsOffsetInfo> topicOffsetInfo = FXCollections.observableArrayList();
+    private final Set<AggregatedConsumerGroupSummary> consumerGroupAggregatedSummaries = new HashSet<>();
     private String clusterId;
 
     public ObservableList<TopicsOffsetInfo> getTopicOffsetInfo() {
@@ -72,6 +73,7 @@ public final class ClusterStateSummary {
         topicsInfo.clear();
         assignedConsumersInfo.clear();
         topicOffsetInfo.clear();
+        consumerGroupAggregatedSummaries.clear();
     }
 
     public void addNodeInfo(ClusterNodeInfo clusterNodeInfo) {
@@ -125,6 +127,14 @@ public final class ClusterStateSummary {
         });
 
         return summaries;
+    }
+
+    public Set<AggregatedConsumerGroupSummary> getAggregatedConsumerGroupSummary() {
+        return consumerGroupAggregatedSummaries;
+    }
+
+    public void addConsumerGroupAggregatedSummary(AggregatedConsumerGroupSummary aggregatedConsumerGroupSummary) {
+        consumerGroupAggregatedSummaries.add(aggregatedConsumerGroupSummary);
     }
 
     private TopicSummary getTopicSummaryFor(String topicName) {

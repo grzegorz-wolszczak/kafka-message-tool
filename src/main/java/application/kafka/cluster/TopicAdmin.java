@@ -44,6 +44,7 @@ public class TopicAdmin {
 
     TopicAdmin(org.apache.kafka.clients.admin.AdminClient kafkaClientsAdminClient) {
         this.kafkaClientsAdminClient = kafkaClientsAdminClient;
+
     }
 
     public void deleteTopic(String topicName) throws Exception {

@@ -50,4 +50,6 @@ public interface KafkaClusterProxy {
                                                            InterruptedException,
                                                            ExecutionException,
                                                            TimeoutException;
+
+    Set<AggregatedConsumerGroupSummary> getConsumerGroupsAggregatedInfo();
 }

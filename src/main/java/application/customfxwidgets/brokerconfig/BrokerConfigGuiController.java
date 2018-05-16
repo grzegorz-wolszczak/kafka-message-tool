@@ -4,6 +4,7 @@ import application.customfxwidgets.AddTopicDialog;
 import application.customfxwidgets.ConfigEntriesViewPreferences;
 import application.customfxwidgets.CustomFxWidgetsLoader;
 import application.customfxwidgets.Displayable;
+import application.customfxwidgets.consumergroupview.ConsumerGroupView;
 import application.customfxwidgets.topicpropertieswindow.TopicPropertiesWindow;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
@@ -34,6 +35,7 @@ import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
@@ -132,6 +134,10 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
     private Tab unassignedConsumersTab;
     @FXML
     private TabPane clusterConfigEntriesTabPane;
+
+    @FXML
+    private Tab consumerGroupsTab;
+
 
     private KafkaBrokerConfig config;
     private Window parentWindow;
@@ -300,9 +306,20 @@ public class BrokerConfigGuiController extends AnchorPane implements Displayable
         if (proxy == null) {
             return;
         }
-        Platform.runLater(() -> this.refreshClusterSummaryPaneContent(proxy));
-        Platform.runLater(() -> this.fillTopicInfoPane(proxy));
-        Platform.runLater(() -> this.fillUnassignedConsumersTab(proxy));
+        Platform.runLater(() -> refreshClusterSummaryPaneContent(proxy));
+        Platform.runLater(() -> fillTopicInfoPane(proxy));
+        Platform.runLater(() -> fillUnassignedConsumersTab(proxy));
+        Platform.runLater(() -> fillConsumerGroupsTab(proxy));
+    }
+
+    private void fillConsumerGroupsTab(KafkaClusterProxy proxy) {
+        try {
+            final ConsumerGroupView value = ConsumerGroupView.get(proxy.getConsumerGroupsAggregatedInfo());
+            consumerGroupsTab.setContent(value);
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logger.error(e);
+        }
     }
 
     private void fillUnassignedConsumersTab(KafkaClusterProxy proxy) {
