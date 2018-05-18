@@ -30,9 +30,9 @@
                         <TableColumn fx:id="currentOffsetColumn" prefWidth="117.0" text="Current offset" />
                         <TableColumn fx:id="logEndOffsetColumn" prefWidth="126.0" text="Log end offset" />
                         <TableColumn fx:id="lagColumn" prefWidth="75.0" text="Lag" />
-                        <TableColumn fx:id="consumerIdColumn" prefWidth="99.0" text="Consumer-Id" />
-                        <TableColumn fx:id="hostColumn" prefWidth="75.0" text="Host" />
                         <TableColumn fx:id="clientIdColumn" prefWidth="161.0" text="Client id" />
+                        <TableColumn fx:id="hostColumn" prefWidth="75.0" text="Host" />
+                        <TableColumn fx:id="consumerIdColumn" prefWidth="99.0" text="Consumer-Id" />
                      </columns>
                   </TableView>
                </children>

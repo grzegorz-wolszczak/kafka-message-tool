@@ -16,7 +16,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class ConsumerGroupView extends AnchorPane {
+public final class ConsumerGroupView extends AnchorPane {
     private static final String FXML_FILE = "ConsumerGroupView.fxml";
     private static ConsumerGroupView instance;
     private KafkaClusterProxy proxy;
@@ -64,11 +64,11 @@ public class ConsumerGroupView extends AnchorPane {
             .map(ConsumerGroupDetailRecord::getConsumerGroupId).distinct().map(ConsumerGroupName::new)
             .collect(Collectors.toList());
         consumerGroupNameTable.setItems(FXCollections.observableList(names));
+
     }
 
     @FXML
     private void initialize() {
-        System.out.println("initialzed");
         initializeTableViews();
     }
 
@@ -90,7 +90,7 @@ public class ConsumerGroupView extends AnchorPane {
 
 
         TableUtils.installCopyPasteHandlerForSingleCell(consumerGroupPropertiesTable);
-        TableUtils.autoResizeColumns(consumerGroupPropertiesTable);
+
     }
 
     private void initializeConsumerGroupInfoTableView() {
@@ -123,6 +123,7 @@ public class ConsumerGroupView extends AnchorPane {
                                    filteredByName.size()));
 
         consumerGroupPropertiesTable.setItems(FXCollections.observableArrayList(filteredByName));
+        //TableUtils.autoResizeColumns(consumerGroupPropertiesTable);
     }
 
     private static class ConsumerGroupName {
