@@ -41,10 +41,10 @@ It is arbitrary and related to effort amount that was invested in implementing p
  - Thanks to [controlfx](http://fxexperience.com/controlsfx/) for textfield with autocomplection and other cool controls
 
 **Why another Kafka Apache tool ?**  
-This application is mainly designed for testers/developers who want to to quickly check/verify some kafka cluster properties 
-(or send/receive few messages) without the need to use original console scripts provided with kafka after installation.
-Functionality is much more limited than original scripts in favour of simpilicity and usability   
-The goal of creating this tool were:
+This application is mainly designed for testers/developers who want to quickly check/verify some kafka cluster properties 
+(or send/receive few messages) without the need to use original console scripts provided with kafka installation.
+Obviously functionality of KMT is much more limited than original scripts in favour of simplicity and usability   
+The goals of creating this tool were:
 - No dependency to zookeeper 
   - User should not be forced to provide zookeeper ip and port to work with kafka.
   Only ip and port of kafka cluster should be enough.
@@ -52,8 +52,6 @@ The goal of creating this tool were:
 - No installation should be required. It should work out of the box.  Just type `java -jar  <application.jar>`
 
 
-
-- JavaFx issues
   
 
 
