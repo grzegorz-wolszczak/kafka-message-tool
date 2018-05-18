@@ -325,9 +325,8 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
         Logger.trace("Refreshing consumer groups pane");
 
         try {
-            ConsumerGroupView consumerGroupsPropertiesView = new ConsumerGroupView(proxy);
+            final ConsumerGroupView consumerGroupsPropertiesView = ConsumerGroupView.get(proxy);
             consumerGroupsTab.setContent(consumerGroupsPropertiesView);
-            consumerGroupsPropertiesView.refresh();
         } catch (Exception e) {
             e.printStackTrace();
         }
