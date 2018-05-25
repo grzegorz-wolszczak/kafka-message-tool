@@ -45,7 +45,7 @@ static String getShortenedTimestamp() {
 
 
 // <app>-<major-patch>-<minor-patch>-<fix>
-version = "1.0.3.2"
+version = "1.1.x.x-dev-build.02"
 //version = "1.0.x.dev-snapshot-${getShortenedTimestamp()}"
 
 println "Gradle project dir: ${projectDir}"
@@ -83,8 +83,8 @@ dependencies {
     compile group: 'org.projectlombok', name: 'lombok', version: '1.16.18'
     compile group: 'org.apache.commons', name: 'commons-lang3', version: '3.7'
     compile group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
-    compile group: 'org.apache.kafka', name: 'kafka-clients', version: '1.0.0'
-    compile group: 'org.apache.kafka', name: 'kafka_2.12', version: '1.0.0'
+    compile group: 'org.apache.kafka', name: 'kafka-clients', version: '1.1.0'
+    compile group: 'org.apache.kafka', name: 'kafka_2.12', version: '1.1.0'
     compile group: 'commons-validator', name: 'commons-validator', version: '1.4.0'
     compile group: 'com.google.guava', name: 'guava', version: '22.0'
     compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.13'

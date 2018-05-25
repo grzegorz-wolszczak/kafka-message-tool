@@ -1,6 +1,5 @@
 package application.kafka.dto;
 
-
 import lombok.Builder;
 import lombok.Data;
 
@@ -13,6 +12,6 @@ public class AssignedConsumerInfo {
     private String host;
     private String clientId;
     private String offset;
-    private int partition;
+    private String partition;
 
 }

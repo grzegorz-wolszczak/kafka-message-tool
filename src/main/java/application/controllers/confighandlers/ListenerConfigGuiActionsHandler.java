@@ -4,7 +4,7 @@ import application.constants.ApplicationConstants;
 import application.controllers.ControllerProvider;
 import application.controllers.helpers.ListViewActionsHandler;
 import application.controllers.helpers.TemplateGuiActionsHandler;
-import application.customfxwidgets.listenerconfig.ListenerConfigGuiController;
+import application.customfxwidgets.listenerconfig.ListenerConfigView;
 import application.controllers.helpers.TabPaneSelectionInformer;
 import application.customfxwidgets.listenerconfig.ToFileSaver;
 import application.kafka.listener.Listeners;
@@ -55,12 +55,12 @@ public class ListenerConfigGuiActionsHandler extends TemplateGuiActionsHandler<K
     @Override
     protected void loadController(KafkaListenerConfig config) {
 
-        final ListenerConfigGuiController controller = controllerProvider.getListenerConfigGuiController(config,
-                                                                                        parentPane,
-                                                                                        activeConsumers,
-                                                                                        listViewActionsHandler::refresh,
-                                                                                        topicConfigs.getItems(),
-                                                                                        toFileSaver);
+        final ListenerConfigView controller = controllerProvider.getListenerConfigGuiController(config,
+                                                                                                parentPane,
+                                                                                                activeConsumers,
+                                                                                                listViewActionsHandler::refresh,
+                                                                                                topicConfigs.getItems(),
+                                                                                                toFileSaver);
         controller.display();
     }
 

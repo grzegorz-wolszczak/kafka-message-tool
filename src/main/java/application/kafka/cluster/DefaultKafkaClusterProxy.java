@@ -1,10 +1,12 @@
 package application.kafka.cluster;
 
 import application.constants.ApplicationConstants;
+import application.customfxwidgets.consumergroupview.ConsumerGroupDetailRecord;
 import application.exceptions.ClusterConfigurationError;
 import application.kafka.dto.AssignedConsumerInfo;
 import application.kafka.dto.ClusterNodeInfo;
 import application.kafka.dto.TopicAggregatedSummary;
+import application.kafka.dto.TopicAlterableProperties;
 import application.kafka.dto.TopicToAdd;
 import application.kafka.dto.UnassignedConsumerInfo;
 import application.logging.Logger;
@@ -25,10 +27,11 @@ import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.TopicPartition;
 import org.apache.kafka.common.config.ConfigResource;
+import org.apache.kafka.common.config.TopicConfig;
 import org.apache.kafka.common.protocol.ApiKeys;
 import org.apache.kafka.common.requests.ApiVersionsResponse;
 import org.apache.kafka.common.serialization.StringDeserializer;
-import scala.collection.JavaConversions;
+import scala.collection.JavaConverters;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,7 +52,7 @@ import static java.util.Collections.singleton;
 import static scala.collection.JavaConversions.seqAsJavaList;
 
 public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
-    public static final String OFFSET_NOT_FOUND = "NOT_FOUND";
+    public static final String NOT_FOUND_STRING = "NOT_FOUND";
 
     private final HostPortValue hostPort;
     private final ClusterStateSummary clusterSummary = new ClusterStateSummary();
@@ -69,6 +72,30 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         assignNewDependencies(topicAdmin, adminClient2, kafkaAdminClient);
         throwIfInvalidConfigMakesClusterUnusable();
         fetchClusterStateSummary();
+    }
+
+    @Override
+    public TopicAlterableProperties getAlterableTopicProperties(String topicName) {
+        final TopicAlterableProperties t = new TopicAlterableProperties(topicName);
+        t.setRetentionMilliseconds(
+            Integer.parseUnsignedInt(
+            clusterSummary.getTopicPropertyByName(topicName,
+                                                  TopicConfig.RETENTION_MS_CONFIG)));
+        return t;
+    }
+
+    @Override
+    public void updateTopic(TopicAlterableProperties topicDetails) {
+        Map<ConfigResource, Config> configs = new HashMap<>();
+
+        final ArrayList<ConfigEntry> configEntries = new ArrayList<>();
+
+        configEntries.add(new ConfigEntry(TopicConfig.RETENTION_MS_CONFIG,
+                                          String.valueOf(topicDetails.getRetentionMilliseconds())));
+
+        final Config config = new Config(configEntries);
+        configs.put(new ConfigResource(ConfigResource.Type.TOPIC, topicDetails.getTopicName()), config);
+        kafkaClientsAdminClient.alterConfigs(configs);
     }
 
     private void assignNewDependencies(TopicAdmin topicAdmin, org.apache.kafka.clients.admin.AdminClient adminClient2, AdminClient kafkaAdminClient) {
@@ -128,6 +155,12 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     @Override
     public Set<TopicAggregatedSummary> getAggregatedTopicSummary() {
         return clusterSummary.getAggregatedTopicSummary();
+    }
+
+    @Override
+    public List<ConsumerGroupDetailRecord> getConsumerGroupDetails() {
+        return clusterSummary.getConsumerGroupsDetails();
+
     }
 
     @Override
@@ -198,7 +231,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     private static String getOffsetForPartition(Map<TopicPartition, Object> offsets, TopicPartition topicPartition) {
         final Optional<Long> optLong = getOptionalOffsetForPartition(offsets, topicPartition);
         if (!optLong.isPresent()) {
-            return OFFSET_NOT_FOUND;
+            return NOT_FOUND_STRING;
         }
         return String.valueOf(optLong.get());
     }
@@ -289,16 +322,17 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
 
     private Map<TopicPartition, Object> getPartitionsForConsumerGroup(String consumerGroup) {
         final scala.collection.immutable.Map<TopicPartition, Object> abc = kafkaAdminClient.listGroupOffsets(consumerGroup);
-        final Map<TopicPartition, Object> partitionsForConsumerGroup = JavaConversions.mapAsJavaMap(abc);
+        final Map<TopicPartition, Object> partitionsForConsumerGroup = JavaConverters.mapAsJavaMap(abc);
         Logger.debug(String.format("Fetched partitions for consumer group '%s' -> '%s'", consumerGroup, partitionsForConsumerGroup));
         return partitionsForConsumerGroup;
     }
 
     private void describeConsumers() {
-        final List<String> consumerGroupIds = getConsumerGroupIds();
+
+        clusterSummary.setConsumerGroupIds(getConsumerGroupIds());
         final List<TopicsOffsetInfo> topicOffsetsInfo = new ArrayList<>();
 
-        consumerGroupIds.forEach(consumerGroupId -> {
+        clusterSummary.getConsumerGroupIds().forEach(consumerGroupId -> {
             final Map<TopicPartition, Object> offsetForPartition = getPartitionsForConsumerGroup(consumerGroupId);
             final List<TopicsOffsetInfo> topicOffsetsFor = getTopicOffsetsFor(consumerGroupId, offsetForPartition);
             topicOffsetsInfo.addAll(topicOffsetsFor);
@@ -335,12 +369,11 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     private List<TopicsOffsetInfo> getTopicOffsetsFor(String consumerGroupId,
                                                       Map<TopicPartition, Object> topicPartitionsCurrentOffset) {
         final Set<TopicPartition> topicPartitions = topicPartitionsCurrentOffset.keySet();
-        List<TopicsOffsetInfo> result = new ArrayList<>();
+        final List<TopicsOffsetInfo> result = new ArrayList<>();
 
         final KafkaConsumer<String, String> consumer = createOffsetInfoConsumerFor(consumerGroupId);
         final Map<TopicPartition, Long> beggingOffsets = consumer.beginningOffsets(topicPartitions);
         final Map<TopicPartition, Long> endOffsets = consumer.endOffsets(topicPartitions);
-
 
         for (Map.Entry<TopicPartition, Long> entry : beggingOffsets.entrySet()) {
 
@@ -350,8 +383,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
                 continue;
             }
 
-            String currentOffset = "NOT_FOUND";
-            String lag = "NOT_FOUND";
+            String currentOffset = NOT_FOUND_STRING;
+            String lag = NOT_FOUND_STRING;
 
             final Optional<Long> optionalOffsetForPartition = getOptionalOffsetForPartition(topicPartitionsCurrentOffset,
                                                                                             topicPartition);
@@ -363,10 +396,6 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
             final Long endOffsetLong = endOffsets.get(topicPartition);
             final String endOffset = String.valueOf(endOffsetLong);
             final String msgCount = String.valueOf(endOffsetLong - startOffsetLong);
-
-            optionalOffsetForPartition.ifPresent(v -> {
-
-            });
 
             if (optionalOffsetForPartition.isPresent()) {
                 final Long currentOffsetLong = optionalOffsetForPartition.get();
@@ -385,10 +414,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
             result.add(topicsOffsetInfo);
         }
 
-
         Logger.debug("Topic offsets: " + result);
         return result;
-
     }
 
     private KafkaConsumer<String, String> createOffsetInfoConsumerFor(String consumerGroupIds) {
@@ -397,10 +424,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, hostPort.toHostString());
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
-
         return new KafkaConsumer<>(props);
     }
-
 
     private AssignedConsumerInfo getAssignedConsumerInfo(String consumerGroupId,
                                                          Map<TopicPartition, Object> offsetForPartition,
@@ -412,7 +437,7 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
             .clientId(consumerSummary.clientId())
             .host(consumerSummary.host())
             .topic(topicPartition.topic())
-            .partition(topicPartition.partition())
+            .partition(String.valueOf(topicPartition.partition()))
             .offset(getOffsetForPartition(offsetForPartition, topicPartition))
             .build();
     }
@@ -471,7 +496,8 @@ public class DefaultKafkaClusterProxy implements KafkaClusterProxy {
     }
 
     private void saveApiVersionsForNodes(Node node) {
-        final List<ApiVersionsResponse.ApiVersion> apiVersions = JavaConversions.seqAsJavaList(kafkaAdminClient.getApiVersions(node));
+        final List<ApiVersionsResponse.ApiVersion> apiVersions = JavaConverters.seqAsJavaList(
+            kafkaAdminClient.getApiVersions(node));
         brokerApiVersions.put(node, new NodeApiVersionsInfo(apiVersions));
         printApiVersionForNode(node, apiVersions);
     }

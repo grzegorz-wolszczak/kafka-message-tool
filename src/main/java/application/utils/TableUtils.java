@@ -1,5 +1,6 @@
 package application.utils;
 
+import application.logging.Logger;
 import com.sun.javafx.scene.control.skin.TableViewSkin;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
@@ -110,7 +111,7 @@ public class TableUtils {
             return;
         }
         if (positionList.size() > 1) {
-            System.err.println("Invalid selection: should be selected only one cell, but is " + positionList.size());
+            Logger.error("Invalid selection: should be selected only one cell, but is " + positionList.size());
             return;
         }
 

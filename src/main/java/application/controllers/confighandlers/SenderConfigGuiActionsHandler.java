@@ -5,7 +5,7 @@ import application.controllers.ControllerProvider;
 import application.controllers.helpers.ListViewActionsHandler;
 import application.controllers.helpers.TabPaneSelectionInformer;
 import application.controllers.helpers.TemplateGuiActionsHandler;
-import application.customfxwidgets.senderconfig.SenderConfigGuiController;
+import application.customfxwidgets.senderconfig.SenderConfigView;
 import application.kafka.sender.KafkaMessageSender;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
@@ -50,11 +50,11 @@ public class SenderConfigGuiActionsHandler extends TemplateGuiActionsHandler<Kaf
 
     @Override
     protected void loadController(KafkaSenderConfig config) {
-        final SenderConfigGuiController controller = controllerProvider.getSenderConfigGuiController(config,
-                                                                                      parentPane,
-                                                                                      sender,
-                                                                                      listViewActionsHandler::refresh,
-                                                                                      topicConfigs.getItems());
+        final SenderConfigView controller = controllerProvider.getSenderConfigGuiController(config,
+                                                                                            parentPane,
+                                                                                            sender,
+                                                                                            listViewActionsHandler::refresh,
+                                                                                            topicConfigs.getItems());
 
         controller.display();
     }
