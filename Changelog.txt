@@ -1,3 +1,6 @@
+[v.1.0.4.0]
+ - feature : added consumer group view inside broker config view
+
 [v.1.0.3.2]
  - fix: topic config name case insensitive -
     topic config showed not existing topic as existing (via green text field background)
