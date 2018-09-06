@@ -1,6 +1,6 @@
 package application.utils;
 
-import application.kafka.cluster.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxiesBase;
 import application.kafka.cluster.KafkaClusterProxy;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
@@ -9,7 +9,7 @@ import org.apache.commons.lang3.StringUtils;
 
 public class Validations {
     public static ValidationStatus validateForCalculatingPartition(KafkaSenderConfig config,
-                                                                   KafkaClusterProxies clusterProxies) {
+                                                                   KafkaClusterProxiesBase clusterProxies) {
 
         final ValidationStatus forSending = validateForSendingMessage(config, clusterProxies);
         if (forSending.isFailure()) {
@@ -24,7 +24,7 @@ public class Validations {
     }
 
     public static ValidationStatus validateForSendingMessage(KafkaSenderConfig config,
-                                                             KafkaClusterProxies clusterProxies) {
+                                                             KafkaClusterProxiesBase clusterProxies) {
 
         final KafkaTopicConfig topicConfig = config.getRelatedConfig();
         if (topicConfig == null) {
@@ -49,7 +49,7 @@ public class Validations {
     }
 
     private static ValidationStatus validateBrokerConfigValidAndStatusIsKnown(KafkaTopicConfig topicConfig,
-                                                                              KafkaClusterProxies clusterProxies) {
+                                                                              KafkaClusterProxiesBase clusterProxies) {
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
         if (brokerConfig == null) {
             return ValidationStatus.failure("Broker config not set");

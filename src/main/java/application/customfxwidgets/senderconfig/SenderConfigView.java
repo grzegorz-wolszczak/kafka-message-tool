@@ -7,7 +7,7 @@ import application.customfxwidgets.TopicConfigComboBoxConfigurator;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
-import application.kafka.cluster.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxiesBase;
 import application.kafka.cluster.KafkaClusterProxy;
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
@@ -22,7 +22,7 @@ import application.utils.ValidationStatus;
 import application.utils.Validations;
 import application.utils.ValidatorUtils;
 import application.utils.kafka.KafkaPartitionUtils;
-import com.sun.javafx.scene.control.skin.TextFieldSkin;
+//import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.beans.binding.StringExpression;
 import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.beans.property.StringProperty;
@@ -33,9 +33,9 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContextMenu;
+//import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+//import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.Spinner;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TextField;
@@ -74,7 +74,7 @@ public class SenderConfigView extends AnchorPane implements Displayable {
     private final StyleClassedTextArea beforeAllMessagesScriptCodeArea;
     private final StyleClassedTextArea beforeEachMessagesScriptCodeArea;
     private final StyleClassedTextArea messageContentTextArea;
-    private KafkaClusterProxies kafkaClusterProxies;
+    private KafkaClusterProxiesBase kafkaClusterProxiesBase;
     private ApplicationSettings applicationSettings;
     private StatusBarNotifier statusBarNotifier;
     @FXML
@@ -133,7 +133,7 @@ public class SenderConfigView extends AnchorPane implements Displayable {
                             VirtualizedScrollPane<StyleClassedTextArea> beforeAllMessagesScriptScrollPane,
                             VirtualizedScrollPane<StyleClassedTextArea> beforeEachMessageScriptScrollPane,
                             VirtualizedScrollPane<StyleClassedTextArea> messageContentScrollPane,
-                            KafkaClusterProxies kafkaClusterProxies,
+                            KafkaClusterProxiesBase kafkaClusterProxiesBase,
                             ApplicationSettings applicationSettings) throws IOException {
         this.msgTemplateSender = msgTemplateSender;
 
@@ -141,7 +141,7 @@ public class SenderConfigView extends AnchorPane implements Displayable {
         this.beforeAllMessagesScriptScrollPane = beforeAllMessagesScriptScrollPane;
         this.beforeEachMessageScriptScrollPane = beforeEachMessageScriptScrollPane;
 
-        this.kafkaClusterProxies = kafkaClusterProxies;
+        this.kafkaClusterProxiesBase = kafkaClusterProxiesBase;
         this.applicationSettings = applicationSettings;
 
         beforeAllmessagesSharedScriptCodeArea = this.beforeAllMessagesSharedScriptScrollPane.getContent();
@@ -228,15 +228,15 @@ public class SenderConfigView extends AnchorPane implements Displayable {
     }
 
     private void addAdditionalEntryToConfigNameContextMenu() {
-        TextFieldSkin customContextSkin = new TextFieldSkin(messageNameTextField) {
-            @Override
-            public void populateContextMenu(ContextMenu contextMenu) {
-                super.populateContextMenu(contextMenu);
-                contextMenu.getItems().add(0, new SeparatorMenuItem());
-                contextMenu.getItems().add(0, generateNameMenuItem);
-            }
-        };
-        messageNameTextField.setSkin(customContextSkin);
+//        TextFieldSkin customContextSkin = new TextFieldSkin(messageNameTextField) {
+//            @Override
+//            public void populateContextMenu(ContextMenu contextMenu) {
+//                super.populateContextMenu(contextMenu);
+//                contextMenu.getItems().add(0, new SeparatorMenuItem());
+//                contextMenu.getItems().add(0, generateNameMenuItem);
+//            }
+//        };
+//        messageNameTextField.setSkin(customContextSkin);
 
     }
 
@@ -333,7 +333,7 @@ public class SenderConfigView extends AnchorPane implements Displayable {
     }
 
     private void displayProbableAssignedPartitionForMessageSentToTopic(String messageKey) {
-        final ValidationStatus validationStatus = Validations.validateForCalculatingPartition(config, kafkaClusterProxies);
+        final ValidationStatus validationStatus = Validations.validateForCalculatingPartition(config, kafkaClusterProxiesBase);
         if (!validationStatus.isSuccess()) {
             showInfoWhyTargetPartitionCouldNotBeCalculated(validationStatus.validationFailureMessage());
             return;
@@ -341,7 +341,7 @@ public class SenderConfigView extends AnchorPane implements Displayable {
 
         final KafkaTopicConfig topicConfig = config.getRelatedConfig();
         final KafkaBrokerConfig brokerConfig = topicConfig.getRelatedConfig();
-        final KafkaClusterProxy kafkaClusterProxy = kafkaClusterProxies.get(brokerConfig.getHostInfo());
+        final KafkaClusterProxy kafkaClusterProxy = kafkaClusterProxiesBase.get(brokerConfig.getHostInfo());
         final int partitions = kafkaClusterProxy.partitionsForTopic(topicConfig.getTopicName());
         final int expectedAssignedPartitions = KafkaPartitionUtils.partition(messageKey, partitions);
         final String msg = String.format("Expected assigned partition for key '%s' is %d", messageKey, expectedAssignedPartitions);

@@ -10,6 +10,7 @@ import application.globals.AppGlobals;
 import application.globals.Timers;
 import application.kafka.cluster.ClusterStatusChecker;
 import application.kafka.cluster.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxiesBase;
 import application.kafka.listener.KafkaListeners;
 import application.kafka.sender.DefaultKafkaMessageSender;
 import application.logging.CyclicStringBuffer;
@@ -141,11 +142,11 @@ public class KafkaMessageToolApplication implements ApplicationRoot {
         Logger.setLogLevel(applicationSettings.appSettings().getLogLevel());
 
         executorService = Executors.newSingleThreadExecutor();
-        final KafkaClusterProxies kafkaClusterProxies = new KafkaClusterProxies();
+        final KafkaClusterProxiesBase kafkaClusterProxiesBase = new KafkaClusterProxies();
         final ControllerRepositoryFactory controllerRepositoryFactory =
-            new DefaultControllerRepositoryFactory(new ClusterStatusChecker(busySwitcher, interactor, kafkaClusterProxies),
+            new DefaultControllerRepositoryFactory(new ClusterStatusChecker(busySwitcher, interactor, kafkaClusterProxiesBase),
                                                    new SyntaxHighlightingCodeAreaConfigurator(executorService),
-                                                   kafkaClusterProxies,
+                    kafkaClusterProxiesBase,
                                                    applicationSettings,
                                                    restartables);
 

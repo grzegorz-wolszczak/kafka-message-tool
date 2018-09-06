@@ -3,7 +3,7 @@ package application.controllers;
 import application.customfxwidgets.brokerconfig.BrokerConfigView;
 import application.customfxwidgets.listenerconfig.ListenerConfigView;
 import application.customfxwidgets.listenerconfig.ToFileSaver;
-import application.kafka.cluster.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxiesBase;
 import application.logging.CyclicStringBuffer;
 import application.logging.FixedNumberRecordsCountLogger;
 import application.persistence.ApplicationSettings;
@@ -45,20 +45,20 @@ public class DefaultControllerProvider implements ControllerProvider {
     private final ClusterStatusChecker statusChecker;
     private final ModelConfigObjectsGuiInformer guiInformer;
     private final SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator;
-    private KafkaClusterProxies kafkaClusterProxies;
+    private KafkaClusterProxiesBase kafkaClusterProxies;
     private ApplicationSettings applicationSettings;
     private Restartables restartables;
 
     public DefaultControllerProvider(ModelConfigObjectsGuiInformer guiInformer,
                                      ClusterStatusChecker statusChecker,
                                      SyntaxHighlightingCodeAreaConfigurator syntaxHighlightConfigurator,
-                                     KafkaClusterProxies kafkaClusterProxies,
+                                     KafkaClusterProxiesBase kafkaClusterProxiesBase,
                                      ApplicationSettings applicationSettings,
                                      Restartables restartables) {
         this.guiInformer = guiInformer;
         this.statusChecker = statusChecker;
         this.syntaxHighlightConfigurator = syntaxHighlightConfigurator;
-        this.kafkaClusterProxies = kafkaClusterProxies;
+        this.kafkaClusterProxies = kafkaClusterProxiesBase;
         this.applicationSettings = applicationSettings;
         this.restartables = restartables;
     }

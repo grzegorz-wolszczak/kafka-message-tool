@@ -18,7 +18,7 @@ import application.utils.ConfigNameGenerator;
 import application.utils.GuiUtils;
 import application.utils.ValidatorUtils;
 import application.utils.gui.FXNodeBlinker;
-import com.sun.javafx.scene.control.skin.TextFieldSkin;
+//import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import javafx.application.Platform;
 import javafx.beans.binding.BooleanBinding;
 import javafx.beans.binding.StringExpression;
@@ -31,10 +31,10 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContextMenu;
+//import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+//import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TitledPane;
 import javafx.scene.control.ToggleButton;
@@ -165,15 +165,15 @@ public class ListenerConfigView extends AnchorPane implements Displayable {
     }
 
     private void addAdditionalEntryToConfigNameContextMenu() {
-        TextFieldSkin customContextSkin = new TextFieldSkin(listenerNameTextField) {
-            @Override
-            public void populateContextMenu(ContextMenu contextMenu) {
-                super.populateContextMenu(contextMenu);
-                contextMenu.getItems().add(0, new SeparatorMenuItem());
-                contextMenu.getItems().add(0, generateNameMenuItem);
-            }
-        };
-        listenerNameTextField.setSkin(customContextSkin);
+//        TextFieldSkin customContextSkin = new TextFieldSkin(listenerNameTextField) {
+//            @Override
+//            public void populateContextMenu(ContextMenu contextMenu) {
+//                super.populateContextMenu(contextMenu);
+//                contextMenu.getItems().add(0, new SeparatorMenuItem());
+//                contextMenu.getItems().add(0, generateNameMenuItem);
+//            }
+//        };
+//        listenerNameTextField.setSkin(customContextSkin);
 
     }
 

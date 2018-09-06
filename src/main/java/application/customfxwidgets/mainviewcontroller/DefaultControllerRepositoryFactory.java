@@ -4,8 +4,8 @@ import application.controllers.ControllerProvider;
 import application.controllers.DefaultControllerProvider;
 import application.displaybehaviour.DefaultModelConfigObjectsGuiInformer;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
-import application.kafka.cluster.KafkaClusterProxies;
 import application.kafka.cluster.ClusterStatusChecker;
+import application.kafka.cluster.KafkaClusterProxiesBase;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaListenerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
@@ -19,18 +19,18 @@ import javafx.scene.control.TabPane;
 public class DefaultControllerRepositoryFactory implements ControllerRepositoryFactory {
     private ClusterStatusChecker statusChecker;
     private SyntaxHighlightingCodeAreaConfigurator syntaxHighlightingConfigurator;
-    private KafkaClusterProxies kafkaClusterProxies;
+    private KafkaClusterProxiesBase kafkaClusterProxiesBase;
     private ApplicationSettings applicationSettings;
     private Restartables restartables;
 
     public DefaultControllerRepositoryFactory(ClusterStatusChecker statusChecker,
                                               SyntaxHighlightingCodeAreaConfigurator syntaxHighlightingConfigurator,
-                                              KafkaClusterProxies kafkaClusterProxies,
+                                              KafkaClusterProxiesBase kafkaClusterProxiesBase,
                                               ApplicationSettings applicationSettings,
                                               Restartables restartables) {
         this.statusChecker = statusChecker;
         this.syntaxHighlightingConfigurator = syntaxHighlightingConfigurator;
-        this.kafkaClusterProxies = kafkaClusterProxies;
+        this.kafkaClusterProxiesBase = kafkaClusterProxiesBase;
         this.applicationSettings = applicationSettings;
         this.restartables = restartables;
     }
@@ -50,7 +50,7 @@ public class DefaultControllerRepositoryFactory implements ControllerRepositoryF
         return new DefaultControllerProvider(guiInformer,
                                              statusChecker,
                                              syntaxHighlightingConfigurator,
-                                             kafkaClusterProxies,
+                kafkaClusterProxiesBase,
                                              applicationSettings,
                                              restartables);
 

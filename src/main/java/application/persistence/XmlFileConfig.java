@@ -5,11 +5,7 @@ import application.logging.Logger;
 import application.model.FromPojoConverter;
 import application.model.ModelDataProxy;
 
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
-import javax.xml.bind.UnmarshalException;
-import javax.xml.bind.Unmarshaller;
+import javax.xml.bind.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.nio.file.Paths;
@@ -19,15 +15,6 @@ public class XmlFileConfig implements LoadableSavable {
     private final String configFilePath = Paths.get(ApplicationConstants.CONFIG_FILE_NAME).toAbsolutePath().toString();
     private final ModelDataProxy modelDataProxy;
     private final FromPojoConverter converter;
-
-    public GuiSettings getGuiSettings() {
-        return guiSettings;
-    }
-
-    public GlobalSettings getGlobalSettings() {
-        return globalSettings;
-    }
-
     private GuiSettings guiSettings;
     private GlobalSettings globalSettings;
 
@@ -41,6 +28,13 @@ public class XmlFileConfig implements LoadableSavable {
         this.globalSettings = globalSettings;
     }
 
+    public GuiSettings getGuiSettings() {
+        return guiSettings;
+    }
+
+    public GlobalSettings getGlobalSettings() {
+        return globalSettings;
+    }
 
     @Override
     public void save() {
@@ -91,6 +85,11 @@ public class XmlFileConfig implements LoadableSavable {
         } catch (JAXBException e) {
             e.printStackTrace();
             Logger.error("Could not loadOnAnchorPane configuration. Exception happened: \n", e);
+        } catch (IllegalArgumentException e) {
+            // in java10 , when jaxb marshaller could nof find file,
+            // it throws IllegalArgumentExcepion,
+            // up to java8 it was UnmarshalException with embedded FileNotFoundException
+            Logger.warn("Config file not found.");
         }
     }
 
@@ -128,26 +127,26 @@ public class XmlFileConfig implements LoadableSavable {
 
     private void loadBrokerConfigs(XmlConfig xmlConfig) {
         xmlConfig
-            .getBrokerConfigs()
-            .forEach(pojo -> modelDataProxy.addConfig(converter.fromPojo(pojo)));
+                .getBrokerConfigs()
+                .forEach(pojo -> modelDataProxy.addConfig(converter.fromPojo(pojo)));
     }
 
     private void loadTopicConfigs(XmlConfig xmlConfig) {
         xmlConfig
-            .getTopicConfigs()
-            .forEach(pojo -> modelDataProxy.addConfig(converter.fromPojo(pojo)));
+                .getTopicConfigs()
+                .forEach(pojo -> modelDataProxy.addConfig(converter.fromPojo(pojo)));
     }
 
     private void loadListenerConfigs(XmlConfig xmlConfig) {
         xmlConfig
-            .getListenerConfigs()
-            .forEach(pojo -> modelDataProxy.addConfig(converter.fromPojo(pojo)));
+                .getListenerConfigs()
+                .forEach(pojo -> modelDataProxy.addConfig(converter.fromPojo(pojo)));
     }
 
     private void loadMessages(XmlConfig xmlConfig) {
         xmlConfig
-            .getMessagesConfigs()
-            .forEach(pojo -> modelDataProxy.addConfig(converter.fromPojo(pojo)));
+                .getMessagesConfigs()
+                .forEach(pojo -> modelDataProxy.addConfig(converter.fromPojo(pojo)));
     }
 
 

@@ -6,10 +6,7 @@ import application.customfxwidgets.TopicConfigComboBoxConfigurator;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
-import application.kafka.cluster.ClusterStatusChecker;
-import application.kafka.cluster.KafkaClusterProxies;
-import application.kafka.cluster.KafkaClusterProxy;
-import application.kafka.cluster.TriStateConfigEntryValue;
+import application.kafka.cluster.*;
 import application.kafka.dto.TopicAggregatedSummary;
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
@@ -19,7 +16,7 @@ import application.utils.ConfigNameGenerator;
 import application.utils.TooltipCreator;
 import application.utils.ValidatorUtils;
 import application.utils.kafka.KafkaBrokerHostInfo;
-import com.sun.javafx.scene.control.skin.TextFieldSkin;
+//import com.sun.javafx.scene.control.skin.TextFieldSkin;
 import impl.org.controlsfx.autocompletion.SuggestionProvider;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
@@ -31,9 +28,9 @@ import javafx.css.PseudoClass;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ComboBox;
-import javafx.scene.control.ContextMenu;
+//import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
+//import javafx.scene.control.SeparatorMenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.control.ToggleButton;
 import javafx.scene.layout.AnchorPane;
@@ -58,7 +55,7 @@ public class TopicConfigView extends AnchorPane implements Displayable {
     private final TopicConfigComboBoxConfigurator<KafkaBrokerConfig> comboBoxConfigurator;
     private final SuggestionProvider<String> suggestionProvider = SuggestionProvider.create(Collections.emptyList());
     private AutoCompletionBinding<String> stringAutoCompletionBinding;
-    private KafkaClusterProxies kafkaClusterProxies;
+    private KafkaClusterProxiesBase kafkaClusterProxiesBase;
     @FXML
     private ComboBox<KafkaBrokerConfig> kafkaBrokerComboBox;
     @FXML
@@ -78,9 +75,9 @@ public class TopicConfigView extends AnchorPane implements Displayable {
                            Runnable refreshCallback,
                            ObservableList<KafkaBrokerConfig> brokerConfigs,
                            ClusterStatusChecker statusChecker,
-                           KafkaClusterProxies kafkaClusterProxies) throws IOException {
+                           KafkaClusterProxiesBase kafkaClusterProxiesBase) throws IOException {
         this.statusChecker = statusChecker;
-        this.kafkaClusterProxies = kafkaClusterProxies;
+        this.kafkaClusterProxiesBase = kafkaClusterProxiesBase;
 
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
 
@@ -130,15 +127,15 @@ public class TopicConfigView extends AnchorPane implements Displayable {
     }
 
     private void addAdditionalEntryToConfigNameContextMenu() {
-        TextFieldSkin customContextSkin = new TextFieldSkin(topicConfigNameField) {
-            @Override
-            public void populateContextMenu(ContextMenu contextMenu) {
-                super.populateContextMenu(contextMenu);
-                contextMenu.getItems().add(0, new SeparatorMenuItem());
-                contextMenu.getItems().add(0, generateNameMenuItem);
-            }
-        };
-        topicConfigNameField.setSkin(customContextSkin);
+//        TextFieldSkin customContextSkin = new TextFieldSkin(topicConfigNameField) {
+//            @Override
+//            public void populateContextMenu(ContextMenu contextMenu) {
+//                super.populateContextMenu(contextMenu);
+//                contextMenu.getItems().add(0, new SeparatorMenuItem());
+//                contextMenu.getItems().add(0, generateNameMenuItem);
+//            }
+//        };
+//        topicConfigNameField.setSkin(customContextSkin);
 
     }
 
@@ -224,7 +221,7 @@ public class TopicConfigView extends AnchorPane implements Displayable {
             return;
         }
         final KafkaBrokerHostInfo hostInfo = brokerConfig.getHostInfo();
-        final KafkaClusterProxy proxy = kafkaClusterProxies.get(hostInfo);
+        final KafkaClusterProxy proxy = kafkaClusterProxiesBase.get(hostInfo);
         resetTopicnameTextFieldAutoCompletionForClusterProxy(proxy);
         setTopicNameTextFieldStylePropertiesBasedOnClusterConfig(proxy);
     }
@@ -232,7 +229,7 @@ public class TopicConfigView extends AnchorPane implements Displayable {
     private void setCallbackForUpdatingTopicNameTextFieldBackgroundIfCurrentClusterSummaryChanges(KafkaBrokerConfig oldValue,
                                                                                                   KafkaBrokerConfig newValue) {
         if (oldValue != null) {
-            final ObjectProperty<KafkaClusterProxy> oldProxy = kafkaClusterProxies.getAsProperty(oldValue.getHostInfo());
+            final ObjectProperty<KafkaClusterProxy> oldProxy = kafkaClusterProxiesBase.getAsProperty(oldValue.getHostInfo());
             Logger.trace(String.format("removing listener for cluster proxy property for %s", oldValue.getHostInfo()));
             oldProxy.removeListener(this::updateTopicNameTextFieldPropertiesCallback);
         }
@@ -242,7 +239,7 @@ public class TopicConfigView extends AnchorPane implements Displayable {
             resetTopicnameTextFieldAutoCompletionForClusterProxy(null);
             return;
         }
-        final ObjectProperty<KafkaClusterProxy> newProxy = kafkaClusterProxies.getAsProperty(newValue.getHostInfo());
+        final ObjectProperty<KafkaClusterProxy> newProxy = kafkaClusterProxiesBase.getAsProperty(newValue.getHostInfo());
         Logger.trace(String.format("adding listener for cluster proxy property for %s", newValue.getHostInfo()));
         newProxy.addListener(this::updateTopicNameTextFieldPropertiesCallback);
     }
@@ -327,7 +324,7 @@ public class TopicConfigView extends AnchorPane implements Displayable {
             return;
         }
         final KafkaBrokerHostInfo hostInfo = brokerConfig.getHostInfo();
-        final KafkaClusterProxy proxy = kafkaClusterProxies.get(hostInfo);
+        final KafkaClusterProxy proxy = kafkaClusterProxiesBase.get(hostInfo);
         resetTopicnameTextFieldAutoCompletionForClusterProxy(proxy);
     }
 

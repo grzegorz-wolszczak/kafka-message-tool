@@ -1,11 +1,11 @@
 package application.utils;
 
 import application.logging.Logger;
-import com.sun.javafx.scene.control.skin.TableViewSkin;
+//import com.sun.javafx.scene.control.skin.TableViewSkin;
 import javafx.collections.ObservableList;
 import javafx.event.EventHandler;
 import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TableColumn;
+//import javafx.scene.control.TableColumn;
 import javafx.scene.control.TablePosition;
 import javafx.scene.control.TableView;
 import javafx.scene.input.Clipboard;
@@ -24,14 +24,14 @@ public class TableUtils {
     public static final double NEW_MAX_WIDTH_EXTRA_SPACE = 15.0d;
     private static Method columnToFitMethod;
 
-    static {
-        try {
-            columnToFitMethod = TableViewSkin.class.getDeclaredMethod("resizeColumnToFitContent", TableColumn.class, int.class);
-            columnToFitMethod.setAccessible(true);
-        } catch (NoSuchMethodException e) {
-            e.printStackTrace();
-        }
-    }
+//    static {
+//        try {
+//            columnToFitMethod = TableViewSkin.class.getDeclaredMethod("resizeColumnToFitContent", TableColumn.class, int.class);
+//            columnToFitMethod.setAccessible(true);
+//        } catch (NoSuchMethodException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     public static void customResize(TableView<?> view) {
 

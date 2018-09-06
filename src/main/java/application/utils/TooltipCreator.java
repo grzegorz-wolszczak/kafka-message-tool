@@ -20,12 +20,13 @@ public class TooltipCreator {
     private static final double VISIBLE_DURATION_MS = Double.MAX_VALUE;
     private static final double CLOSE_DELAY_MS = 100d;
 
-    static {
-        updateTooltipBehavior(OPEN_DELAY_MS,
-                              VISIBLE_DURATION_MS,
-                              CLOSE_DELAY_MS,
-                              false);
-    }
+    // in java 10 - no such method
+//    static {
+//        updateTooltipBehavior(OPEN_DELAY_MS,
+//                              VISIBLE_DURATION_MS,
+//                              CLOSE_DELAY_MS,
+//                              false);
+//    }
 
     public static Tooltip createFrom(KafkaTopicConfig topicConfig, ModelDataProxy dataProxy) {
 

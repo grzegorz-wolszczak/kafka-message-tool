@@ -1,6 +1,6 @@
 package validationspecification;
 
-import application.kafka.cluster.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxiesBase;
 import application.kafka.cluster.KafkaClusterProxy;
 import application.model.modelobjects.KafkaBrokerConfig;
 import application.model.modelobjects.KafkaSenderConfig;
@@ -14,7 +14,7 @@ public class ValidationTestBase {
     protected final KafkaBrokerConfig brokerConfig = new KafkaBrokerConfig();
     protected final KafkaTopicConfig topicConfig = new KafkaTopicConfig();
     protected final KafkaSenderConfig senderConfig = new KafkaSenderConfig();
-    protected final KafkaClusterProxies clusterProxies = mock(KafkaClusterProxies.class);
+    protected final KafkaClusterProxiesBase clusterProxies = mock(KafkaClusterProxiesBase.class);
     protected final KafkaClusterProxy clusterProxy = mock(KafkaClusterProxy.class);
     protected String topicName;
 

@@ -1,59 +1,28 @@
 package application.customfxwidgets.brokerconfig;
 
-import application.customfxwidgets.AddTopicDialog;
-import application.customfxwidgets.AlterTopicDialog;
-import application.customfxwidgets.ConfigEntriesView;
-import application.customfxwidgets.ConfigEntriesViewPreferences;
-import application.customfxwidgets.CustomFxWidgetsLoader;
-import application.customfxwidgets.Displayable;
+import application.customfxwidgets.*;
 import application.customfxwidgets.consumergroupview.ConsumerGroupView;
 import application.customfxwidgets.topicpropertieswindow.TopicPropertiesWindow;
 import application.displaybehaviour.DetachableDisplayBehaviour;
 import application.displaybehaviour.DisplayBehaviour;
 import application.displaybehaviour.ModelConfigObjectsGuiInformer;
 import application.kafka.cluster.ClusterStatusChecker;
-import application.kafka.cluster.KafkaClusterProxies;
+import application.kafka.cluster.KafkaClusterProxiesBase;
 import application.kafka.cluster.KafkaClusterProxy;
 import application.kafka.cluster.TriStateConfigEntryValue;
-import application.kafka.dto.AssignedConsumerInfo;
-import application.kafka.dto.ClusterNodeInfo;
-import application.kafka.dto.TopicAggregatedSummary;
-import application.kafka.dto.TopicAlterableProperties;
-import application.kafka.dto.TopicToAdd;
-import application.kafka.dto.UnassignedConsumerInfo;
+import application.kafka.dto.*;
 import application.logging.Logger;
 import application.model.modelobjects.KafkaBrokerConfig;
-import application.utils.GuiUtils;
-import application.utils.TableUtils;
-import application.utils.TooltipCreator;
-import application.utils.UserInteractor;
-import application.utils.ValidatorUtils;
+import application.utils.*;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.beans.binding.StringExpression;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.ReadOnlyObjectWrapper;
-import javafx.beans.property.ReadOnlyStringWrapper;
-import javafx.beans.property.SimpleIntegerProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.*;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.SeparatorMenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableRow;
-import javafx.scene.control.TableView;
-import javafx.scene.control.TextField;
-import javafx.scene.control.TitledPane;
-import javafx.scene.control.ToggleButton;
+import javafx.scene.control.*;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Window;
 import org.apache.kafka.clients.admin.ConfigEntry;
@@ -69,7 +38,7 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
 
     private static final String FXML_FILE = "BrokerConfigView.fxml";
     private final ClusterStatusChecker statusChecker;
-    private KafkaClusterProxies kafkaClusterProxies;
+    private KafkaClusterProxiesBase kafkaClusterProxiesBase;
     @FXML
     private TextField brokerConfigNameField;
 
@@ -162,10 +131,10 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
                             Runnable refeshCallback,
                             UserInteractor guiInteractor,
                             ClusterStatusChecker statusChecker,
-                            KafkaClusterProxies kafkaClusterProxies) throws IOException {
+                            KafkaClusterProxiesBase kafkaClusterProxiesBase) throws IOException {
 
         this.statusChecker = statusChecker;
-        this.kafkaClusterProxies = kafkaClusterProxies;
+        this.kafkaClusterProxiesBase = kafkaClusterProxiesBase;
         CustomFxWidgetsLoader.loadAnchorPane(this, FXML_FILE);
 
         this.config = config;
@@ -176,11 +145,11 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
         final StringExpression windowTitle = composeConfigWindowTitle();
 
         displayBehaviour = new DetachableDisplayBehaviour(parentPane,
-                                                          windowTitle,
-                                                          this,
-                                                          detachPaneButton.selectedProperty(),
-                                                          config,
-                                                          guiInformer);
+                windowTitle,
+                this,
+                detachPaneButton.selectedProperty(),
+                config,
+                guiInformer);
         GuiUtils.expandNodeToAnchorPaneBorders(this);
 
         configureGuiControls();
@@ -229,7 +198,7 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
         if (kafkaBrokerProxyProperty != null) {
             kafkaBrokerProxyProperty.removeListener(this::observedKafkaBrokerPropertyChanged);
         }
-        kafkaBrokerProxyProperty = kafkaClusterProxies.getAsProperty(config.getHostInfo());
+        kafkaBrokerProxyProperty = kafkaClusterProxiesBase.getAsProperty(config.getHostInfo());
         kafkaBrokerProxyProperty.addListener(this::observedKafkaBrokerPropertyChanged);
         clusterStatusTitledPane.visibleProperty().bind(Bindings.isNotNull(kafkaBrokerProxyProperty));
 
@@ -238,33 +207,33 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
 
     private StringExpression composeConfigWindowTitle() {
         return new ReadOnlyStringWrapper("Broker configuration")
-            .concat(" '").concat(config.nameProperty()).concat("' (")
-            .concat(config.hostNameProperty())
-            .concat(":")
-            .concat(config.portProperty())
-            .concat(")");
+                .concat(" '").concat(config.nameProperty()).concat("' (")
+                .concat(config.hostNameProperty())
+                .concat(":")
+                .concat(config.portProperty())
+                .concat(")");
     }
 
     private void configureGuiControls() {
         brokerConfigNameField.setText(config.getName());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(brokerConfigNameField,
-                                                         config::setName,
-                                                         ValidatorUtils::isStringIdentifierValid,
-                                                         rerfeshCallback);
+                config::setName,
+                ValidatorUtils::isStringIdentifierValid,
+                rerfeshCallback);
 
 
         kafkaBrokerHostnameField.setText(config.getHostname());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(kafkaBrokerHostnameField,
-                                                         config::setHostname,
-                                                         ValidatorUtils::isStringIdentifierValid,
-                                                         rerfeshCallback);
+                config::setHostname,
+                ValidatorUtils::isStringIdentifierValid,
+                rerfeshCallback);
 
 
         kafkaBrokerPortField.setText(config.getPort());
         GuiUtils.configureTextFieldToAcceptOnlyValidData(kafkaBrokerPortField,
-                                                         config::setPort,
-                                                         ValidatorUtils::isPortValid,
-                                                         rerfeshCallback);
+                config::setPort,
+                ValidatorUtils::isPortValid,
+                rerfeshCallback);
         ValidatorUtils.configureTextFieldToAcceptOnlyDecimalValues(kafkaBrokerPortField);
 
 
@@ -315,10 +284,12 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
         if (proxy == null) {
             return;
         }
-        Platform.runLater(() -> this.refreshClusterSummaryPaneContent(proxy));
-        Platform.runLater(() -> this.fillTopicInfoPane(proxy));
-        Platform.runLater(() -> this.fillUnassignedConsumersTab(proxy));
-        Platform.runLater(() -> this.refreshConsumerGroupPaneContent(proxy));
+        Platform.runLater(() -> {
+            this.refreshClusterSummaryPaneContent(proxy);
+            this.fillTopicInfoPane(proxy);
+            this.fillUnassignedConsumersTab(proxy);
+            this.refreshConsumerGroupPaneContent(proxy);
+        });
     }
 
     private void refreshConsumerGroupPaneContent(KafkaClusterProxy proxy) {
@@ -355,7 +326,7 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
 
     private void refreshBrokerStatus(boolean shouldShowWarningOnInvalidConfig) {
         statusChecker.updateStatus(config.getHostInfo(),
-                                   shouldShowWarningOnInvalidConfig);
+                shouldShowWarningOnInvalidConfig);
     }
 
 
@@ -419,9 +390,9 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
         final MenuItem topicPropertiesMenuItem = createMenuItemForShowingTopicProperties();
 
         final ContextMenu contextMenu = getTopicManagementContextMenu(deleteTopicMenuItem,
-                                                                      createTopicMenuItem,
-                                                                      alterTopicMenuItem,
-                                                                      topicPropertiesMenuItem);
+                createTopicMenuItem,
+                alterTopicMenuItem,
+                topicPropertiesMenuItem);
 
         row.contextMenuProperty().bind(new ReadOnlyObjectWrapper<>(contextMenu));
         topicPropertiesMenuItem.disableProperty().bind(row.emptyProperty());
@@ -441,10 +412,10 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
                                                       MenuItem topicPropertiesMenuItem) {
         final ContextMenu contextMenu = new ContextMenu();
         contextMenu.getItems().setAll(createTopicMenuItem,
-                                      deleteTopicMenuItem,
-                                      alterTopicMenuItem,
-                                      new SeparatorMenuItem(),
-                                      topicPropertiesMenuItem);
+                deleteTopicMenuItem,
+                alterTopicMenuItem,
+                new SeparatorMenuItem(),
+                topicPropertiesMenuItem);
         return contextMenu;
     }
 
@@ -517,8 +488,8 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
         try {
             ConfigEntriesView entriesView = new ConfigEntriesView("Topic properties", topicProperties, topicPropertiesViewPreferences);
             final TopicPropertiesWindow topicPropertiesWindow = TopicPropertiesWindow.get(topicName,
-                                                                                          entriesView,
-                                                                                          kafkaClusterProxy.getTopicOffsetsInfo());
+                    entriesView,
+                    kafkaClusterProxy.getTopicOffsetsInfo());
             topicPropertiesWindow.show();
 
 
@@ -529,9 +500,9 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
 
     private String getTopicDeleteWarningMessageForUser() {
         return " *** NOTE ***\n" +
-            " * Topic delete operation may not be immediate.\n" +
-            " * It may take several seconds for all the brokers to become aware that the topic is gone.\n" +
-            " * During this time kafka cluster may continue to return information about the deleted topics as if they still exist.";
+                " * Topic delete operation may not be immediate.\n" +
+                " * It may take several seconds for all the brokers to become aware that the topic is gone.\n" +
+                " * During this time kafka cluster may continue to return information about the deleted topics as if they still exist.";
     }
 
     private void deleteTopic(KafkaClusterProxy proxy,
@@ -539,9 +510,9 @@ public class BrokerConfigView extends AnchorPane implements Displayable {
         final String topicName = summary.getTopicName();
 
         final boolean deletionConfired = userInteractor
-            .getYesNoDecision("Deleting topic...",
-                              String.format("Are you sure you want to delete topic '%s' ?", topicName),
-                              getTopicDeleteWarningMessageForUser());
+                .getYesNoDecision("Deleting topic...",
+                        String.format("Are you sure you want to delete topic '%s' ?", topicName),
+                        getTopicDeleteWarningMessageForUser());
         if (!deletionConfired) {
             return;
         }

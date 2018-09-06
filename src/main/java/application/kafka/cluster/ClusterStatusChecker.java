@@ -10,14 +10,14 @@ import javafx.application.Platform;
 public class ClusterStatusChecker {
     private final ApplicationBusySwitcher busySwitcher;
     private final UserInteractor userInteractor;
-    private KafkaClusterProxies kafkaClusterProxies;
+    private KafkaClusterProxiesBase kafkaClusterProxiesBase;
 
     public ClusterStatusChecker(ApplicationBusySwitcher busySwitcher,
                                 UserInteractor userInteractor,
-                                KafkaClusterProxies kafkaClusterProxies) {
+                                KafkaClusterProxiesBase kafkaClusterProxiesBase) {
         this.busySwitcher = busySwitcher;
         this.userInteractor = userInteractor;
-        this.kafkaClusterProxies = kafkaClusterProxies;
+        this.kafkaClusterProxiesBase = kafkaClusterProxiesBase;
     }
 
     public void updateStatus(HostInfo hostInfo,
@@ -27,7 +27,7 @@ public class ClusterStatusChecker {
                 busySwitcher.setAppBusy(true);
             });
             try {
-                final KafkaClusterProxy proxy = kafkaClusterProxies.getRefreshed(hostInfo);
+                final KafkaClusterProxy proxy = kafkaClusterProxiesBase.getRefreshed(hostInfo);
                 showWarningOnInvalidClusterConfig(proxy, shouldShowWarningOnInvalidConfig);
             } catch (Throwable e) {
                 Logger.error(e);

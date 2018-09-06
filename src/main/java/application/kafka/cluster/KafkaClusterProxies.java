@@ -12,13 +12,14 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
 
 
-public class KafkaClusterProxies {
+public class KafkaClusterProxies implements KafkaClusterProxiesBase {
     private final Map<HostPortValue, KafkaClusterProxy> hostPortToProxy = new HashMap<>();
     private final Map<HostInfo, ObjectProperty<KafkaClusterProxy>> hostInfoToBrokerProperty = new HashMap<>();
 
     public KafkaClusterProxies() {
     }
 
+    @Override
     public KafkaClusterProxy getRefreshed(HostInfo hostInfo) throws InterruptedException,
                                                                     ExecutionException,
                                                                     TimeoutException,
@@ -30,11 +31,12 @@ public class KafkaClusterProxies {
         getAsProperty(hostInfo).set(newProxy);
         return newProxy;
     }
-
+    @Override
     public KafkaClusterProxy get(HostInfo hostInfo) {
         return getAsProperty(hostInfo).get();
     }
 
+    @Override
     public ObjectProperty<KafkaClusterProxy> getAsProperty(HostInfo hostInfo) {
         if (!hostInfoToBrokerProperty.containsKey(hostInfo)) {
             hostInfoToBrokerProperty.put(hostInfo, new SimpleObjectProperty<>());
