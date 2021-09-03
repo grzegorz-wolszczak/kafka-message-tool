@@ -28,7 +28,7 @@ public class ValidatorUtils {
             return false;
         }
         try {
-            Integer value = Integer.valueOf(port);
+            int value = Integer.parseInt(port);
             return value >= 0 && value <= MAX_PORT_VALUE;
         } catch (Exception e) {
             return false;
@@ -50,9 +50,9 @@ public class ValidatorUtils {
         if (!isStringIdentifierValid(value)) {
             return false;
         }
-        Integer asIntValue;
+        int asIntValue;
         try {
-            asIntValue = Integer.valueOf(value);
+            asIntValue = Integer.parseInt(value);
         } catch (Exception e) {
             return false;
         }
@@ -96,10 +96,10 @@ public class ValidatorUtils {
     }
 
     private static Function<String, Boolean> validationFunc(int maxValue) {
-        return (v) -> isNumberLessEqualThan(v, maxValue);
+        return v -> isNumberLessEqualThan(v, maxValue);
     }
 
     private static Consumer<String> stringConsumer(IntegerProperty referenceProperty) {
-        return (v) -> referenceProperty.set(Integer.valueOf(v));
+        return v -> referenceProperty.set(Integer.parseInt(v));
     }
 }
